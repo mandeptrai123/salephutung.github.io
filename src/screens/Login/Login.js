@@ -1,12 +1,12 @@
 import React from 'react'
-import '../FormStyle/FormStyle.css'
+import '../FormStyle/css/FormStyle.css'
 
 
 // import components
-import TitleForm from '../resource/TitleForm/TitleForm'
-import InputText from '../resource/InputText/InputText'
-import ButtonForm from '../resource/ButtonForm/ButtonForm'
-import TextForm from '../resource/TextForm/TextForm'
+import TitleForm from '../../resource/TitleForm/TitleForm'
+import InputText from '../../resource/InputText/InputText'
+import ButtonForm from '../../resource/ButtonForm/ButtonForm'
+import TextForm from '../../resource/TextForm/TextForm'
 
 
 function Login() {
@@ -19,7 +19,7 @@ function Login() {
     return(
         <div className='container'>
             <div className='form'>
-                <TitleForm title='Sale Phụ Tùng'/>
+                <TitleForm title='Sale'/>
                 <form className='form-content'>
                     <InputText placeholder='Số Điện Thoại'/>   
                     <InputText placeholder='Mật Khẩu'/>  
