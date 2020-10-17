@@ -13,7 +13,7 @@ function ButtonNavigation(props) {
 
     const style = {
         backgroundColor: props.bgColor,
-        boxShadow: props.boxShadow
+        boxShadow: props.boxShadow,
     }
 
     return(

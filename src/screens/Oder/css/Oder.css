@@ -46,14 +46,23 @@ body {
 }
 
 .input-content {
-  width: 400px;
+  width: 600px;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
 }
-
+.input-content .edt{
+ margin-left: 15px;
+}
+h3{
+  margin-top: 20px;
+  margin-left:20px;
+}
 .input-content h3 {
   width: 200px;
+}
+label{
+  margin-left:20px;
 }
 
 .container-content {
@@ -196,6 +205,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   border-radius: 50%;
+  color: aliceblue;
+  background-color: green;
   transition: all .3s;
 }
 

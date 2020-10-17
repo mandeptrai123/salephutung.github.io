@@ -3,6 +3,9 @@
   padding: 0;
   box-sizing: border-box;
 }
+h3{
+  color: green;
+}
 
 .nhapkho-container {
   width: 100%;
@@ -54,6 +57,8 @@
   border-radius: 5px;
   font-size: 18px;
   border: none;
+  background-color: green;
+  color: whitesmoke;
   outline: none;
   font-weight: 600;
   transition: all .3s;

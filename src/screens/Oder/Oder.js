@@ -11,18 +11,16 @@ function Oder() {
     return(
         <section className='oder-container'>
             <header className='oder-header'>
+                <div>
+                    <h3>
+                        Thông Tin Khách
+                    </h3>
+                </div>
                 <div className='container-input'>
                     <div className='input-content'>
-                        <h3>Số điện thoại: </h3>
-                        <InputText placeholder='Số Điện Thoại'/>
-                    </div>
-                    <div className='input-content'>
-                        <h3>Tên Khách: </h3>
-                        <InputText placeholder='Tên Khách'/>
-                    </div>
-                    <div className='input-content'>
-                        <h3>Địa Chỉ: </h3>
-                        <InputText placeholder='Địa Chỉ'/>
+                        <InputText className="edt" placeholder='Số Điện Thoại'/>
+                        <InputText className="edt" placeholder='Tên Khách'/>
+                        <InputText className="edt" placeholder='Địa Chỉ'/>
                     </div>
                 </div>
 
@@ -42,19 +40,19 @@ function Oder() {
                         <ul className='list-items-product'>
                             <li className='item-product'>
                                 <div className='item-product__content'>
-                                    Demo Nội Dụng
+                                    Sản Phẩm 1
                                 </div>
                                 <button type='button' className='btn-choose'>Chọn</button>
                             </li>
                             <li className='item-product'>
                                 <div className='item-product__content'>
-                                    Demo Nội Dụng
+                                    Sản Phẩm 2
                                 </div>
                                 <button type='button' className='btn-choose'>Chọn</button>
                             </li>
                             <li className='item-product'>
                                 <div className='item-product__content'>
-                                    Demo Nội Dụng
+                                    Sản Phẩm 3
                                 </div>
                                 <button type='button' className='btn-choose'>Chọn</button>
                             </li>
@@ -66,7 +64,12 @@ function Oder() {
                     <div className='content-right__price'>
                         <ul className='content-right__price-list'>
                             <li class="price-list__item">
-                                Sản phẩm: 
+                                Sản phẩm
+                                <span class="price">Giá Tiền</span>
+                            </li>
+                            <br></br>
+                            <li class="price-list__item">
+                                Sản phẩm 1 : 
                                 <span class="price">10000</span>
                             </li>
                             <li class="price-list__item">
