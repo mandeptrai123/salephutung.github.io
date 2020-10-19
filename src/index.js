@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
-import Login from './Login/Login';
+import HangLuongTonKhoThap from './screens/HangLuongTonKhoThap/HangLuongTonKhoThap';
+import App from './App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Login />
+    <HangLuongTonKhoThap />
   </React.StrictMode>,
   document.getElementById('root')
 );
