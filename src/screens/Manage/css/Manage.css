@@ -21,7 +21,7 @@ body {
 }
 
 .manage-header .title {
-  width: 100%;
+  width: 3600px;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -59,35 +59,16 @@ body {
 .btn {
   width: 250px;
   height: 200px;
-  margin-left: 20px;
   border-radius: 10px;
-  color: aliceblue;
+  color: black;
   font-weight: 600;
   font-size: 20px;
-  background-color: green;
+  background-color: #8B35FC;
   margin-bottom: 20px;
   transition: all 0.3s;
   cursor: pointer;
   box-shadow: 1px 1px 5px;
   border: none;
-}
-
-.btnThem {
-  width: 150px;
-  height: 50px;
-  margin-left: 10px;
-  border-radius: 10px;
-  color: aliceblue;
-  font-size: 20px;
-  background-color: green;
-  transition: all 0.3s;
-  cursor: pointer;
-  box-shadow: 1px 1px 5px;
-  border: none;
-}
-
-.edt{
-  margin-top:15px;
 }
 
 .btn:hover {

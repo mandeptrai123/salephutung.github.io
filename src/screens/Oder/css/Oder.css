@@ -46,23 +46,14 @@ body {
 }
 
 .input-content {
-  width: 600px;
+  width: 400px;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: center;
 }
-.input-content .edt{
- margin-left: 15px;
-}
-h3{
-  margin-top: 20px;
-  margin-left:20px;
-}
+
 .input-content h3 {
   width: 200px;
-}
-label{
-  margin-left:20px;
 }
 
 .container-content {
@@ -205,8 +196,6 @@ label{
   font-weight: 600;
   cursor: pointer;
   border-radius: 50%;
-  color: aliceblue;
-  background-color: green;
   transition: all .3s;
 }
 
