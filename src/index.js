@@ -2,12 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import HangLuongTonKhoThap from './screens/HangLuongTonKhoThap/HangLuongTonKhoThap';
+import BaoCaoDoanhThu from './screens/BaoCaoDoanhThu/BaoCaoDoanhThu';
 import App from './App'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <HangLuongTonKhoThap />
+    <BaoCaoDoanhThu />
   </React.StrictMode>,
   document.getElementById('root')
 );

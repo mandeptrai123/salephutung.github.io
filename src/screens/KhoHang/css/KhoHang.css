@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.khohang-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.khohang-container .khohang-container__content {
+  width: 100%;
+}
+
+.khohang-container .khohang-container__content .header-title {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.list-product {
+  width: 100%;
+  padding: 20px;
+  scroll-behavior: auto;
+}
+
+.list-product .list-items__detail-product {
+  list-style: none;
+  padding: 20px;
+  width: 100%;
+  border: 1px solid black;
+  height: 550px;
+  overflow: auto;
+}
+/*# sourceMappingURL=KhoHang.css.map */
