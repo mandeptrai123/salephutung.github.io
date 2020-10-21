@@ -21,8 +21,8 @@ body {
 }
 
 .manage-header .title {
-  width: 3600px;
-  height: 50%;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,9 +32,7 @@ body {
   width: 100%;
   display: flex;
 }
-.display-show{
-  border: 2px solid black;
-}
+
 .container-content__manage .content-left__nd {
   width: 100%;
 }
@@ -61,12 +59,12 @@ body {
 .btn {
   width: 250px;
   height: 200px;
+  margin-left: 20px;
   border-radius: 10px;
-  color: black;
+  color: aliceblue;
   font-weight: 600;
   font-size: 20px;
-  background-color: #8B35FC;
-  
+  background-color: green;
   margin-bottom: 20px;
   transition: all 0.3s;
   cursor: pointer;
@@ -74,11 +72,25 @@ body {
   border: none;
 }
 
+.btnThem {
+  width: 150px;
+  height: 50px;
+  margin-left: 10px;
+  border-radius: 10px;
+  color: aliceblue;
+  font-size: 20px;
+  background-color: green;
+  transition: all 0.3s;
+  cursor: pointer;
+  box-shadow: 1px 1px 5px;
+  border: none;
+}
+
+.edt{
+  margin-top:15px;
+}
 
 .btn:hover {
-  background-color: coral;
-}
-.item-li{
-  border: 1px solid black;
+  font-size: 23px;
 }
 /*# sourceMappingURL=Manage.css.map */

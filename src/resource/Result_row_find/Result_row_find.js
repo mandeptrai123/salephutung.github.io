@@ -6,9 +6,19 @@ import Dialog from '../Dialog/Dialog';
 
 function Result_row_find(props) {
     return(
-        <li className='item__detail-product'>
+        <li 
+        className='item__detail-product'>
             <div className='item__detail-product-content'>
-                Test nội dung
+                {props.name}
+            </div>
+            <div className='item__detail-product-content'>
+                {props.donvi}
+            </div>
+            <div className='item__detail-product-content'>
+                {props.giaban}
+            </div>
+            <div className='item__detail-product-content'>
+                {props.soluong}
             </div>
             <label for='btn-show-dialog' className='btn-show'>{props.txtBtn}</label>
             <input type='checkbox' id='btn-show-dialog' hidden/>

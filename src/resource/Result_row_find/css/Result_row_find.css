@@ -18,7 +18,7 @@
 }
 
 .item__detail-product .item__detail-product-content {
-  width: 90%;
+  width: 50%;
   border: 1px solid black;
   display: flex;
   justify-content: center;
@@ -29,7 +29,7 @@
 .item__detail-product .btn-show {
   border: 1px solid black;
   cursor: pointer;
-  width: 10%;
+  width: 20%;
   height: 100%;
   outline: none;
   font-weight: 600;
