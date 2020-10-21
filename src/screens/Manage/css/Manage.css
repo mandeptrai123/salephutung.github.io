@@ -22,7 +22,7 @@ body {
 
 .manage-header .title {
   width: 3600px;
-  height: 50%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,9 +32,7 @@ body {
   width: 100%;
   display: flex;
 }
-.display-show{
-  border: 2px solid black;
-}
+
 .container-content__manage .content-left__nd {
   width: 100%;
 }
@@ -66,7 +64,6 @@ body {
   font-weight: 600;
   font-size: 20px;
   background-color: #8B35FC;
-  
   margin-bottom: 20px;
   transition: all 0.3s;
   cursor: pointer;
@@ -74,11 +71,7 @@ body {
   border: none;
 }
 
-
 .btn:hover {
-  background-color: coral;
-}
-.item-li{
-  border: 1px solid black;
+  font-size: 23px;
 }
 /*# sourceMappingURL=Manage.css.map */

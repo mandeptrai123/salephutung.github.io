@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: "Quicksand", Arial, sans-serif;
+  font-family: 'Quicksand', Arial, sans-serif;
 }
 
 .oder-container {
@@ -55,10 +55,6 @@ body {
 .input-content h3 {
   width: 200px;
 }
-h5{
-  font-family: 'Times New Roman', Times, serif;
-  font-style: inherit;
-}
 
 .container-content {
   width: 100%;
@@ -99,7 +95,7 @@ h5{
   padding-left: 5px;
   outline: none;
   border-radius: 5px;
-  transition: all .2s;
+  transition: all 0.2s;
 }
 
 .find-product .input-find:focus {
@@ -116,7 +112,7 @@ h5{
   height: 50px;
   border-radius: 20px;
   cursor: pointer;
-  transition: all .2s;
+  transition: all 0.2s;
 }
 
 .find-product .btn-find:hover {
@@ -145,7 +141,7 @@ h5{
   border: 1px solid black;
   cursor: pointer;
   height: 50px;
-  transition: all .2s;
+  transition: all 0.2s;
   font-size: 18px;
   font-weight: 600;
   width: 20%;
@@ -200,7 +196,7 @@ h5{
   font-weight: 600;
   cursor: pointer;
   border-radius: 50%;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 .content-right__submit .btn-submit:hover {

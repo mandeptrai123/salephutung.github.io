@@ -5,6 +5,7 @@
 }
 
 .baocao-container {
+  height: 100%;
   width: 100%;
 }
 
@@ -13,7 +14,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 20px;
 }
 
 .baocao-header .btn-back {
@@ -24,7 +24,7 @@
 }
 
 .baocao-header .title-baocao {
-  line-height: 50px;
+  line-height: 70px;
   text-align: center;
   align-self: center;
   margin-bottom: 0;
@@ -32,39 +32,24 @@
 }
 
 .baocao-container__content {
-  margin-top: 30px;
+  margin: 30px 0;
   width: 100%;
   display: flex;
 }
 
 .baocao-container__content .baocao-container__content-left {
-  width: 100%;
+  width: 60%;
 }
 
 .baocao-container__content .baocao-container__content-left .input-chekbox {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-left: 20px;
-  padding-right: 350px;
-}
-
-.baocao-container__content .baocao-container__content-right {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-}
-
-.baocao-container__content .baocao-container__content-right .dropdown-basic {
-  width: 10px;
-  height: 10px;
 }
 
 .table-content {
   width: 100%;
   padding: 0 20px;
-  margin-top: 70px;
 }
 
 .table-content .title-table {
