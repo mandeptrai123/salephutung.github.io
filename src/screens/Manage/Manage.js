@@ -8,13 +8,21 @@ import ButtonNavigation from '../../resource/ButtonNavigation/ButtonNavigation'
 import DonHangTrongNgay from './Children_Component/DonHangTrongNgay'
 import CongNo from './Children_Component/CongNo'
 import BaoCaoDoanhThu from './Children_Component/BaoCaoDoanhThu/BaoCaoDoanhThu'
+import TaoNhanVien from './Children_Component/TaoNhanVien'
+import HangThieuSL from './Children_Component/HangThieuSL'
+
+import { Button, ListGroup } from 'react-bootstrap'
 
 function Manage() {
     const [screenUI, setUI] = useState(<DonHangTrongNgay></DonHangTrongNgay>)
     useEffect(() => {})
 
-    function Handle_ThemNhanVien() {}
-    function Handle_HangThieuSL() {}
+    function Handle_ThemNhanVien() {
+        setUI(<TaoNhanVien />)
+    }
+    function Handle_HangThieuSL() {
+        setUI(<HangThieuSL />)
+    }
     function Handle_DonHangTrongNgay() {
         setUI(<DonHangTrongNgay></DonHangTrongNgay>)
     }
@@ -38,51 +46,88 @@ function Manage() {
                 style={{
                     width: '20%',
                     display: 'flex',
-                    flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    padding: '0 10px',
                 }}
             >
-                <button
-                    onClick={Handle_ThemNhanVien}
-                    style={{ height: 50 }}
-                    type="button"
-                    className="btn"
+                <ListGroup
+                    as="ul"
+                    style={{
+                        width: '100%',
+                        fontSize: '18px',
+                        fontWeight: '600',
+                    }}
                 >
-                    Thêm Nhân Viên
-                </button>
-                <button
-                    onClick={Handle_HangThieuSL}
-                    style={{ height: 50 }}
-                    type="button"
-                    className="btn"
-                >
-                    Hàng Thiếu Số Lượng
-                </button>
-                <button
-                    onClick={Handle_DonHangTrongNgay}
-                    style={{ height: 50 }}
-                    type="button"
-                    className="btn"
-                >
-                    Đơn Hàng Trong Ngày
-                </button>
-                <button
-                    onClick={Handle_BaoCaoDoanhThu}
-                    style={{ height: 50 }}
-                    type="button"
-                    className="btn"
-                >
-                    Báo Cáo Doanh Thu
-                </button>
-                <button
-                    onClick={Handle_ToanBoCongNo}
-                    style={{ height: 50 }}
-                    type="button"
-                    className="btn"
-                >
-                    Toàn Bộ Công Nợ
-                </button>
+                    <ListGroup.Item as="li" variant="danger">
+                        Bảng Điều Khiển
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        variant="light"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'black',
+                        }}
+                        onClick={Handle_ThemNhanVien}
+                    >
+                        Thêm Nhân Viên
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        variant="light"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'black',
+                        }}
+                        onClick={Handle_HangThieuSL}
+                    >
+                        Hàng Thiếu Số Lượng
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        variant="light"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'black',
+                        }}
+                        onClick={Handle_DonHangTrongNgay}
+                    >
+                        Đơn Hàng Trong Ngày
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        variant="light"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'black',
+                        }}
+                        onClick={Handle_BaoCaoDoanhThu}
+                    >
+                        Báo Cáo Doanh Thu
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        variant="light"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'black',
+                        }}
+                        onClick={Handle_ToanBoCongNo}
+                    >
+                        Toàn Bộ Công Nợ
+                    </ListGroup.Item>
+                </ListGroup>
             </div>
 
             {/* Màn Hình Chính */}

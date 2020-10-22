@@ -34,17 +34,13 @@
   outline: none;
   font-weight: 600;
   font-size: 18px;
-  transition: all .3s;
+  transition: all 0.3s;
   border-radius: 2px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #ebebeb;
-}
-
-.item__detail-product .btn-show:hover {
-  font-size: 20px;
 }
 
 .item__detail-product #btn-show-dialog:checked ~ .overlay-dialog {

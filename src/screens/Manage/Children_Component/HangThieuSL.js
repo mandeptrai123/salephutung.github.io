@@ -1,13 +1,237 @@
-
-import React,{useState,useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 
 //import component
-import InputText from '../../resource/InputText/InputText';
-import {Modal,Button,Spinner} from 'react-bootstrap';
+import { Modal, Button, Spinner } from 'react-bootstrap'
 
-function HangThieuSL()
-{
-    
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+
+function HangThieuSL() {
+    const [lstResult, setResult] = useState()
+    const [totalBill, setTotalBill] = useState(30)
+
+    var arr = [
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+        {
+            Date: '2020/10/20',
+            name: 'Man',
+            TenKhach: 'Khach Dep Trai',
+            SDTKhach: '0969',
+            lstSanPham: [],
+            TongTien: 50000,
+            ThanhTien: 100000,
+            Congno: 40000,
+        },
+    ]
+
+    var stt = 0
+    function ItemHangThieuSL(props) {
+        stt++
+        return (
+            <TableRow hover>
+                <TableCell>{stt}</TableCell>
+                <TableCell>Test</TableCell>
+                <TableCell>Test</TableCell>
+                <TableCell>Test</TableCell>
+                <TableCell>Test</TableCell>
+                <TableCell>
+                    <Button
+                        variant="danger"
+                        style={{
+                            width: '150px',
+                            height: '50px',
+                            fontSize: '14px',
+                        }}
+                    >
+                        Xem Chi Tiết
+                    </Button>
+                </TableCell>
+            </TableRow>
+        )
+    }
+
+    useEffect(() => {
+        const _result = arr.map((e) => {
+            return ItemHangThieuSL(e)
+        })
+
+        setResult(_result)
+    }, [])
+
+    return (
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <h1
+                style={{
+                    textAlign: 'center',
+                }}
+            >
+                Hàng Thiếu Số Lượng
+            </h1>
+            <h4
+                style={{
+                    color: 'red',
+                    padding: 10,
+                    textAlign: 'center',
+                    width: '100%',
+                    alignSelf: 'center',
+                }}
+            >
+                Tổng Số Đơn: {totalBill}
+            </h4>
+            <TableContainer
+                style={{
+                    maxHeight: '550px',
+                    width: '93%',
+                }}
+            >
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>STT</TableCell>
+                            <TableCell>Test</TableCell>
+                            <TableCell>Test</TableCell>
+                            <TableCell>Test</TableCell>
+                            <TableCell>Test</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>{lstResult}</TableBody>
+                </Table>
+            </TableContainer>
+        </div>
+    )
 }
 
-module.exports = HangThieuSL;
+export default HangThieuSL

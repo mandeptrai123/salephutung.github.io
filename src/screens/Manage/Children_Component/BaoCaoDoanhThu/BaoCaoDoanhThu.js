@@ -160,11 +160,12 @@ function BaoCaoDoanhThu(props) {
         setResult(_result)
     }, [])
 
+    var stt = 0
     function ItemDonHang(props) {
-        // stt++
+        stt++
         return (
             <TableRow hover>
-                <TableCell>{props.name}</TableCell>
+                <TableCell>{stt}</TableCell>
                 <TableCell>{props.name}</TableCell>
                 <TableCell>{props.name}</TableCell>
                 <TableCell>{props.name}</TableCell>
@@ -254,7 +255,12 @@ function BaoCaoDoanhThu(props) {
                 </Col>
             </Row>
             <section className="table-content">
-                <h4 className="title-table">
+                <h4
+                    style={{
+                        color: 'red',
+                        textAlign: 'center',
+                    }}
+                >
                     Bạn đang xem doanh thu tháng 9/2020
                 </h4>
                 <TableContainer

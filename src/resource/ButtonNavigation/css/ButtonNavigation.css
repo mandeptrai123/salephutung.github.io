@@ -11,10 +11,5 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-click-me:hover {
-  font-size: 30px;
 }
 /*# sourceMappingURL=ButtonNavigation.css.map */

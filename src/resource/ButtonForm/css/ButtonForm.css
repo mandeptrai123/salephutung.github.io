@@ -13,7 +13,7 @@
   text-transform: uppercase;
   cursor: pointer;
   outline: none;
-  transition: .5s;
+  transition: 0.5s;
 }
 
 .btn-submit:hover {
