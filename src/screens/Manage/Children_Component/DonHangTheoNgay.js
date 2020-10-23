@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 
-//import component
 import { Modal, Button, Spinner } from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
@@ -10,44 +9,53 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
-function HangThieuSL() {
-    const [lstResult, setResult] = useState();
-    const [totalBill, setTotalBill] = useState(30);
+function DonHangTheoNgay() {
+    const [lstResult, setResult] = useState()
+    const [totalBill, setTotalBill] = useState(30)
 
-    const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Sản Phẩm!");
+    const [messLoading, setMessLoading] = useState(" Đang Tải Thông Tin Đơn Hàng!");
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    var stt = 0;
 
-    function ItemHangThieuSL(props) {
+    var stt = 0;
+    function ItemDonHang(props) {
         stt++
         return (
             <TableRow hover>
                 <TableCell>{stt}</TableCell>
-                <TableCell>{props.name}</TableCell>
-                <TableCell>{props.amoutAlert}</TableCell>
-                <TableCell>{props.Donvi}</TableCell>
-                <TableCell>{props.amout}</TableCell>
+                <TableCell>{props.Date}</TableCell>
+                <TableCell>{props.TenKhach}</TableCell>
+                <TableCell>{props.TongTien}</TableCell>
+                <TableCell>{props.ThanhTien}</TableCell>
+                <TableCell
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                </TableCell>
             </TableRow>
         )
     }
 
     useEffect(() => {
-       OnFresh();
-    }, []);
+        var _date = new Date();
+        OnRefresh(_date.getDate());
 
-    function RenderMatHangHetSL(arr)
+    },[]);
+    function RenderDonHangTrongNgay(arr)
     {
         const _result = arr.map((e) => {
-            return ItemHangThieuSL(e)
+            return ItemDonHang(e)
         })
 
         setResult(_result)
     }
 
-    function OnFresh()
+    function OnRefresh(dateCurrent)
     {
         handleShow();
         const requestOptions = {
@@ -55,18 +63,17 @@ function HangThieuSL() {
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/quanli/MatHangHetSL",requestOptions)
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+dateCurrent,requestOptions)
         .then(res => res.json())
         .then(res =>{
             handleClose();
            if(res.success)
            {
-               RenderMatHangHetSL(res.data);
+            RenderDonHangTrongNgay(res.data);
            }
         }).catch(e=>
             {
-                alert("Có Lỗi Ở Hàng Thiếu SL! ");
-
+                alert("Có Lỗi Ở Đơn Hàng Trong Ngày ! ");
                 handleClose();
             }
             );
@@ -77,6 +84,7 @@ function HangThieuSL() {
             style={{
                 width: '100%',
                 height: '100%',
+
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
@@ -90,9 +98,20 @@ function HangThieuSL() {
                     color:'blue'
                 }}
             >
-                Hàng Thiếu Số Lượng
+                Xem Đơn Hàng Theo Ngày
             </h1>
-           
+            <h4
+                style={{
+                    color: 'red',
+                    paddingRight:200,
+                    textAlign: 'center',
+                    width: '100%',
+                    alignSelf: 'center',
+                }}
+            >
+                Tổng Số Đơn: {totalBill}
+            </h4>
+
             <TableContainer
                 style={{
                     maxHeight: '550px',
@@ -103,17 +122,17 @@ function HangThieuSL() {
                     <TableHead>
                         <TableRow>
                             <TableCell>STT</TableCell>
-                            <TableCell>Tên Sản Phẩm</TableCell>
-                            <TableCell>Số Lượng Báo Động</TableCell>
-                            <TableCell>Đơn Vị</TableCell>
-                            <TableCell>Số Lượng Hiện Tại</TableCell>
-                        
+                            <TableCell>Thời Gian</TableCell>
+                            <TableCell>Tên Khách</TableCell>
+                            <TableCell>Tổng Tiền</TableCell>
+                            <TableCell>Thành Tiền</TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
+
                     <TableBody>{lstResult}</TableBody>
                 </Table>
             </TableContainer>
-
 
             <Modal
                     aria-labelledby="contained-modal-title-vcenter"
@@ -131,4 +150,4 @@ function HangThieuSL() {
     )
 }
 
-export default HangThieuSL
+export default DonHangTheoNgay;

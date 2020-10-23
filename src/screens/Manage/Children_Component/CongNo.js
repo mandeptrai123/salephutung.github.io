@@ -1,86 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 //import component
-import { Modal, Button, Spinner } from 'react-bootstrap'
+import { Modal, Button, Spinner} from 'react-bootstrap';
+import {TextField} from '@material-ui/core';
 // import css
-import '../css/Manage.css'
+import '../css/Manage.css';
 
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
+let SDTSelected;
+let CongnoCu;
 function CongNo() {
-    const [lstResult, setResult] = useState()
-    const [totalCongNo, setTotalCongNo] = useState(30)
+    const [lstResult, setResult] = useState();
+    const [totalCongNo, setTotalCongNo] = useState(0);
 
-    var arr = [
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969025915',
-            LichSuMuaHang: [],
-            DiaChi: '12 Nguyễn Văn Bảo',
-            Congno: 40000,
-        },
-    ]
+    const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Khách Hàng!");
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [showDieuChinh, setShowDieuChinh] = useState(false);
+
+    const handleCloseDieuChinh = () => setShowDieuChinh(false);
+    const handleShowDieuChinh = () => setShowDieuChinh(true);
+
+    const [messResponse, setMessResponse] = useState("");
+    const [showResponse, setShowResponse] = useState(false);
+
+    const [congnoMoi, setcongnoMoi] = useState();
+   
 
     var stt = 0
     function ItemCongNo(props) {
@@ -88,10 +42,10 @@ function CongNo() {
         return (
             <TableRow hover>
                 <TableCell>{stt}</TableCell>
-                <TableCell>{props.Date}</TableCell>
-                <TableCell>{props.TenKhach}</TableCell>
+                <TableCell>{props.SDT}</TableCell>
+                <TableCell>{props.Name}</TableCell>
                 <TableCell>{props.DiaChi}</TableCell>
-                <TableCell>{props.Congno}</TableCell>
+                <TableCell>{props.Congno}.000VND</TableCell>
                 <TableCell
                     style={{
                         display: 'flex',
@@ -100,15 +54,19 @@ function CongNo() {
                     }}
                 >
                     <Button
+                    onClick={e=>{
+                        SDTSelected = props.SDT;
+                        setcongnoMoi(props.Congno);
+                        setShowDieuChinh(true)}}
                         variant="danger"
                         style={{
-                            width: '150px',
-                            height: '50px',
+                            width: '120px',
+                            height: '40px',
                             fontSize: '14px',
                             marginBottom: '0',
                         }}
                     >
-                        Xem Chi Tiết
+                       Điều Chỉnh
                     </Button>
                 </TableCell>
             </TableRow>
@@ -116,12 +74,79 @@ function CongNo() {
     }
 
     useEffect(() => {
+       OnFresh();
+    }, [])
+
+
+    function OnFresh()
+    {
+        handleShow();
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'}
+        };
+
+        fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang",requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose();
+           if(res.success)
+           {
+               RenderCongNo(res.data);
+           }
+        }).catch(e=>
+            {
+                alert("Có Lỗi Ở Công Nợ! ");
+
+                handleClose();
+            });
+
+    }
+
+
+    function RenderCongNo(arr)
+    {
+        var _congno = 0;
         const _result = arr.map((e) => {
+            _congno += new Number(e.Congno);
             return ItemCongNo(e)
         })
-
+        setTotalCongNo(_congno);
         setResult(_result)
-    }, [])
+    }
+    
+    function CapNhatCongNoMoi()
+    {
+        handleCloseDieuChinh(false);
+        
+        setMessLoading("Đang Cập Nhật Công Nợ Mới !");
+        handleShow();
+        var itemRequest =
+        {
+            SDT:SDTSelected,
+            Congno:new Number(congnoMoi)
+        };
+        const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body:JSON.stringify(itemRequest)
+            };
+    
+        fetch("https://phutungserver.herokuapp.com/khachhang/CapNhatCongNo",requestOptions)
+            .then(res => res.json())
+            .then(res =>{
+                handleClose();
+                setMessResponse(res.mess);
+                setShowResponse(true);
+                
+            }).catch(e=>
+                {
+                    alert("Có Lỗi Khi Cập Nhật Công Nợ! ");
+                    handleClose();
+                }
+                ); 
+
+    }
 
     return (
         <div
@@ -130,28 +155,20 @@ function CongNo() {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 alignItems: 'center',
             }}
         >
             <h1
                 style={{
                     textAlign: 'center',
+                    paddingRight:200,
+                    color:'blue'
                 }}
             >
-                Công Nợ Nè
+                Toàn Bộ Công Nợ
             </h1>
-            <h4
-                style={{
-                    color: 'red',
-                    padding: '10px 0',
-                    textAlign: 'center',
-                    width: '100%',
-                    alignSelf: 'center',
-                }}
-            >
-                Tổng Số Đơn: {totalCongNo}
-            </h4>
+           
 
             <TableContainer
                 style={{
@@ -163,10 +180,10 @@ function CongNo() {
                     <TableHead>
                         <TableRow>
                             <TableCell>STT</TableCell>
-                            <TableCell>Thời Gian</TableCell>
+                            <TableCell>Số Điện Thoại</TableCell>
                             <TableCell>Tên Khách</TableCell>
-                            <TableCell>Tổng Tiền</TableCell>
-                            <TableCell>Thành Tiền</TableCell>
+                            <TableCell>Địa Chỉ</TableCell>
+                            <TableCell>Tổng Công Nợ</TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
@@ -174,6 +191,101 @@ function CongNo() {
                     <TableBody>{lstResult}</TableBody>
                 </Table>
             </TableContainer>
+            <div
+            style={{paddingRight:200,marginTop:30}}
+            >
+                <h4
+                style={{textAlign:'center'}}
+                >
+                    Tổng Công Nợ
+                </h4>
+                <h3
+                style={{textAlign:'center',color:'red'}}
+                >
+                    {totalCongNo}.000VND
+                </h3>
+            </div>
+
+            <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={show} onHide={handleClose}>
+                    <Modal.Body >
+                    <Modal.Title>
+                    <Spinner animation="border" variant="success" role="status"></Spinner>
+                        {messLoading}
+
+                    </Modal.Title>
+                    </Modal.Body>
+                </Modal>
+
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showDieuChinh}
+                    onHide={handleCloseDieuChinh} 
+                    >
+                    <Modal.Body >
+                    <Modal.Title>
+                        Cập Nhật Công Nợ Mới
+                    </Modal.Title>
+                    <Modal.Footer>
+                        <div
+                        style={{width:'100%'}}
+                        >
+                        <TextField
+                            style={{width:'100%'}}
+                            value={congnoMoi}
+                            onChange={e=>{setcongnoMoi(e.target.value)}}
+                        />
+                        </div>
+                       
+                       <div
+                       style={{marginTop:50}}
+                       >
+                       <Button
+                       onClick={e=>{CapNhatCongNoMoi()}}
+                       style={{width:100,marginRight:20}}
+                       >
+                            OK
+                        </Button>
+
+                        <Button
+                         variant="danger"
+                        style={{width:100,marginLeft:20}}
+                        onClick={e=>{handleCloseDieuChinh()}}
+                        >
+                            Huỷ
+                        </Button>
+                       </div>
+                       
+                    </Modal.Footer>
+                    </Modal.Body>
+                </Modal>
+        
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showResponse} >
+                    <Modal.Body >
+                    <Modal.Title>
+                        {messResponse}
+                    </Modal.Title>
+                    <Modal.Footer>
+                        <Button
+                        onClick={e=>{
+                            setShowResponse(false)
+                            OnFresh();
+                        }}
+                        >
+                            OK
+                        </Button>
+                    </Modal.Footer>
+                    </Modal.Body>
+                </Modal>
         </div>
     )
 }

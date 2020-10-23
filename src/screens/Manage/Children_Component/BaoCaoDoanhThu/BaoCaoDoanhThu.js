@@ -17,147 +17,20 @@ import TableRow from '@material-ui/core/TableRow'
 //import component
 
 function BaoCaoDoanhThu(props) {
-    var arr = [
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-        {
-            Date: '2020/10/20',
-            name: 'Man',
-            TenKhach: 'Khach Dep Trai',
-            SDTKhach: '0969',
-            lstSanPham: [],
-            TongTien: 50000,
-            ThanhTien: 100000,
-            Congno: 40000,
-        },
-    ]
-
+   
     const [lstResult, setResult] = useState()
+    const [viewModeDropdown, setviewModelDropdown] = useState("Doanh Thu 7 Ngày Gần Đây");
+
+
+    const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Khách Hàng!");
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
 
     useEffect(() => {
-        const _result = arr.map((e) => {
-            return ItemDonHang(e)
-        })
-
-        setResult(_result)
+       
     }, [])
 
     var stt = 0
@@ -166,18 +39,204 @@ function BaoCaoDoanhThu(props) {
         return (
             <TableRow hover>
                 <TableCell>{stt}</TableCell>
-                <TableCell>{props.name}</TableCell>
-                <TableCell>{props.name}</TableCell>
+                <TableCell>{props.TenKhach}</TableCell>
+                <TableCell>{props.ThanhTien}</TableCell>
                 <TableCell>{props.name}</TableCell>
                 <TableCell>{props.name}</TableCell>
             </TableRow>
         )
     }
 
+    function RenderBaoCaoDoanhThu(arr)
+    {
+        const _result = arr.map((e) => {
+            return ItemDonHang(e)
+        })
+        setResult(_result)
+    }
+
+    function handleDropDown(stt)
+    {
+        switch(stt)
+        {
+            case 0:
+                setviewModelDropdown("Doanh Thu Ngày Hôm Nay");
+                LoadDoanhThuHomNay();
+                break;
+            case 1:
+                setviewModelDropdown("Doanh Thu 7 Ngày Gần Đây");
+                LoadDoanhThuTheoTuan();
+                break;
+            case 2:
+                setviewModelDropdown("Doanh Thu Tháng Này");
+                LoadDoanhThuThangNay();
+                break;
+            case 3:
+                setviewModelDropdown("Doanh Thu Tháng Trước");
+                LoadDoanhThuThangTruoc();
+                break;
+            case 4:
+                setviewModelDropdown("Doanh Thu Năm Nay");
+                LoadDoanhThuNamNay();
+                break;
+        }
+    }
+
+    function XuLyDuHoaDonThanhSanPham(arr)
+    {
+        var arrSanPham = [];
+        arr.map(e=>{
+            e.lstSanPham.map(i=>{
+                if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
+                {
+                    arrSanPham[arrSanPham.findIndex(item=>{item._id == i._id})].soluongMua += new Number(i.SoLuongBan);
+                }else
+                {
+                    arrSanPham.push(
+                        {
+                            _id:i.id,
+                            TenSanPham:i.name,
+                            soluongMua:i.soluongBan
+                        }) 
+                }
+            })
+        })
+        return arrSanPham;
+
+    }
+
+    function LoadDoanhThuNamNay()
+    {
+        var _d = new Date();
+        handleShow();
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'}
+        };
+
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNam?Year="+_d.getFullYear(),requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose();
+           if(res.success)
+           {
+               RenderBaoCaoDoanhThu(res.data);
+           }
+        }).catch(e=>
+            {
+                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+
+                handleClose();
+            });
+    }
+
+    function LoadDoanhThuThangNay()
+    {
+        var _d = new Date();
+        handleShow();
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'}
+        };
+
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month="+_d.getMonth(),requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose();
+           if(res.success)
+           {
+               var arrSP = XuLyDuHoaDonThanhSanPham(res.data);
+               RenderBaoCaoDoanhThu(arrSP);
+           }
+        }).catch(e=>
+            {
+                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+
+                handleClose();
+            });
+    }
+    function LoadDoanhThuThangTruoc()
+    {
+        handleShow();
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'}
+        };
+        var _d = new Date().getMonth();
+        _d-=1;
+        if(_d == -1)
+            _d = 11;
+
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month="+_d,requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose();
+           if(res.success)
+           {
+               RenderBaoCaoDoanhThu(res.data);
+           }
+        }).catch(e=>
+            {
+                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+
+                handleClose();
+            });
+    }
+
+    function LoadDoanhThuTheoTuan()
+    {
+        // handleShow();
+        // const requestOptions = {
+        //     method: 'GET',
+        //     headers: { 'Content-Type': 'application/json'}
+        // };
+
+        // fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+_d.getDate(),requestOptions)
+        // .then(res => res.json())
+        // .then(res =>{
+        //     handleClose();
+        //    if(res.success)
+        //    {
+        //        RenderCongNo(res.data);
+        //    }
+        // }).catch(e=>
+        //     {
+        //         alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+
+        //         handleClose();
+        //     });
+    }
+
+    function LoadDoanhThuHomNay()
+    {
+        var _d = new Date();
+        handleShow();
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'}
+        };
+        alert(_d.getDate())
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+_d.getDate(),requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose();
+           if(res.success)
+           {
+               RenderBaoCaoDoanhThu(res.data);
+           }
+        }).catch(e=>
+            {
+                alert("Có Lỗi Ở Báo Cáo Doanh Thu! "+e);
+                handleClose();
+            });
+    }
+
     return (
         <section className="baocao-container">
             <header className="baocao-header">
-                <h1 className="title-baocao">Báo Cáo Doanh Thu</h1>
+                <h1
+                style={{paddingRight:200,color:'blue'}}
+                className="title-baocao">Báo Cáo Doanh Thu</h1>
             </header>
             <Row md={12} className="baocao-container__content">
                 <Col md={6} className="baocao-container__content-left">
@@ -207,13 +266,34 @@ function BaoCaoDoanhThu(props) {
                                 height: '60px',
                             }}
                         >
-                            Doanh thu tháng này
+                            {viewModeDropdown}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            <Dropdown.Item
-                                href="#/action-1"
+
+                        <Dropdown.Item
+                                onClick={e=>handleDropDown(0)}
                                 style={{
-                                    fontSize: '20px',
+                                    fontSize: '15px',
+                                    width: '230px',
+                                    height: '60px',
+                                }}
+                            >
+                                Doanh thu ngày hôm nay
+                            </Dropdown.Item>
+                        <Dropdown.Item
+                                onClick={e=>handleDropDown(1)}
+                                style={{
+                                    fontSize: '15px',
+                                    width: '230px',
+                                    height: '60px',
+                                }}
+                            >
+                                Doanh thu 7 ngày gần đây
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={e=>handleDropDown(2)}
+                                style={{
+                                    fontSize: '15px',
                                     width: '230px',
                                     height: '60px',
                                 }}
@@ -221,24 +301,24 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu tháng này
                             </Dropdown.Item>
                             <Dropdown.Item
-                                href="#/action-1"
+                             onClick={e=>handleDropDown(3)}
                                 style={{
-                                    fontSize: '20px',
+                                    fontSize: '15px',
                                     width: '230px',
                                     height: '60px',
                                 }}
                             >
-                                Doanh thu tháng này
+                                Doanh thu tháng trước
                             </Dropdown.Item>
                             <Dropdown.Item
-                                href="#/action-1"
+                              onClick={e=>handleDropDown(4)}
                                 style={{
-                                    fontSize: '20px',
+                                    fontSize: '15px',
                                     width: '230px',
                                     height: '60px',
                                 }}
                             >
-                                Doanh thu tháng này
+                                Doanh thu năm nay
                             </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

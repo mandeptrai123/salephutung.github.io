@@ -5,32 +5,59 @@ import { Paper, TextField } from '@material-ui/core'
 
 import { makeStyles } from '@material-ui/core/styles'
 
-import Button from 'react-bootstrap/Button'
-
-const useStyles = makeStyles({
-    FormTextField: {
-        display: 'flex',
-        width: '100%',
-        height: '70%',
-        borderRadius: '5px',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-    txtField: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '40%',
-    },
-    tf: {
-        margin: '30px 0',
-    },
-})
+import { Button,Modal ,Spinner } from 'react-bootstrap';
 
 function TaoNhanVien() {
-    const classes = useStyles()
+    const [sodienthoai,setSDT] = useState("");
+    const [tenNV,setTenNV] = useState("");
+
+    const [show, setShow] = useState(false);
+    const [messLoading, setMessLoading] = useState(" Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!");
+
+    const [messResponse, setMessResponse] = useState("");
+    const [showResponse, setShowResponse] = useState(false);
+
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    function Handle_ThemNhanVien()
+    {
+        var itemRequest = 
+        {
+            SDT:sodienthoai,
+            Pass:"123456",
+            Name:tenNV
+        }
+        handleShow();
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body:JSON.stringify(itemRequest)
+        };
+
+        fetch("https://phutungserver.herokuapp.com/quanli/ThemNhanVien",requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            handleClose(); 
+            setMessResponse(res.mess);
+            setShowResponse(true);
+            setTenNV("");
+            setSDT("");
+        }).catch(e=>
+            {
+                alert(e);
+                handleClose();
+            }
+            );
+    }
     return (
         <div
             style={{
+                flex:1,
+                
+                justifyContent:'center',
+                alignContent:'center',
                 width: '100%',
                 height: '100%',
                 padding: '20px 30px',
@@ -40,81 +67,86 @@ function TaoNhanVien() {
                 style={{
                     lineHeight: '60px',
                     textAlign: 'center',
+                    paddingRight:200,
+                    color:'blue'
                 }}
             >
                 Thêm Nhân Viên
             </h1>
-            <form
-                className={classes.FormTextField}
-                noValidate
-                autoComplete="off"
-            >
-                <div className={classes.txtField}>
+           
+              
                     <TextField
-                        className={classes.tf}
+                    style={{
+                        width:200,
+                        marginLeft:200,
+                    }}
+                        onChange={e=>{setSDT(e.target.value)}}
+                        value={sodienthoai}
                         id="standard-basic"
                         label="Số Điện Thoại"
                         type="number"
                     />
+             
+              
                     <TextField
-                        className={classes.tf}
+                    style={{
+                        width:200,
+                        marginLeft:100,
+                    }}
+                        onChange={e=>{setTenNV(e.target.value)}}
+                        value={tenNV}
                         id="standard-basic"
-                        label="Password"
-                        type="password"
-                        value="123456"
+                        label="Tên Nhân Viên"
                     />
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                </div>
-                <div className={classes.txtField}>
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                    <TextField
-                        className={classes.tf}
-                        id="standard-basic"
-                        label="Thông tin nhân viên"
-                    />
-                </div>
-            </form>
-            <div
-                style={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
+                    
+             
+           
+           
                 <Button
+                onClick={e=>Handle_ThemNhanVien()}
                     variant="primary"
                     style={{
-                        width: '300px',
+                        marginTop:100,
+                        width: '200px',
+                        marginLeft:200,
                         height: '50px',
                     }}
                 >
-                    Thêm
+                    Tạo Nhân Viên
                 </Button>
-            </div>
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={show} onHide={handleClose}>
+                    <Modal.Body >
+                    <Modal.Title>
+                    <Spinner animation="border" variant="success" role="status"></Spinner>
+                        {messLoading}
+
+                    </Modal.Title>
+                    </Modal.Body>
+                </Modal>
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showResponse} >
+                    <Modal.Body >
+                    <Modal.Title>
+                        {messResponse}
+                    </Modal.Title>
+                    <Modal.Footer>
+                        <Button
+                        onClick={e=>{setShowResponse(false)}}
+                        >
+                            OK
+                        </Button>
+                    </Modal.Footer>
+                    </Modal.Body>
+                </Modal>
+           
         </div>
     )
 }

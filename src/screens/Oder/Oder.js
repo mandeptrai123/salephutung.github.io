@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 
 // import css
 import './css/Oder.css';
@@ -6,98 +6,422 @@ import './css/Oder.css';
 //import component
 import InputText from '../../resource/InputText/InputText';
 
-import {Modal,Button,Spinner} from 'react-bootstrap';
+import {Modal,Button,Spinner,Toast} from 'react-bootstrap';
+
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import {TextField} from '@material-ui/core';
+
+var itemSelected;
+let arr_Cart=[];
+function ItemCart(props){
+   
+
+    return <TableRow hover>
+        <TableCell>{props.name}</TableCell>
+        <TableCell>{props.soluongBan}</TableCell>
+        <TableCell>X</TableCell>
+        <TableCell>{props.price}</TableCell>
+        <TableCell>{props.pricesum}</TableCell>
+    </TableRow>
+}
+
 
 function Oder() {
 
+
+    //Modal Loading
     const [show, setShow] = useState(false);
+    const [txtButtonNegative, settxtButtonNegative] = useState("OK");
+    // Hiệu Chỉnh 
+    const [showHieuChinh, setShowHieuChinh] = useState(false);
+    const [soluongBan, setsoluongBan] = useState("");
+    const [ghichuDonHang, setghichuDonHang] = useState("");
+    // Thong Bao Sau Khi Dat Hang
+    const [showResultOrder, setShowResultOrder] = useState(false);
+
+    // Khách Lẻ
+    const [isCheck, setChecked] = useState(false);
+
+
     const [messLoading, setMessLoading] = useState("   Đang Tải Thông Tin Khách, Đợi Chút Nhé");
+    
+    const [contentSearch, setContentSearch] = useState("");
+    const [sodienthoai, setSoDienThoai] = useState("");
+    const [diachi, setDiaChi] = useState("");
+    const [tenkhach, setTenKhach] = useState("");
+    // List Này Dành Cho Bảng Tìm Kiếm
+    const [resultList, setResultSearch] = useState([]);
+    // List Này Dành Cho Bảng Giỏ Hàng
+    const [resultCart, setResultCart] = useState([]);
+    const [thanhtien, setThanhTien] = useState(0);
+
+    var _responseSanPham = [];
+
+
+    // Có giá trị khi nhấn nút Chọn
+    var IDSelected;
+
+    function ItemSanPham(props){
+        return <TableRow hover>
+            <TableCell>{props.name}</TableCell>
+            <TableCell>{props.amount}</TableCell>
+            <TableCell>{props.price}</TableCell>
+            <TableCell><Button  onClick={e=>ShowHieuChinhSoLuong(props._id)} >Chọn</Button></TableCell>
+        </TableRow>
+    }
+
+   
+    function ShowHieuChinhSoLuong(id)
+    {
+        // Show Modal 
+        var _item = _responseSanPham.find(e=>e._id==id);
+        itemSelected = _item;
+        handleOpenHieuChinh();
+        IDSelected = id;
+    }
+    function Handle_AddToCart()
+    {
+
+       
+       
+
+        // Tìm Xem Trong Giỏ Hàng Đã Có Sản Phẩm Này Chưa
+        var indexAlready = arr_Cart.findIndex(e=>e._id==itemSelected._id);
+        if(indexAlready > -1)
+        {
+            arr_Cart[indexAlready].soluongBan = new Number(arr_Cart[indexAlready].soluongBan) + new Number(soluongBan);
+            arr_Cart[indexAlready].pricesum = new Number(arr_Cart[indexAlready].pricesum)+ (new Number(itemSelected.price) * new Number(soluongBan));
+        }else
+        {
+            itemSelected.soluongBan = soluongBan;
+            itemSelected.pricesum = new Number(itemSelected.price) * soluongBan;
+            arr_Cart.push(itemSelected);
+        }
+
+
+        // Tính Toán Thành Tiền
+        var _sum = 0;
+        arr_Cart.map(e=>{
+            _sum += e.pricesum;
+        });
+
+        setThanhTien(_sum+".000VND");
+
+        RenderKetQuaGioHang(arr_Cart);
+        handleHideHieuChinh();
+    }
+
+    function RenderKetQuaGioHang(arr)
+    {
+        const result =  arr.map(e=>{
+            return ItemCart(e);
+        })
+        setResultCart(result);
+    }
+    function totalPrice() {
+        return(
+            <div className='total-price'>
+                Thành tiền: 
+                <span className='price'>20000</span>
+            </div>
+        );
+    }
+
+    function RenderKetQuaTimKiem(arr)
+    {
+        const result =  arr.map(e=>{
+            return ItemSanPham(e);
+        })
+        setResultSearch(result);
+    }
 
     function  LoadKhach(){
         setMessLoading("    Đang Tải Thông Tin Khách, Đợi Chút Nhé")
         handleShow();
+        TimKhachHang(sodienthoai);
     }
 
-    function  TimSanPham(){
+    function  Handle_TimSP(){
         setMessLoading("    Đang Tìm Sản Phẩm, Đợi Chút Nhé")
         handleShow();
+        TimSanPham(contentSearch);
+
     }
 
-    function  DatHang(){
+    // Kiểm Tra Thông Tin Khách Hàng .
+    async function isValidData()
+    {
+        if(isCheck)
+        {
+         return true;   
+        }else
+        {
+            if(sodienthoai == "")
+                return false;
+            if(diachi == "")
+                return false;
+            if(tenkhach == "")
+                return false;
+        }
+        return true;
+    }
+
+
+    function XuLiThongTinKhach()
+    {
+        if(isCheck)
+        {
+            var _itemRequest = 
+            {
+                SDTNV:"0969025915",
+                name:"Man",
+                TenKhach:"Khách Lẻ",
+                DiaChiKhach:"",
+                SDTKhach:"111",
+                TongTien:thanhtien,
+                ThanhTien:thanhtien,
+                Congno:0,
+                TraNo:0,
+                lstSanPham:arr_Cart
+                
+            }
+            return _itemRequest;
+        }else
+        {
+            var _itemRequest = 
+            {
+                SDTNV:"0969025915",
+                name:"Man",
+                TenKhach:tenkhach,
+                DiaChiKhach:diachi,
+                SDTKhach:sodienthoai,
+                TongTien:thanhtien,
+                ThanhTien:thanhtien,
+                Congno:0,
+                TraNo:0,
+                lstSanPham:arr_Cart
+    
+            }
+            return _itemRequest;
+        }
+    }
+
+    async function  DatHang(){
+        settxtButtonNegative("Huỷ Đặt Hàng");
         setMessLoading("    Đang Tiến Hành Đặt Hàng, Đợi Chút Nhé")
         handleShow();
+
+        var isValid = await isValidData();
+        if(!isValid)
+        {
+            handleClose();
+            return;
+        }
+        // Xem object request từ document của back-
+       
+        var itemRequest = XuLiThongTinKhach();
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body:JSON.stringify(itemRequest)
+        };
+
+        fetch("https://phutungserver.herokuapp.com/donhang/ThemDonHang",requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            if(res.success)
+            {
+                
+            }else
+            {
+
+            }
+            handleClose();
+        }
+            )
+        .catch(e=>{
+            alert(e);
+            handleClose();
+        })
+
+       
     }
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleHideHieuChinh =()=> setShowHieuChinh(false); 
+    const handleOpenHieuChinh =()=> setShowHieuChinh(true); 
+
+    useEffect(()=>{
+
+    },[])
+    function TimKhachHang(sdt)
+    {
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'},
+        };
+
+        fetch("https://phutungserver.herokuapp.com/khachhang/TimKhachHang?SDT="+sdt,requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            if(res.success)
+            {
+                if(res.data != null)
+                {
+                    setDiaChi(res.data.DiaChi);
+                    setTenKhach(res.data.Name);
+                }else
+                {
+                    setDiaChi("");
+                    setTenKhach("");
+                }
+                handleClose();
+            }
+        }).catch(e=>{
+            alert(e);
+            handleClose();
+        })
+   
+
+    }
+    
+
+    function TimSanPham(name)
+    {
+        if(name == "")
+        {
+            handleClose();
+            return;
+        }
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json'},
+        };
+
+        fetch("https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name="+name,requestOptions)
+        .then(res => res.json())
+        .then(res =>{
+            setContentSearch("");
+            if(res.success)
+            {
+                _responseSanPham = res.data;
+                RenderKetQuaTimKiem(res.data);
+                handleClose();
+            }else
+            {
+                handleClose();
+            }
+        }).catch(e=>{
+            alert(e);
+            handleClose();
+
+        });
+
+    }
+
+
+
     return(
         <section style={{marginLeft:20,marginRight:20}} className='oder-container'>
             
             <header className='oder-header'>
                 <div className='container-input'>
                     <div className='input-content'>
-                        <h5>Số điện thoại: </h5>
-                        <InputText onBlur={e=>LoadKhach()} placeholder='Số Điện Thoại'/>
+                        <h5 style={{padding:20}}>Số điện thoại: </h5>
+                        <InputText  onChange={e=>setSoDienThoai(e.target.value)}    text={sodienthoai}  onBlur={e=>LoadKhach()} placeholder='Số Điện Thoại'/>
                     </div>
                     <div className='input-content'>
-                        <h5>Tên Khách: </h5>
-                        <InputText placeholder='Tên Khách'/>
+                        <h5 style={{padding:20}}>Tên Khách: </h5>
+                        <InputText  onChange={e=>setTenKhach(e.target.value)}   text={tenkhach} placeholder='Tên Khách'/>
                     </div>
                     <div className='input-content'>
-                        <h5>Địa Chỉ: </h5>
-                        <InputText placeholder='Địa Chỉ'/>
+                        <h5 style={{padding:20}}>Địa Chỉ: </h5>
+                        <InputText onChange={e=>setDiaChi(e.target.value)}  text={diachi}    placeholder='Địa Chỉ'/>
                     </div>
                 </div>
 
                 <div className='check-box'>
                     <label for='check-box__custormer'>Khách Lẻ</label>
-                    <input type='checkbox' id='check-box__custormer' style={{width:40,height:40}}/>
+                    <input onClick={e=>setChecked(!isCheck)} checked={isCheck}  type='checkbox' id='check-box__custormer' style={{width:40,height:40}}/>
                 </div>
             </header>
 
             <section className='container-content'>
-                <div className='content-left'>
+                <div 
+                style={{height:400}}
+                className='content-left'>
                     <div className='content-left__find-product'>
                         <div className='find-product'>
-                            <input type='text' placeholder='Nhập sản phẩm cần tìm' className='input-find'/>
-                            <button type='button' onClick={TimSanPham} className='btn-find'>Tìm</button>
+                            <input onChange={e=>setContentSearch(e.target.value)} value={contentSearch} type='text' placeholder='Nhập sản phẩm cần tìm' className='input-find'/>
+                            <button type='button' onClick={Handle_TimSP} className='btn-find'>Tìm</button>
                         </div>
-                        <ul className='list-items-product'>
-                            <li className='item-product'>
-                                <div className='item-product__content'>
-                                    Demo Nội Dụng
-                                </div>
-                                <button type='button' className='btn-choose'>Chọn</button>
-                            </li>
-                            <li className='item-product'>
-                                <div className='item-product__content'>
-                                    Demo Nội Dụng
-                                </div>
-                                <button type='button' className='btn-choose'>Chọn</button>
-                            </li>
-                            <li className='item-product'>
-                                <div className='item-product__content'>
-                                    Demo Nội Dụng
-                                </div>
-                                <button type='button' className='btn-choose'>Chọn</button>
-                            </li>
-                        </ul>
+                        <TableContainer
+                            style={{
+                                height:'80%',
+                                width: '93%',
+                            }}
+                        >
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tên Sản Phẩm</TableCell>
+                                        <TableCell>Số Lượng Đang Có</TableCell>
+                                        <TableCell>Giá Bán</TableCell>
+                                    </TableRow>
+                                   
+                                </TableHead>
+
+                                <TableBody>{resultList}</TableBody>
+                            </Table>
+                        </TableContainer>
+
                     </div>
+                    
                 </div>
 
-                <div className='content-right'>
-                    <div className='content-right__price'>
-                        <ul className='content-right__price-list'>
-                            <li class="price-list__item">
-                                Sản phẩm: 
-                                <span class="price">10000</span>
-                            </li>
-                            <li class="price-list__item">
-                                Sản phẩm: 
-                                <span class="price">10000</span>
-                            </li>
-                        </ul>
-                        <totalPrice />
+                <div   style={{width:400,height:300,marginLeft:50}} className='content-right'>
+                    <div style={{width:'100%',padding:0,margin:2}}  className='content-right__price'>
+                       <TableContainer
+                            style={{
+                                height:'100%',
+                                width: '100%',
+                            }}
+                        >
+                            <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tên Sản Phẩm</TableCell>
+                                        <TableCell>Số Lượng</TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell>Đơn Giá</TableCell>
+                                        <TableCell>Tổng Tiền</TableCell>
+                                    </TableRow>
+                                   
+                                </TableHead>
+
+                                <TableBody>{resultCart}</TableBody>
+                            </Table>
+                            
+                        </TableContainer>
+                       
+                      
+                    </div>
+                    <div  style={{width:'100%',justifyContent:'center',textAlign:'center',marginTop:20}}  className='total-price'>
+                     <span  style={{fontSize:20}} >
+                     Thành tiền
+                     <span> &nbsp; </span>
+                     <span> &nbsp; </span>
+                     <span> &nbsp; </span>
+                     </span>
+                  
+                        <span  style={{alignContent:'flex-end',fontSize:20,color:'red'}} className='price'>{thanhtien}</span>
                     </div>
 
                     <div className='content-right__submit'>
@@ -106,26 +430,69 @@ function Oder() {
                 </div>
             </section>
         
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Body >
+            <Modal
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+             backdrop="static"
+             show={show} onHide={handleClose}>
+                <Modal.Body>
                  <Modal.Title>
                  <Spinner animation="border" variant="success" role="status"></Spinner>
                      {messLoading}
-
                  </Modal.Title>
+                 <Modal.Footer>
+                     <Button
+                     onClick={e=>handleClose()}
+                     >
+                         {txtButtonNegative}
+                     </Button>
+                 </Modal.Footer>
                 </Modal.Body>
             </Modal>
+
+
+            <Modal
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+             backdrop="static"
+             show={showHieuChinh} onHide={handleHideHieuChinh}>
+                <Modal.Body>
+                 <Modal.Title>
+                     <h4>
+                     Số Lượng Bán
+                     </h4>
+                        <TextField
+                        value={soluongBan}
+                        onChange={e=>setsoluongBan(e.target.value)}
+                        variant="outlined"
+                        />
+                        <h4>
+                            Ghi Chú
+                        </h4>
+                         <TextField
+                         value={ghichuDonHang}
+                        variant="outlined"
+                        />  
+                 </Modal.Title>
+                 <Modal.Footer>
+                            <Button
+                            onClick={e=>Handle_AddToCart()}
+                            >
+                                Thêm Giỏ Hàng
+                            </Button>
+                            <Button
+                            onClick={e=>handleHideHieuChinh()}
+                            >
+                                Huỷ
+                            </Button>
+                 </Modal.Footer>
+                </Modal.Body>
+            </Modal>
+
+            
         </section>
     );
 }
 
 export default Oder;
 
-function totalPrice() {
-    return(
-        <div className='total-price'>
-            Thành tiền: 
-            <span className='price'>20000</span>
-        </div>
-    );
-}
