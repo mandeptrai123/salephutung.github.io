@@ -16,6 +16,8 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import resources from '../../resource/color/ColorApp';
+
 
 function MatHangHetSL() {
 
@@ -23,8 +25,6 @@ function MatHangHetSL() {
     const [messLoading, setMessLoading] = useState("   Đang Làm Mới Kho Hàng!");
 
     const [resultLst, setResultLst] = useState();
-
-
     
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -86,9 +86,9 @@ function MatHangHetSL() {
             <div className='hang-container__content'>
              
             <h3 
-            style={{color:'blue',textAlign:'center'}}
+            style={{color:resources.colorPrimary,textAlign:'center'}}
             className='title'>Sản Phẩm Hết Số Lượng</h3>
-            <FontAwesomeIcon   onClick={e=>{Refresh()}} color={'green'} size="4x" icon={faSyncAlt}/>
+            <FontAwesomeIcon   onClick={e=>{Refresh()}} color={resources.colorPrimary} size="3x" icon={faSyncAlt}/>
             <TableContainer
                 style={{
                     height:'80%',
@@ -111,7 +111,10 @@ function MatHangHetSL() {
             </div>
 
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal 
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            show={show} onHide={handleClose}>
                 <Modal.Body >
                  <Modal.Title>
                  <Spinner animation="border" variant="success" role="status"></Spinner>

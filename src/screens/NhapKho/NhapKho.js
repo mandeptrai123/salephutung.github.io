@@ -18,8 +18,10 @@ import TableRow from '@material-ui/core/TableRow'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt} from '@fortawesome/free-solid-svg-icons'
+import resources from '../../resource/color/ColorApp';
 
 var arr_NhatKy = [];
+var _giaban = 0;
 function NhapKho() {
 
 
@@ -78,7 +80,7 @@ function NhapKho() {
         var object_request = 
         {
         name:_nameSanPham,
-        price:_price,
+        price:_giaban,
         amount:_amount,
         amountAlert:_amountAlert,
         Donvi:_donvi,
@@ -156,7 +158,7 @@ function NhapKho() {
         .then(res =>{
             if(res.success)
             {
-               arr_NhatKy.push({Detail:"Bạn Vừa Thêm "+item.amount+" "+item.name});
+               arr_NhatKy.push({Detail:"Bạn Vừa Thêm "+item.amount+" "+item.Donvi+" "+item.name});
                UpdateNhatKy(arr_NhatKy);
             }
 
@@ -173,7 +175,26 @@ function NhapKho() {
         LoadingNhatKy();
     }
 
+    function TienVietNam(input)
+    {
+        var input = new Number(input);
+        input = input.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return input;
+    }
 
+  
+    function onBlurSoTien(input)
+    {
+        var _a = new Number(input);
+        if(_a%1000 != 0)
+            {
+                setGiaBan("");
+                alert("Vui Lòng Nhập Giá Bán Tối Thiểu Là 1000 !")
+                return;
+            }
+            _giaban = _a;
+            setGiaBan(TienVietNam(input))
+    }
     return(
         <section
         style={{marginTop:40,marginLeft:20}}
@@ -182,28 +203,45 @@ function NhapKho() {
             className='nhapkho-container__product'>
                 <ul className='list-items__input'>
                     <li className='item__input'>
-                        <h6>Tên Sản Phẩm</h6>
+                        <h6
+                        style={{color:resources.colorPrimary}}
+                        >Tên Sản Phẩm</h6>
                         <InputText    onChange={e=>{setNameSanPham(e.target.value)}}  text={nameSanPham} width={300} placeholder='Tên Sản Phẩm'/>
                     </li>
                     <li className='item__input'>
-                        <h6>Số Lượng</h6>
+                        <h6
+                        style={{color:resources.colorPrimary}}
+                        >Số Lượng</h6>
                         <InputText  onChange={e=>{setSL(e.target.value)}} text={soluong}   width={300} placeholder='Số Lượng'/>
                     </li>
                     <li className='item__input'>
-                        <h6>Số Lượng Báo Động</h6>
+                        <h6
+                        style={{color:resources.colorPrimary}}
+                        >Số Lượng Báo Động</h6>
                         <InputText onChange={e=>{setSLBaoDong(e.target.value)}}  text={soluongbaodong}    width={300} placeholder='Số Lượng Báo Động'/>
                     </li>
                     <li className='item__input'>
-                        <h6>Đơn Vị</h6>
-                        <InputText onChange={e=>{setDonVi(e.target.value)}} text={donvi} width={300} placeholder='Đơn Vị'/>
+                        <h6
+                        style={{color:resources.colorPrimary}}
+                        >Đơn Vị</h6>
+                        <InputText 
+                        
+                        onChange={e=>{setDonVi(e.target.value)}} text={donvi} width={300} placeholder='Đơn Vị'/>
                     </li>
                     <li className='item__input'>
-                        <h6>Giá Bán</h6>
-                        <InputText onChange={e=>{setGiaBan(e.target.value)}} text={giaban} width={300} placeholder='Giá Bán'/>
+                        <h6
+
+                        style={{color:resources.colorPrimary}}
+                        >Giá Bán</h6>
+                        <InputText
+                        onBlur={e=>{onBlurSoTien(e.target.value)}}
+                        onChange={e=>{setGiaBan(e.target.value)}} text={giaban} width={300} placeholder='Giá Bán'/>
                     </li>
                     <li className='item__input'>
                         <h6></h6>
-                        <button   onClick={ThemVaoKho}  style={{borderRadius:30,marginTop:40,marginRight:20}} type='button' className='btn-nhapkho'>Cho vào kho</button>
+                        <button  
+                        style={{color:resources.colorText,backgroundColor:resources.colorPrimary,borderRadius:30,marginTop:40,marginRight:20}}
+                        onClick={ThemVaoKho} type='button' className='btn-nhapkho'>Cho vào kho</button>
 
                     </li>
                 </ul>
@@ -214,8 +252,10 @@ function NhapKho() {
              style={{marginTop:40,marginRight:40,marginBottom:20}}
             className='nhapkho-container__diary'>
                 <div className='diary__content'>
-                    <h4>Nhật kí nhập hàng</h4>
-                    <FontAwesomeIcon   onClick={e=>{Refresh()}} color={'green'} size="4x" icon={faSyncAlt}/>
+                    <h4
+                    style={{color:resources.colorPrimary}}
+                    >Nhật kí nhập hàng</h4>
+                    <FontAwesomeIcon   onClick={e=>{Refresh()}} color={resources.colorPrimary} size="3x" icon={faSyncAlt}/>
             <TableContainer
                 style={{
                     height:'80%',

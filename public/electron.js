@@ -16,12 +16,13 @@ function createWindow() {
     const startUrl =    url.format({
         pathname: path.join(__dirname, '/../build/index.html'),
         protocol: 'file:',
-        slashes: true
+        slashes: true,
+        icon: path.join(__dirname, 'assets/icons/png/64.png')
       });
      mainWindow.loadURL(startUrl);
       
     // Open the DevTools.
-     mainWindow.webContents.openDevTools();
+   //  mainWindow.webContents.openDevTools();
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows

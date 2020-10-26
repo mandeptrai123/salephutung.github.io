@@ -18,7 +18,7 @@ import TableRow from '@material-ui/core/TableRow'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt} from '@fortawesome/free-solid-svg-icons'
-
+import resources from '../../resource/color/ColorApp';
 
 import TextField from '@material-ui/core/Button'
 
@@ -121,6 +121,12 @@ function KhoHang() {
             }
             );
     }
+    function TienVietNam()
+    {
+        var x = 1000;
+        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return x;
+    }
 
     useEffect(()=>{
        Refresh();
@@ -129,7 +135,9 @@ function KhoHang() {
     return (
         <section className="khohang-container">
             <div className="khohang-container__content">
-                <h2 className="header-title">Kho Hàng</h2>
+                <h2 
+                style={{color:resources.colorPrimary}}
+                className="header-title">Kho Hàng</h2>
 
                 <div
                     style={{
@@ -138,6 +146,9 @@ function KhoHang() {
                         alignContent: 'center',
                     }}
                 >
+                     <FontAwesomeIcon   
+                    style={{marginLeft:40,alignContent:'center',alignSelf:'center',marginTop:60}}
+                    onClick={e=>{Refresh()}} color={resources.colorPrimary} size="3x" icon={faSyncAlt}/>
                     <input
                     value={searchContent}
                     onChange={e=>{setsearchContent(e.target.value)}}
@@ -163,9 +174,7 @@ function KhoHang() {
                     >
                         Tìm
                     </Button>
-                    <FontAwesomeIcon   
-                    style={{marginLeft:40,alignContent:'center',alignSelf:'center',marginTop:60}}
-                    onClick={e=>{Refresh()}} color={'green'} size="3x" icon={faSyncAlt}/>
+                   
                 </div>
 
                 <div className="list-product">

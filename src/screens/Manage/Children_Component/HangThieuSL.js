@@ -10,6 +10,8 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
+import resources from '../../../resource/color/ColorApp';
+
 function HangThieuSL() {
     const [lstResult, setResult] = useState();
     const [totalBill, setTotalBill] = useState(30);
@@ -87,7 +89,7 @@ function HangThieuSL() {
                 style={{
                     textAlign: 'center',
                     paddingRight:200,
-                    color:'blue'
+                    color:resources.colorPrimary
                 }}
             >
                 Hàng Thiếu Số Lượng

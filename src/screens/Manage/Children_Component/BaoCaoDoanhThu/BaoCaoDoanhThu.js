@@ -14,7 +14,21 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
+import resources from '../../../../resource/color/ColorApp';
+
 //import component
+
+
+
+function TienVietNam(input)
+    {
+
+        var x = new Number(input);
+        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return x;
+    }
+
+
 
 function BaoCaoDoanhThu(props) {
    
@@ -84,24 +98,24 @@ function BaoCaoDoanhThu(props) {
 
     function XuLyDuHoaDonThanhSanPham(arr)
     {
-        var arrSanPham = [];
-        arr.map(e=>{
-            e.lstSanPham.map(i=>{
-                if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
-                {
-                    arrSanPham[arrSanPham.findIndex(item=>{item._id == i._id})].soluongMua += new Number(i.SoLuongBan);
-                }else
-                {
-                    arrSanPham.push(
-                        {
-                            _id:i.id,
-                            TenSanPham:i.name,
-                            soluongMua:i.soluongBan
-                        }) 
-                }
-            })
-        })
-        return arrSanPham;
+         var arrSanPham = [];
+        // arr.map(e=>{
+        //     e.lstSanPham.map(i=>{
+        //         if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
+        //         {
+        //             arrSanPham[arrSanPham.findIndex(item=>{item._id == i._id})].soluongMua += new Number(i.SoLuongBan);
+        //         }else
+        //         {
+        //             arrSanPham.push(
+        //                 {
+        //                     _id:i.id,
+        //                     TenSanPham:i.name,
+        //                     soluongMua:i.soluongBan
+        //                 }) 
+        //         }
+        //     })
+        // })
+        // return arrSanPham;
 
     }
 
@@ -235,7 +249,7 @@ function BaoCaoDoanhThu(props) {
         <section className="baocao-container">
             <header className="baocao-header">
                 <h1
-                style={{paddingRight:200,color:'blue'}}
+                style={{paddingRight:200,color:resources.colorPrimary}}
                 className="title-baocao">Báo Cáo Doanh Thu</h1>
             </header>
             <Row md={12} className="baocao-container__content">
@@ -263,7 +277,8 @@ function BaoCaoDoanhThu(props) {
                             id="dropdown-basic"
                             style={{
                                 width: '230px',
-                                height: '60px',
+                                height: '50px',
+                                backgroundColor:resources.colorPrimary
                             }}
                         >
                             {viewModeDropdown}
@@ -327,7 +342,9 @@ function BaoCaoDoanhThu(props) {
                         style={{
                             fontSize: '20px',
                             width: '150px',
-                            height: '60px',
+                            height: '50px',
+                            backgroundColor:resources.colorPrimary,
+                            color:resources.colorText
                         }}
                     >
                         Xem
@@ -338,7 +355,7 @@ function BaoCaoDoanhThu(props) {
                 <h4
                     style={{
                         color: 'red',
-                        textAlign: 'center',
+                        textAlign: 'left',
                     }}
                 >
                     Bạn đang xem doanh thu tháng 9/2020

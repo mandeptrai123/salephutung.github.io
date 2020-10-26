@@ -9,15 +9,30 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
+import resources from '../../../resource/color/ColorApp';
+import {TextField, unstable_createMuiStrictModeTheme} from '@material-ui/core';
+
+
+function TienVietNam(input)
+    {
+
+        var x = new Number(input);
+        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return x;
+    }
+
+
 function DonHangTheoNgay() {
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
-
+    const [startDate, setStartDate] = useState(new Date());
     const [messLoading, setMessLoading] = useState(" Đang Tải Thông Tin Đơn Hàng!");
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const [date,setDateChoosee] = useState(new Date().getDay()+"-"+new Date().getMonth+"-"+new Date().getFullYear());
 
     var stt = 0;
     function ItemDonHang(props) {
@@ -25,35 +40,31 @@ function DonHangTheoNgay() {
         return (
             <TableRow hover>
                 <TableCell>{stt}</TableCell>
-                <TableCell>{props.Date}</TableCell>
+                <TableCell>{props.Date} {props.TimeOfDay}</TableCell>
                 <TableCell>{props.TenKhach}</TableCell>
-                <TableCell>{props.TongTien}</TableCell>
-                <TableCell>{props.ThanhTien}</TableCell>
-                <TableCell
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                </TableCell>
+                <TableCell>{TienVietNam(props.TongTien)}</TableCell>
+                <TableCell>{TienVietNam(props.ThanhTien)}</TableCell>
+                <TableCell>{TienVietNam(props.Congno)}</TableCell>
             </TableRow>
         )
     }
 
     useEffect(() => {
         var _date = new Date();
-        OnRefresh(_date.getDate());
+        OnRefresh(_date.getFullYear()+"-"+_date.getMonth()>9?_date.getMonth():"0"+_date.getMonth()+"-"+_date.getDate()>9?_date.getDate():"0"+_date.getDate());
 
     },[]);
     function RenderDonHangTrongNgay(arr)
     {
+        var _total = 0;
         const _result = arr.map((e) => {
+            _total +=1;
             return ItemDonHang(e)
         })
-
+        setTotalBill(_total);
         setResult(_result)
     }
+
 
     function OnRefresh(dateCurrent)
     {
@@ -63,7 +74,7 @@ function DonHangTheoNgay() {
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+dateCurrent,requestOptions)
+        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?date="+dateCurrent,requestOptions)
         .then(res => res.json())
         .then(res =>{
             handleClose();
@@ -91,15 +102,33 @@ function DonHangTheoNgay() {
                 alignItems: 'center',
             }}
         >
+            <div>
             <h1
                 style={{
                     textAlign: 'center',
                     paddingRight:200,
-                    color:'blue'
+                    color:resources.colorPrimary
                 }}
             >
                 Xem Đơn Hàng Theo Ngày
             </h1>
+
+            
+            </div>
+            <TextField
+                    id="date"
+                    label="Ngày Muốn Xem"
+                    type="date"
+                    style={{
+                        color: resources.colorPrimary,
+                        paddingRight:200,margin:20,marginBottom:20}}
+                    onChange={e=>{
+                        OnRefresh(e.target.value);
+                    }}
+                    InputLabelProps={{
+                    shrink: true,
+                    }}
+  />
             <h4
                 style={{
                     color: 'red',
@@ -126,7 +155,7 @@ function DonHangTheoNgay() {
                             <TableCell>Tên Khách</TableCell>
                             <TableCell>Tổng Tiền</TableCell>
                             <TableCell>Thành Tiền</TableCell>
-                            <TableCell></TableCell>
+                            <TableCell>Còn Nợ</TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -146,6 +175,7 @@ function DonHangTheoNgay() {
                     </Modal.Title>
                     </Modal.Body>
                 </Modal>
+                
         </div>
     )
 }

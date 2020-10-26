@@ -6,7 +6,8 @@ import { Paper, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { Button,Modal ,Spinner } from 'react-bootstrap';
-
+import resources from '../../../resource/color/ColorApp';
+import '../css/Manage.css';
 function TaoNhanVien() {
     const [sodienthoai,setSDT] = useState("");
     const [tenNV,setTenNV] = useState("");
@@ -68,14 +69,16 @@ function TaoNhanVien() {
                     lineHeight: '60px',
                     textAlign: 'center',
                     paddingRight:200,
-                    color:'blue'
+                    color:resources.colorPrimary
                 }}
             >
                 Thêm Nhân Viên
             </h1>
-           
-              
-                    <TextField
+            <div
+            style={{padding:50}}
+            className="borderW"
+            >
+            <TextField
                     style={{
                         width:200,
                         marginLeft:200,
@@ -98,9 +101,6 @@ function TaoNhanVien() {
                         id="standard-basic"
                         label="Tên Nhân Viên"
                     />
-                    
-             
-           
            
                 <Button
                 onClick={e=>Handle_ThemNhanVien()}
@@ -115,6 +115,10 @@ function TaoNhanVien() {
                     Tạo Nhân Viên
                 </Button>
 
+            </div>
+           
+              
+                  
                 <Modal
                     aria-labelledby="contained-modal-title-vcenter"
                     centered

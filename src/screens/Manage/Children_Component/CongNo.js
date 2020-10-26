@@ -12,6 +12,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import resources from '../../../resource/color/ColorApp';
 
 let SDTSelected;
 let CongnoCu;
@@ -45,7 +46,7 @@ function CongNo() {
                 <TableCell>{props.SDT}</TableCell>
                 <TableCell>{props.Name}</TableCell>
                 <TableCell>{props.DiaChi}</TableCell>
-                <TableCell>{props.Congno}.000VND</TableCell>
+                <TableCell>{props.Congno}</TableCell>
                 <TableCell
                     style={{
                         display: 'flex',
@@ -58,12 +59,12 @@ function CongNo() {
                         SDTSelected = props.SDT;
                         setcongnoMoi(props.Congno);
                         setShowDieuChinh(true)}}
-                        variant="danger"
                         style={{
                             width: '120px',
                             height: '40px',
                             fontSize: '14px',
                             marginBottom: '0',
+                            backgroundColor:resources.colorPrimary
                         }}
                     >
                        Điều Chỉnh
@@ -86,7 +87,7 @@ function CongNo() {
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang",requestOptions)
+        fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoCongNo",requestOptions)
         .then(res => res.json())
         .then(res =>{
             handleClose();
@@ -111,10 +112,17 @@ function CongNo() {
             _congno += new Number(e.Congno);
             return ItemCongNo(e)
         })
-        setTotalCongNo(_congno);
+        setTotalCongNo(TienVietNam(_congno));
         setResult(_result)
     }
-    
+    function TienVietNam(input)
+    {
+
+        var x = new Number(input);
+        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return x;
+    }
+
     function CapNhatCongNoMoi()
     {
         handleCloseDieuChinh(false);
@@ -163,7 +171,7 @@ function CongNo() {
                 style={{
                     textAlign: 'center',
                     paddingRight:200,
-                    color:'blue'
+                    color:resources.colorPrimary
                 }}
             >
                 Toàn Bộ Công Nợ
@@ -202,7 +210,7 @@ function CongNo() {
                 <h3
                 style={{textAlign:'center',color:'red'}}
                 >
-                    {totalCongNo}.000VND
+                    {totalCongNo}
                 </h3>
             </div>
 

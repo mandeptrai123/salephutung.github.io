@@ -6,7 +6,7 @@ import './css/BottomNavigation.css';
 
 //import component
 import ButtonNavigation from '../../resource/ButtonNavigation/ButtonNavigation';
-
+import resources from '../resource/color/ColorApp';
 function BottomNavigation() {
     return(
         <section className='bottomNavigation-container'>

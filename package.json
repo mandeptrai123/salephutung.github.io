@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
-  "main": "src/electron.js",
+  "main": "public/electron.js",
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
     "directories": {
@@ -19,6 +19,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.5.3",
+    "path": "^0.12.7",
     "react": "^16.14.0",
     "react-bootstrap": "^1.3.0",
     "react-dom": "^16.14.0",
@@ -34,7 +35,8 @@
     "electron-start": "node src/start-react",
     "react-start": "react-scripts start",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,6 +56,7 @@
   "devDependencies": {
     "electron": "^10.1.3",
     "electron-builder": "^22.9.1",
+    "electron-packager": "^15.1.0",
     "electron-reload": "^1.5.0",
     "electron-reloader": "^1.0.1"
   }
