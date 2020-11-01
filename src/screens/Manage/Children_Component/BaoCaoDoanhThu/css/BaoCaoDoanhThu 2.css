@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.baocao-container {
+  height: 100%;
+  width: 100%;
+}
+
+.baocao-header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.baocao-header .btn-back {
+  width: 75px;
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
+
+.baocao-header .title-baocao {
+  line-height: 70px;
+  text-align: center;
+  align-self: center;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.baocao-container__content {
+  margin: 30px 0;
+  width: 100%;
+  display: flex;
+}
+
+.baocao-container__content .baocao-container__content-left {
+  width: 60%;
+}
+
+.baocao-container__content .baocao-container__content-left .input-chekbox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.table-content {
+  width: 100%;
+  padding: 0 20px;
+}
+/*# sourceMappingURL=BaoCaoDoanhThu.css.map */
