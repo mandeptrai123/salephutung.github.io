@@ -15,7 +15,6 @@ import TableRow from '@material-ui/core/TableRow';
 import resources from '../../../resource/color/ColorApp';
 
 let SDTSelected;
-let CongnoCu;
 function CongNo() {
     const [lstResult, setResult] = useState();
     const [totalCongNo, setTotalCongNo] = useState(0);
@@ -29,7 +28,7 @@ function CongNo() {
     const [showDieuChinh, setShowDieuChinh] = useState(false);
 
     const handleCloseDieuChinh = () => setShowDieuChinh(false);
-    const handleShowDieuChinh = () => setShowDieuChinh(true);
+    //const handleShowDieuChinh = () => setShowDieuChinh(true);
 
     const [messResponse, setMessResponse] = useState("");
     const [showResponse, setShowResponse] = useState(false);
@@ -74,10 +73,7 @@ function CongNo() {
         )
     }
 
-    useEffect(() => {
-       OnFresh();
-    }, [])
-
+    useEffect(OnFresh,[]);
 
     function OnFresh()
     {
@@ -88,7 +84,6 @@ function CongNo() {
         };
 
         fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoCongNo",requestOptions)
-        .then(res => res.json())
         .then(res =>{
             handleClose();
            if(res.success)
@@ -109,7 +104,7 @@ function CongNo() {
     {
         var _congno = 0;
         const _result = arr.map((e) => {
-            _congno += new Number(e.Congno);
+            _congno += parseInt(e.Congno);
             return ItemCongNo(e)
         })
         setTotalCongNo(TienVietNam(_congno));
@@ -118,7 +113,7 @@ function CongNo() {
     function TienVietNam(input)
     {
 
-        var x = new Number(input);
+        var x = parseInt(input);
         x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
         return x;
     }
@@ -132,7 +127,7 @@ function CongNo() {
         var itemRequest =
         {
             SDT:SDTSelected,
-            Congno:new Number(congnoMoi)
+            Congno:parseInt(congnoMoi)
         };
         const requestOptions = {
                 method: 'POST',

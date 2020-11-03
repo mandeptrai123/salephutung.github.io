@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-
 //import component
-import { Modal, Button, Spinner } from 'react-bootstrap'
+import { Modal, Spinner } from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -11,68 +10,74 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
 import resources from '../../../resource/color/ColorApp';
+import NetWorking from '../../../networking/fetchWithTimeout';
 
 function HangThieuSL() {
     const [lstResult, setResult] = useState();
-    const [totalBill, setTotalBill] = useState(30);
+   // const [totalBill, setTotalBill] = useState(30);
 
-    const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Sản Phẩm!");
+    const [messLoading, setMessLoading] = useState("");
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    var stt = 0;
-
-    function ItemHangThieuSL(props) {
-        stt++
-        return (
-            <TableRow hover>
-                <TableCell>{stt}</TableCell>
-                <TableCell>{props.name}</TableCell>
-                <TableCell>{props.amoutAlert}</TableCell>
-                <TableCell>{props.Donvi}</TableCell>
-                <TableCell>{props.amout}</TableCell>
-            </TableRow>
-        )
-    }
+    
 
     useEffect(() => {
-       OnFresh();
-    }, []);
+        setMessLoading(" Đang Lấy Thông Tin Sản Phẩm!");
+        var stt = 0;
+        const  ItemHangThieuSL=(props) =>{
+            stt++
+            return (
+                <TableRow hover>
+                    <TableCell>{stt}</TableCell>
+                    <TableCell>{props.name}</TableCell>
+                    <TableCell>{props.amoutAlert}</TableCell>
+                    <TableCell>{props.Donvi}</TableCell>
+                    <TableCell>{props.amout}</TableCell>
+                </TableRow>
+            )
+        }
 
-    function RenderMatHangHetSL(arr)
-    {
-        const _result = arr.map((e) => {
-            return ItemHangThieuSL(e)
-        })
+        const RenderMatHangHetSL=(arr)=>
+        {
+            const _result = arr.map((e) => {
+                return ItemHangThieuSL(e)
+            })
+    
+            setResult(_result)
+        }
 
-        setResult(_result)
-    }
-
-    function OnFresh()
-    {
-        handleShow();
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json'}
-        };
-
-        fetch("https://phutungserver.herokuapp.com/quanli/MatHangHetSL",requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            handleClose();
-           if(res.success)
-           {
-               RenderMatHangHetSL(res.data);
-           }
-        }).catch(e=>
-            {
-                alert("Có Lỗi Ở Hàng Thiếu SL! ");
-
+        const OnFresh=()=>
+        {
+            handleShow();
+            const requestOptions = {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json'}
+            };
+    
+            let _URL = "https://phutungserver.herokuapp.com/quanli/MatHangHetSL";
+            NetWorking(_URL,requestOptions,5000)
+            .then(res =>{
                 handleClose();
-            }
-            );
-    }
+               if(res.success)
+               {
+                   RenderMatHangHetSL(res.data);
+               }
+            }).catch(e=>
+                {
+                    alert("Có Lỗi Ở Hàng Thiếu SL! ");
+    
+                    handleClose();
+                }
+                );
+        }
+
+       OnFresh();
+    },[]);
+
+   
+
+   
 
     return (
         <div

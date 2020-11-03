@@ -3,8 +3,16 @@ import './css/InputText.css';
 
 function InputText(props) {
     return(
-        <div className='input' style={{width:props.width}} >
-            <input onChange={props.onChange} value={props.text} className='input-content'  onBlur={props.onBlur} placeholder={props.placeholder}></input>
+        <div 
+        style={props.style}
+          >
+            <input
+
+                style={{height:40,textAlign:'center'}}
+             onChange={props.onChange} 
+             value={props.value} 
+              onBlur={props.onBlur} 
+              placeholder={props.placeholder}></input>
             <span className='focus'></span>
         </div>
     );

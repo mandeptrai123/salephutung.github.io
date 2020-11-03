@@ -1,12 +1,10 @@
 
 import React,{useState,useEffect} from 'react'
-
 // import css
 import './css/NhapKho.css';
-
 //import component
 import InputText from '../../resource/InputText/InputText';
-import {Modal,Button,Spinner} from 'react-bootstrap';
+import {Modal,Spinner} from 'react-bootstrap';
 
 
 import Table from '@material-ui/core/Table'
@@ -19,6 +17,7 @@ import TableRow from '@material-ui/core/TableRow'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt} from '@fortawesome/free-solid-svg-icons'
 import resources from '../../resource/color/ColorApp';
+import NetWorking from '../../networking/fetchWithTimeout'
 
 var arr_NhatKy = [];
 var _giaban = 0;
@@ -48,15 +47,15 @@ function NhapKho() {
         var _amountAlert = soluongbaodong
         var _donvi = donvi;
 
-        if(_nameSanPham == "")
+        if(_nameSanPham === "")
             return false;
-        if(_price == "")
+        if(_price === "")
             return false;
-        if(_amount == "")
+        if(_amount === "")
             return false;
-        if(_amountAlert == "")
+        if(_amountAlert === "")
             return false;
-        if(_donvi == "")
+        if(_donvi === "")
             return false;
 
         return true;
@@ -71,7 +70,6 @@ function NhapKho() {
 
         // Tránh Rò Rỉ Dữ Liệu Nên Không Gán Trực Tiếp
         var _nameSanPham   = nameSanPham;
-        var _price = giaban;
         var _amount = soluong;
         var _amountAlert = soluongbaodong
         var _donvi = donvi;
@@ -111,38 +109,39 @@ function NhapKho() {
         setNhatKy(_lst);
        
     }
-    
-    useEffect(()=>{
-        LoadingNhatKy();
+     // NetWord
+     function LoadingNhatKy()
+     {
+         const requestOptions = {
+             method: 'GET',
+             headers: { 'Content-Type': 'application/json'},
+         };
+         let _URL = "https://phutungserver.herokuapp.com/sanpham/NhatKySanPham";
+         
+         NetWorking(_URL,requestOptions,5000)
+         .then(res =>{
+             if(res.success)
+             {
+                 arr_NhatKy = res.data;
+                 UpdateNhatKy(arr_NhatKy);
+             }
+ 
+             handleClose();
+         }).catch(e=>{
+             alert("Lỗi Khi Load Nhật Ký Kho Hàng");
+             handleClose();
+         })
      
-    },[])
+     
+     
+     }
 
-    // NetWord
-    function LoadingNhatKy()
-    {
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json'},
-        };
 
-        fetch("https://phutungserver.herokuapp.com/sanpham/NhatKySanPham",requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            if(res.success)
-            {
-                arr_NhatKy = res.data;
-                UpdateNhatKy(arr_NhatKy);
-            }
+    useEffect(
+        LoadingNhatKy
+     ,[])
 
-            handleClose();
-        }).catch(e=>{
-            alert(e);
-            handleClose();
-        })
-    
-    
-    
-    }
+   
 
     function ThemSanPham(item)
     {
@@ -152,9 +151,9 @@ function NhapKho() {
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify(item)
         };
-
-        fetch("https://phutungserver.herokuapp.com/sanpham/ThemSanPham",requestOptions)
-        .then(res => res.json())
+        let _URL = "https://phutungserver.herokuapp.com/sanpham/ThemSanPham";
+        
+        NetWorking(_URL,requestOptions,5000)
         .then(res =>{
             if(res.success)
             {
@@ -177,16 +176,16 @@ function NhapKho() {
 
     function TienVietNam(input)
     {
-        var input = new Number(input);
-        input = input.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
-        return input;
+        var _input = parseInt(input);
+        _input = _input.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+        return _input;
     }
 
   
     function onBlurSoTien(input)
     {
-        var _a = new Number(input);
-        if(_a%1000 != 0)
+        var _a = parseInt(input);
+        if(_a%1000 !== 0)
             {
                 setGiaBan("");
                 alert("Vui Lòng Nhập Giá Bán Tối Thiểu Là 1000 !")

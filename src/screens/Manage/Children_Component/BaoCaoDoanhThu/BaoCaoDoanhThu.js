@@ -4,7 +4,7 @@ import './css/BaoCaoDoanhThu.css'
 //import component react-bootstrap
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
-import { Row, Col } from 'react-bootstrap'
+import { Row, Col,Modal, Spinner } from 'react-bootstrap'
 // import Table from 'react-bootstrap/Table'
 
 import Table from '@material-ui/core/Table'
@@ -20,23 +20,13 @@ import resources from '../../../../resource/color/ColorApp';
 
 
 
-function TienVietNam(input)
-    {
-
-        var x = new Number(input);
-        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
-        return x;
-    }
-
-
-
 function BaoCaoDoanhThu(props) {
    
     const [lstResult, setResult] = useState()
     const [viewModeDropdown, setviewModelDropdown] = useState("Doanh Thu 7 Ngày Gần Đây");
 
 
-    const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Khách Hàng!");
+    // const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Khách Hàng!");
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -93,12 +83,14 @@ function BaoCaoDoanhThu(props) {
                 setviewModelDropdown("Doanh Thu Năm Nay");
                 LoadDoanhThuNamNay();
                 break;
+            default:
+                    break;
         }
     }
 
     function XuLyDuHoaDonThanhSanPham(arr)
     {
-         var arrSanPham = [];
+        //  var arrSanPham = [];
         // arr.map(e=>{
         //     e.lstSanPham.map(i=>{
         //         if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
@@ -178,7 +170,7 @@ function BaoCaoDoanhThu(props) {
         };
         var _d = new Date().getMonth();
         _d-=1;
-        if(_d == -1)
+        if(_d === -1)
             _d = 11;
 
         fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month="+_d,requestOptions)
@@ -380,6 +372,18 @@ function BaoCaoDoanhThu(props) {
                     </Table>
                 </TableContainer>
             </section>
+            <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={show} onHide={handleClose}>
+                    <Modal.Body >
+                    <Modal.Title>
+                    <Spinner animation="border" variant="success" role="status"></Spinner>
+          
+
+                    </Modal.Title>
+                    </Modal.Body>
+                </Modal>
         </section>
     )
 }

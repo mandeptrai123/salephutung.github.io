@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import * as serviceWorker from './serviceWorker'
 
-import Congno from './screens/CongNo/CongNo';
 import KhoHang from './screens/KhoHang/KhoHang';
 import NhapKho from './screens/NhapKho/NhapKho';
 import MatHangHetSL from './screens/HangTonSLThap/MatHangHetSL';
 import Order from './screens/Oder/Oder';
 import Manage from './screens/Manage/Manage';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Tabs, Tab, Col, Nav, Row, Badge } from 'react-bootstrap';
+import { Tab, Col, Nav, Row} from 'react-bootstrap';
 import resources from './resource/color/ColorApp';
 ReactDOM.render(
     <Tab.Container id="left-tabs-example" defaultActiveKey="banhang">

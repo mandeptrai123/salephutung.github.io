@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-import { Modal, Button, Spinner } from 'react-bootstrap'
+import { Modal, Spinner } from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -10,13 +10,14 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
 import resources from '../../../resource/color/ColorApp';
-import {TextField, unstable_createMuiStrictModeTheme} from '@material-ui/core';
+import {TextField} from '@material-ui/core';
+import NetWorking from '../../../networking/fetchWithTimeout';
 
 
 function TienVietNam(input)
     {
 
-        var x = new Number(input);
+        var x = parseInt(input);
         x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
         return x;
     }
@@ -25,17 +26,34 @@ function TienVietNam(input)
 function DonHangTheoNgay() {
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
-    const [startDate, setStartDate] = useState(new Date());
-    const [messLoading, setMessLoading] = useState(" Đang Tải Thông Tin Đơn Hàng!");
+    //const [startDate, setStartDate] = useState(new Date());
+    const [messLoading, setMessLoading] = useState("");
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    const [date,setDateChoosee] = useState(new Date().getDay()+"-"+new Date().getMonth+"-"+new Date().getFullYear());
-
     var stt = 0;
-    function ItemDonHang(props) {
+    //const [date,setDateChoosee] = useState(new Date().getDay()+"-"+new Date().getMonth+"-"+new Date().getFullYear());
+    useEffect(() => {
+
+        
+        setMessLoading(" Đang Tải Thông Tin Đơn Hàng!");
+        var _date = new Date();
+        OnRefresh(_date.getFullYear()+"-"+_date.getMonth()>9?_date.getMonth():"0"+_date.getMonth()+"-"+_date.getDate()>9?_date.getDate():"0"+_date.getDate());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+
+    const  RenderDonHangTrongNgay=(arr)=>
+    {
+        var _total = 0;
+        const _result = arr.map((e) => {
+            _total +=1;
+            return ItemDonHang(e)
+        })
+        setTotalBill(_total);
+        setResult(_result)
+    }
+    const ItemDonHang=(props)=> {
         stt++
         return (
             <TableRow hover>
@@ -49,23 +67,6 @@ function DonHangTheoNgay() {
         )
     }
 
-    useEffect(() => {
-        var _date = new Date();
-        OnRefresh(_date.getFullYear()+"-"+_date.getMonth()>9?_date.getMonth():"0"+_date.getMonth()+"-"+_date.getDate()>9?_date.getDate():"0"+_date.getDate());
-
-    },[]);
-    function RenderDonHangTrongNgay(arr)
-    {
-        var _total = 0;
-        const _result = arr.map((e) => {
-            _total +=1;
-            return ItemDonHang(e)
-        })
-        setTotalBill(_total);
-        setResult(_result)
-    }
-
-
     function OnRefresh(dateCurrent)
     {
         handleShow();
@@ -74,8 +75,8 @@ function DonHangTheoNgay() {
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?date="+dateCurrent,requestOptions)
-        .then(res => res.json())
+        let _URL = "https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?date="+dateCurrent;
+        NetWorking(_URL,requestOptions,5000)
         .then(res =>{
             handleClose();
            if(res.success)

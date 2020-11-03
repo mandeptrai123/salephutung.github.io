@@ -5,11 +5,10 @@ import React,{useState,useEffect} from 'react'
 import './css/HangTonSLThap.css';
 
 //import component
-import InputText from '../../resource/InputText/InputText';
-import { Image} from 'react-bootstrap';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt} from '@fortawesome/free-solid-svg-icons'
-import { Button,Modal ,Spinner } from 'react-bootstrap';
+import {Modal ,Spinner } from 'react-bootstrap';
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -17,12 +16,13 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import resources from '../../resource/color/ColorApp';
+import NetWorking from '../../networking/fetchWithTimeout';
 
 
 function MatHangHetSL() {
 
     const [show, setShow] = useState(false);
-    const [messLoading, setMessLoading] = useState("   Đang Làm Mới Kho Hàng!");
+    const [messLoading, setMessLoading] = useState("");
 
     const [resultLst, setResultLst] = useState();
     
@@ -30,9 +30,7 @@ function MatHangHetSL() {
     const handleShow = () => setShow(true);
 
 
-    function Refresh(){
-        handleShow();
-    }
+   
 
     function ItemNoiDung(props)
     {
@@ -44,7 +42,10 @@ function MatHangHetSL() {
     }
 
     useEffect(()=>{
+        
+        setMessLoading("   Đang Làm Mới Kho Hàng!");
         Refresh();
+         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     function Refresh()
@@ -55,8 +56,8 @@ function MatHangHetSL() {
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/quanli/MatHangHetSL",requestOptions)
-        .then(res => res.json())
+        let _URL ="https://phutungserver.herokuapp.com/quanli/MatHangHetSL";
+        NetWorking(_URL,requestOptions,5000) 
         .then(res =>{
             handleClose();  
             if(res.success)

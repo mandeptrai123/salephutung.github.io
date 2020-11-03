@@ -1,14 +1,7 @@
 import React, { useState ,useEffect} from 'react'
 import './css/KhoHang.css'
-
 //import component
-import Find from '../../resource/Find/Find'
-import Result_row_find from '../../resource/Result_row_find/Result_row_find'
-import InputText from '../../resource/InputText/InputText'
 import { Button, Modal, Spinner } from 'react-bootstrap'
-
-
-
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -20,31 +13,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt} from '@fortawesome/free-solid-svg-icons'
 import resources from '../../resource/color/ColorApp';
 
-import TextField from '@material-ui/core/Button'
+import NetWorking from '../../networking/fetchWithTimeout';
 
 function KhoHang() {
-    var arr = [
-        { Name: 'Oc Vit', DonVi: 'Cai', GiaBan: '25000', SoLuong: 4 },
-        { Name: 'Oc Vit', DonVi: 'Cai', GiaBan: '25000', SoLuong: 4 },
-        { Name: 'Oc Vit', DonVi: 'Cai', GiaBan: '25000', SoLuong: 4 },
-    ]
 
-    const [lstKhoHang,setLstKhoHang] = useState([]);
+  //  const [lstKhoHang,setLstKhoHang] = useState([]);
     const [searchContent,setsearchContent] = useState("");
 
     const [show, setShow] = useState(false)
     const [messLoading, setMessLoading] = useState(
         '   Đang Tải Thông Tin Khách, Đợi Chút Nhé'
     )
-
     const [lstResult, setLstResult] = useState()
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-
-    const style_Dialog_KhoHang = {
-        display: 'block',
-    }
     
 
     function UpdateKhoSanPham(arr) {
@@ -64,7 +47,7 @@ function KhoHang() {
 
     function Hanlde_TimSanPham()
     {
-        if(setsearchContent == "")
+        if(setsearchContent === "")
             return;
         
         
@@ -73,9 +56,9 @@ function KhoHang() {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json'}
             };
-    
-            fetch("https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name="+searchContent,requestOptions)
-            .then(res => res.json())
+            let _URL = "https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name="+searchContent;
+            
+            NetWorking(_URL,requestOptions,5000)
             .then(res =>{
                 if(res.success)
                 {
@@ -87,7 +70,7 @@ function KhoHang() {
                 }
             }).catch(e=>
                 {
-                    alert(e);
+                    alert("Có Lỗi Ở Kho Hàng");
                     handleClose();
                 }
                 );
@@ -101,9 +84,10 @@ function KhoHang() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json'},
         };
-
-        fetch("https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham",requestOptions)
-        .then(res => res.json())
+        
+        let _URL = "https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham";
+        
+        NetWorking(_URL,requestOptions,10000)
         .then(res =>{
             if(res.success)
             {
@@ -116,21 +100,19 @@ function KhoHang() {
         }).catch(e=>
             {
                 alert("Có Lỗi Ở Kho Hàng! ");
-
                 handleClose();
             }
             );
     }
-    function TienVietNam()
-    {
-        var x = 1000;
-        x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
-        return x;
-    }
 
-    useEffect(()=>{
-       Refresh();
-    },[])
+    // function TienVietNam()
+    // {
+    //     var x = 1000;
+    //     x = x.toLocaleString('it-IT', {style : 'currency', currency : 'VND'});
+    //     return x;
+    // }
+
+    useEffect(Refresh,[])
 
     return (
         <section className="khohang-container">

@@ -4,14 +4,13 @@ import React, { useState, useEffect } from 'react'
 import './css/Manage.css'
 
 //import component
-import ButtonNavigation from '../../resource/ButtonNavigation/ButtonNavigation'
 import DonHangTheoNgay from './Children_Component/DonHangTheoNgay'
 import CongNo from './Children_Component/CongNo'
 import BaoCaoDoanhThu from './Children_Component/BaoCaoDoanhThu/BaoCaoDoanhThu'
 import TaoNhanVien from './Children_Component/TaoNhanVien'
 import HangThieuSL from './Children_Component/HangThieuSL'
 
-import { Button, ListGroup } from 'react-bootstrap'
+import { ListGroup } from 'react-bootstrap'
 
 function Manage() {
     const [screenUI, setUI] = useState(<DonHangTheoNgay></DonHangTheoNgay>)

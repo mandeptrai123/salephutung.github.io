@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState,useEffect} from 'react'
 
 //import component react material
-import { Paper, TextField } from '@material-ui/core'
-
-import { makeStyles } from '@material-ui/core/styles'
-
+import {TextField } from '@material-ui/core'
 import { Button,Modal ,Spinner } from 'react-bootstrap';
 import resources from '../../../resource/color/ColorApp';
 import '../css/Manage.css';
+import NetWorking from '../../../networking/fetchWithTimeout';
+
 function TaoNhanVien() {
     const [sodienthoai,setSDT] = useState("");
     const [tenNV,setTenNV] = useState("");
 
     const [show, setShow] = useState(false);
-    const [messLoading, setMessLoading] = useState(" Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!");
+    const [messLoading, setMessLoading] = useState("");
 
     const [messResponse, setMessResponse] = useState("");
     const [showResponse, setShowResponse] = useState(false);
@@ -22,6 +21,9 @@ function TaoNhanVien() {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    useEffect(()=>{
+        setMessLoading(" Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!");
+    },[]);
     function Handle_ThemNhanVien()
     {
         var itemRequest = 
@@ -37,8 +39,9 @@ function TaoNhanVien() {
             body:JSON.stringify(itemRequest)
         };
 
-        fetch("https://phutungserver.herokuapp.com/quanli/ThemNhanVien",requestOptions)
-        .then(res => res.json())
+        let _URL = "https://phutungserver.herokuapp.com/quanli/ThemNhanVien";
+
+        NetWorking(_URL,requestOptions,5000)
         .then(res =>{
             handleClose(); 
             setMessResponse(res.mess);
@@ -47,7 +50,7 @@ function TaoNhanVien() {
             setSDT("");
         }).catch(e=>
             {
-                alert(e);
+                alert("Xảy Ra Sự Cố ,Kiểm Tra Lại Internet !");
                 handleClose();
             }
             );
