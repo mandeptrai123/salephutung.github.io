@@ -6,10 +6,21 @@ import { Button,Modal ,Spinner } from 'react-bootstrap';
 import resources from '../../../resource/color/ColorApp';
 import '../css/Manage.css';
 import NetWorking from '../../../networking/fetchWithTimeout';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+
+function Alert(props) 
+{
+        return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 function TaoNhanVien() {
     const [sodienthoai,setSDT] = useState("");
     const [tenNV,setTenNV] = useState("");
+    const [matkhau,setPassword] = useState("");
 
     const [show, setShow] = useState(false);
     const [messLoading, setMessLoading] = useState("");
@@ -17,9 +28,15 @@ function TaoNhanVien() {
     const [messResponse, setMessResponse] = useState("");
     const [showResponse, setShowResponse] = useState(false);
 
+    const [stateSnackbar,setStateSnackbar] = useState({openSnackbar:false,messSnackbar:"",isSuccess:true,});
+    const {openSnackbar,messSnackbar,isSuccess} = stateSnackbar;
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    function handleCloseSnackbar(){
+        setStateSnackbar({...stateSnackbar,openSnackbar:false});
+    }
 
     useEffect(()=>{
         setMessLoading(" Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!");
@@ -29,8 +46,9 @@ function TaoNhanVien() {
         var itemRequest = 
         {
             SDT:sodienthoai,
-            Pass:"123456",
-            Name:tenNV
+            Pass:matkhau,
+            Name:tenNV,
+            isQuanLi:false
         }
         handleShow();
         const requestOptions = {
@@ -44,10 +62,24 @@ function TaoNhanVien() {
         NetWorking(_URL,requestOptions,5000)
         .then(res =>{
             handleClose(); 
-            setMessResponse(res.mess);
-            setShowResponse(true);
-            setTenNV("");
-            setSDT("");
+            if(res.success)
+            {
+                setStateSnackbar({...stateSnackbar,
+                    openSnackbar:true,
+                    isSuccess:true,
+                    messSnackbar:res.mess})
+               
+                setTenNV("");
+                setSDT("");
+                setPassword("");
+            }else
+            {
+                setStateSnackbar({...stateSnackbar,
+                    openSnackbar:true,
+                    isSuccess:false,
+                    messSnackbar:res.mess})   
+            }
+            
         }).catch(e=>
             {
                 alert("Xảy Ra Sự Cố ,Kiểm Tra Lại Internet !");
@@ -62,9 +94,8 @@ function TaoNhanVien() {
                 
                 justifyContent:'center',
                 alignContent:'center',
-                width: '100%',
+                width: '50%',
                 height: '100%',
-                padding: '20px 30px',
             }}
         >
             <h1
@@ -82,28 +113,45 @@ function TaoNhanVien() {
             className="borderW"
             >
             <TextField
+            variant="outlined"
                     style={{
                         width:200,
-                        marginLeft:200,
+                        marginBottom:10,
+                        marginLeft:200
                     }}
                         onChange={e=>{setSDT(e.target.value)}}
                         value={sodienthoai}
                         id="standard-basic"
                         label="Số Điện Thoại"
-                        type="number"
                     />
-             
-              
-                    <TextField
+                <TextField
+                     variant="outlined"
                     style={{
                         width:200,
-                        marginLeft:100,
+                        marginTop:10,
+                        marginLeft:200
+                    }}
+                        onChange={e=>{setPassword(e.target.value)}}
+                        value={matkhau}
+                        id="standard-basic"
+                        label="Mật Khẩu"
+                        type="password"
+                    />
+              
+                <TextField
+                     variant="outlined"
+                    style={{
+                        width:200,
+                        marginTop:10,
+                        marginLeft:200
                     }}
                         onChange={e=>{setTenNV(e.target.value)}}
                         value={tenNV}
                         id="standard-basic"
                         label="Tên Nhân Viên"
                     />
+
+                
            
                 <Button
                 onClick={e=>Handle_ThemNhanVien()}
@@ -153,6 +201,18 @@ function TaoNhanVien() {
                     </Modal.Footer>
                     </Modal.Body>
                 </Modal>
+
+
+                <Snackbar 
+                    open={stateSnackbar.openSnackbar}
+                    autoHideDuration={2000}
+                    onClose={() => {setStateSnackbar({...stateSnackbar,openSnackbar:false})}
+                    }
+                    >
+                    <Alert onClose={handleCloseSnackbar} severity={stateSnackbar.isSuccess?"success":"error"} >
+                            {stateSnackbar.messSnackbar}
+                    </Alert>
+            </Snackbar>
            
         </div>
     )

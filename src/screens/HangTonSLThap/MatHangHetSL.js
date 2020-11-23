@@ -17,7 +17,11 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import resources from '../../resource/color/ColorApp';
 import NetWorking from '../../networking/fetchWithTimeout';
-
+import {Button} from 'react-bootstrap';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import _ from 'lodash';
+import disableScroll from 'disable-scroll';
 
 function MatHangHetSL() {
 
@@ -35,14 +39,30 @@ function MatHangHetSL() {
     function ItemNoiDung(props)
     {
         return <TableRow>
-            <TableCell>{props.name}</TableCell>
-            <TableCell>{props.amount}</TableCell>
-            <TableCell>Số Lượng Đã Thấp Hơn {props.amountAlert}</TableCell>
+           
+            <TableCell>{props.NhaCC}</TableCell>
+            <TableCell>{props.SDTNhaCC}</TableCell>
+            <TableCell>
+            <List component="nav" aria-label="secondary mailbox folders">
+                         {props.DanhSachSP.map(e=>{
+                            return <ListItem 
+                            onClick={e=>{
+                            }}
+                            button>
+                                {e.Name}
+                            </ListItem>
+                        })}
+                </List>
+            </TableCell>
+            <TableCell>
+                <Button>
+                    Liên Hệ Nhà CC
+                </Button>
+            </TableCell>
         </TableRow>
     }
 
     useEffect(()=>{
-        
         setMessLoading("   Đang Làm Mới Kho Hàng!");
         Refresh();
          // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,18 +77,33 @@ function MatHangHetSL() {
         };
 
         let _URL ="https://phutungserver.herokuapp.com/quanli/MatHangHetSL";
-        NetWorking(_URL,requestOptions,5000) 
+        NetWorking(_URL,requestOptions,10000) 
         .then(res =>{
             handleClose();  
             if(res.success)
             {
-                UpdateHangThieuSL(res.data.reverse());
-                 
+                var arr = [];
+                _.forEach(res.data,function(e){
+                    e.DanhSachSP = [{Name:e.name}];
+                   var isAlready =  _.some(arr, { NhaCC:e.NhaCC});
+                    if(!isAlready)
+                    {
+                        arr.push(e);
+                    }else
+                    {
+                        var index = _.findIndex(arr, function(o) { return o.NhaCC == e.NhaCC; });
+                        arr[index].DanhSachSP.push({Name:e.name});
+                    }
+                        
+                })
+
+                console.log(arr)
+
+                UpdateHangThieuSL(arr.reverse());
             }
         }).catch(e=>
             {
-                alert("Có Lỗi Ở Mặt Hàng Hết SL ! ");
-
+                alert("Có Lỗi Ở Mặt Hàng Hết SL ! : "+e);
                 handleClose();
             }
             );
@@ -89,7 +124,9 @@ function MatHangHetSL() {
             <h3 
             style={{color:resources.colorPrimary,textAlign:'center'}}
             className='title'>Sản Phẩm Hết Số Lượng</h3>
-            <FontAwesomeIcon   onClick={e=>{Refresh()}} color={resources.colorPrimary} size="3x" icon={faSyncAlt}/>
+            <FontAwesomeIcon  
+            style={{marginBottom:10}}
+            onClick={e=>{Refresh()}} color={resources.colorPrimary} size="3x" icon={faSyncAlt}/>
             <TableContainer
                 style={{
                     height:'80%',
@@ -99,9 +136,11 @@ function MatHangHetSL() {
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Tên Sản Phẩm</TableCell>
-                            <TableCell>Số Lượng Hiện Tại</TableCell>
-                            <TableCell>Nội Dung</TableCell>
+                            <TableCell>Nhà Cung Cấp</TableCell>
+                            <TableCell>SDT Nhà Cung Cấp</TableCell>
+                            <TableCell>Danh Sách Sản Phẩm Hết</TableCell>
+                            <TableCell>Liên Hệ</TableCell>
+
                         </TableRow>
                     </TableHead>
 

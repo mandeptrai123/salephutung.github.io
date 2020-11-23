@@ -31,9 +31,9 @@ function HangThieuSL() {
                 <TableRow hover>
                     <TableCell>{stt}</TableCell>
                     <TableCell>{props.name}</TableCell>
-                    <TableCell>{props.amoutAlert}</TableCell>
+                    <TableCell>{props.amountAlert}</TableCell>
                     <TableCell>{props.Donvi}</TableCell>
-                    <TableCell>{props.amout}</TableCell>
+                    <TableCell>{props.amount}</TableCell>
                 </TableRow>
             )
         }

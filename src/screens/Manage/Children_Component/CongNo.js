@@ -13,9 +13,21 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import resources from '../../../resource/color/ColorApp';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSyncAlt} from '@fortawesome/free-solid-svg-icons';
+
+import { useSelector } from 'react-redux';
+
+
 
 let SDTSelected;
+var arr_KhachHang = [];
+
 function CongNo() {
+
+    const SDTNV = useSelector(state => state.SDTNV)
+    const PassLogin = useSelector(state => state.Pass)
+
     const [lstResult, setResult] = useState();
     const [totalCongNo, setTotalCongNo] = useState(0);
 
@@ -33,6 +45,12 @@ function CongNo() {
     const [messResponse, setMessResponse] = useState("");
     const [showResponse, setShowResponse] = useState(false);
 
+
+    const [stateModalDieuChinh, setStateModalDieuChinh] = useState({openDieuChinh:false,CongNoCu:0,CongNoMoi:"",Pass:""});
+    const {openDieuChinh,CongNoCu,CongNoMoi,Pass} = stateModalDieuChinh;
+
+
+
     const [congnoMoi, setcongnoMoi] = useState();
    
 
@@ -40,7 +58,7 @@ function CongNo() {
     function ItemCongNo(props) {
         stt++
         return (
-            <TableRow hover>
+            <TableRow>
                 <TableCell>{stt}</TableCell>
                 <TableCell>{props.SDT}</TableCell>
                 <TableCell>{props.Name}</TableCell>
@@ -55,9 +73,10 @@ function CongNo() {
                 >
                     <Button
                     onClick={e=>{
-                        SDTSelected = props.SDT;
-                        setcongnoMoi(props.Congno);
-                        setShowDieuChinh(true)}}
+                         SDTSelected = props.SDT;
+                        setStateModalDieuChinh({...stateModalDieuChinh,openDieuChinh:true})
+                    }
+                    }
                         style={{
                             width: '120px',
                             height: '40px',
@@ -73,27 +92,34 @@ function CongNo() {
         )
     }
 
-    useEffect(OnFresh,[]);
+    useEffect(()=>{
+        OnFresh();
+    },[]);
 
     function OnFresh()
     {
+        
         handleShow();
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json'}
         };
 
-        fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoCongNo",requestOptions)
+        fetch("https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang",requestOptions)
+        .then(res => res.json())
         .then(res =>{
             handleClose();
            if(res.success)
            {
+               arr_KhachHang = res.data;
                RenderCongNo(res.data);
+           }else
+           {
+
            }
         }).catch(e=>
             {
                 alert("Có Lỗi Ở Công Nợ! ");
-
                 handleClose();
             });
 
@@ -120,15 +146,27 @@ function CongNo() {
 
     function CapNhatCongNoMoi()
     {
+        if(PassLogin != Pass)
+        {
+            setMessLoading("Mật Khẩu Không Chính Xác !");
+            handleShow();
+            return;
+        }
+
         handleCloseDieuChinh(false);
-        
         setMessLoading("Đang Cập Nhật Công Nợ Mới !");
         handleShow();
+        var _d = new Date();
+        var _time = _d.getHours()+":"+_d.getMinutes();
         var itemRequest =
         {
-            SDT:SDTSelected,
-            Congno:parseInt(congnoMoi)
+            SDTKhach:SDTSelected,
+            SDTNV:SDTNV,
+            Congno:parseInt(CongNoMoi),
+            Pass:Pass,
+            Time:_time
         };
+        console.log(JSON.stringify(itemRequest));
         const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
@@ -140,6 +178,8 @@ function CongNo() {
             .then(res =>{
                 handleClose();
                 setMessResponse(res.mess);
+                
+                setStateModalDieuChinh({...stateModalDieuChinh,openDieuChinh:false,CongNoMoi:"",Pass:""});
                 setShowResponse(true);
                 
             }).catch(e=>
@@ -171,11 +211,17 @@ function CongNo() {
             >
                 Toàn Bộ Công Nợ
             </h1>
+            <FontAwesomeIcon
+            style={{position:'absolute',right:100,top:10}}
+            onClick={e=>{OnFresh()}}
+            color={resources.colorPrimary} size="3x" icon={faSyncAlt}
+            />
            
 
             <TableContainer
                 style={{
-                    maxHeight: '550px',
+                    marginTop:20,
+                    maxHeight: '500px',
                     width: '93%',
                 }}
             >
@@ -221,53 +267,7 @@ function CongNo() {
                     </Modal.Title>
                     </Modal.Body>
                 </Modal>
-
-
-                <Modal
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered
-                    backdrop="static"
-                    show={showDieuChinh}
-                    onHide={handleCloseDieuChinh} 
-                    >
-                    <Modal.Body >
-                    <Modal.Title>
-                        Cập Nhật Công Nợ Mới
-                    </Modal.Title>
-                    <Modal.Footer>
-                        <div
-                        style={{width:'100%'}}
-                        >
-                        <TextField
-                            style={{width:'100%'}}
-                            value={congnoMoi}
-                            onChange={e=>{setcongnoMoi(e.target.value)}}
-                        />
-                        </div>
-                       
-                       <div
-                       style={{marginTop:50}}
-                       >
-                       <Button
-                       onClick={e=>{CapNhatCongNoMoi()}}
-                       style={{width:100,marginRight:20}}
-                       >
-                            OK
-                        </Button>
-
-                        <Button
-                         variant="danger"
-                        style={{width:100,marginLeft:20}}
-                        onClick={e=>{handleCloseDieuChinh()}}
-                        >
-                            Huỷ
-                        </Button>
-                       </div>
-                       
-                    </Modal.Footer>
-                    </Modal.Body>
-                </Modal>
-        
+              
                 <Modal
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
@@ -289,8 +289,75 @@ function CongNo() {
                     </Modal.Footer>
                     </Modal.Body>
                 </Modal>
+
+
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={openDieuChinh} 
+                    >
+                  
+                    <Modal.Title
+                    style={{color:'red',fontWeight:'bold',padding:10,fontSize:15}}
+                    >
+                        "Lưu Ý: Hoạt Động Này Sẽ Được Ghi Vào Nhật Ký !"
+                    </Modal.Title>
+
+                    <Modal.Body>
+                        <div
+                        style={{width:"50%"}}
+                        >
+                         
+
+                        <TextField
+                        variant="outlined"
+                        placeholder="Công Nợ Mới"
+                        style={{width:200,height:50,marginLeft:40,marginTop:5,marginBottom:5}}
+                        value={CongNoMoi}
+                        onChange={e=>{
+                            setStateModalDieuChinh({...stateModalDieuChinh,CongNoMoi:e.target.value})
+                        }}
+                        />
+                        <TextField
+                        type="password"
+                        variant="outlined"
+                        placeholder="Mật Khẩu Đăng Nhập"
+                        onChange={e=>{
+                            setStateModalDieuChinh({...stateModalDieuChinh,Pass:e.target.value})
+                        }}
+                        style={{width:200,height:50,marginLeft:40,marginTop:5}}
+                        value={Pass}
+                        />
+                        </div>
+                       
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button
+                        onClick={e=>{
+                            CapNhatCongNoMoi();
+                        }}
+                        >
+                            Lưu
+                        </Button>
+                        <Button
+                        onClick={e=>{
+                            setStateModalDieuChinh({...stateModalDieuChinh,openDieuChinh:false})
+
+                        }}
+                        >
+                            Huỷ
+                        </Button>
+                    </Modal.Footer>
+                  
+                </Modal>
+
+
+
         </div>
     )
 }
 
-export default CongNo
+export default CongNo;
