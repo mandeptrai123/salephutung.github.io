@@ -16,7 +16,8 @@ import TableRow from '@material-ui/core/TableRow'
 
 import resources from '../../../../resource/color/ColorApp';
 
-//import component
+import {Snackbar} from '@material-ui/core';
+import {Alert} from '@material-ui/lab';
 
 
 
@@ -32,6 +33,10 @@ function BaoCaoDoanhThu(props) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const [stateSnackbar,setStateSnackbar] = useState({openSnackbar:false,messSnackbar:"",isSuccess:false});
+
+    const {openSnackbar,messSnackbar,isSuccess} = stateSnackbar;
+
 
     useEffect(() => {
        
@@ -45,6 +50,8 @@ function BaoCaoDoanhThu(props) {
                 <TableCell>{stt}</TableCell>
                 <TableCell>{props.TenKhach}</TableCell>
                 <TableCell>{props.ThanhTien}</TableCell>
+                <TableCell>{props.name}</TableCell>
+                <TableCell>{props.name}</TableCell>
                 <TableCell>{props.name}</TableCell>
                 <TableCell>{props.name}</TableCell>
             </TableRow>
@@ -189,29 +196,6 @@ function BaoCaoDoanhThu(props) {
             });
     }
 
-    function LoadDoanhThuTheoTuan()
-    {
-        // handleShow();
-        // const requestOptions = {
-        //     method: 'GET',
-        //     headers: { 'Content-Type': 'application/json'}
-        // };
-
-        // fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+_d.getDate(),requestOptions)
-        // .then(res => res.json())
-        // .then(res =>{
-        //     handleClose();
-        //    if(res.success)
-        //    {
-        //        RenderCongNo(res.data);
-        //    }
-        // }).catch(e=>
-        //     {
-        //         alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
-
-        //         handleClose();
-        //     });
-    }
 
     function LoadDoanhThuHomNay()
     {
@@ -221,7 +205,7 @@ function BaoCaoDoanhThu(props) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json'}
         };
-        alert(_d.getDate())
+        
         fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+_d.getDate(),requestOptions)
         .then(res => res.json())
         .then(res =>{
@@ -229,13 +213,16 @@ function BaoCaoDoanhThu(props) {
            if(res.success)
            {
                RenderBaoCaoDoanhThu(res.data);
+               setStateSnackbar({...stateSnackbar,openSnackbar:true,messSnackbar:"Bạn Đang Xem Doanh Thu Hôm Nay !",isSuccess:true})
            }
         }).catch(e=>
             {
-                alert("Có Lỗi Ở Báo Cáo Doanh Thu! "+e);
+                setStateSnackbar({...stateSnackbar,isSuccess:false,messSnackbar:"Có Lỗi Ở Báo Cáo Doanh Thu! "+e,openSnackbar:true})
                 handleClose();
             });
     }
+
+   
 
     return (
         <section className="baocao-container">
@@ -249,6 +236,7 @@ function BaoCaoDoanhThu(props) {
                     <Checkbox
                         txtLabel="Xếp Theo Số Lượng Bán Nhiều Nhất"
                         idCheck="mathang"
+                        
                     />
                     <Checkbox
                         txtLabel="Xếp Theo Mặt Hàng Có Doanh Thu Cao Nhất"
@@ -350,7 +338,7 @@ function BaoCaoDoanhThu(props) {
                         textAlign: 'left',
                     }}
                 >
-                    Bạn đang xem doanh thu tháng 9/2020
+                    Bạn đang xem doanh thu tháng 9/2020 , Số Đơn Hàng Tăng : 10
                 </h4>
                 <TableContainer
                     style={{
@@ -365,6 +353,8 @@ function BaoCaoDoanhThu(props) {
                                 <TableCell>Số Lượng Bán Được</TableCell>
                                 <TableCell>Số Lượng Khách Mua</TableCell>
                                 <TableCell>Doanh Thu</TableCell>
+                                <TableCell>Khấu Trừ</TableCell>
+                                <TableCell>Lợi Nhuận</TableCell>
                             </TableRow>
                         </TableHead>
 
@@ -384,6 +374,19 @@ function BaoCaoDoanhThu(props) {
                     </Modal.Title>
                     </Modal.Body>
                 </Modal>
+
+
+         <Snackbar 
+            open={openSnackbar}
+             autoHideDuration={2000}
+             onClose={() => {setStateSnackbar({...stateSnackbar,openSnackbar:false})}
+             }
+             >
+                <Alert onClose={()=>
+                setStateSnackbar({...stateSnackbar,openSnackbar:false})} severity={isSuccess?"success":"error"} >
+                            {messSnackbar}
+                </Alert>
+            </Snackbar>
         </section>
     )
 }
@@ -405,6 +408,8 @@ function Checkbox(props) {
             </label>
             <input
                 type="checkbox"
+                onChange={props.onChange}
+                onClick={props.onClick}
                 id={props.idCheck}
                 style={{
                     width: '20px',

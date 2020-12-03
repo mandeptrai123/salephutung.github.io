@@ -23,7 +23,6 @@ import {Autocomplete} from '@material-ui/lab';
 import {TextField} from '@material-ui/core';
 
 import {Snackbar} from '@material-ui/core';
-
 import {Alert} from '@material-ui/lab';
 
 import _ from 'lodash';

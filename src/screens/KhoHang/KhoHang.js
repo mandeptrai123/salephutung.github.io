@@ -226,6 +226,11 @@ function KhoHang() {
                         onChange={e=>
                         {
                             setsearchContent(e.target.value);
+                            if(e.target.value == "")
+                            {
+                                UpdateKhoSanPham(arr_KhoHang);
+                            }
+
                         }}  
                     variant="outlined" />
                     }

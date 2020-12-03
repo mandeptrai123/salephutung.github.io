@@ -11,11 +11,24 @@ import Manage from './screens/Manage/Manage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Tab, Col, Nav, Row} from 'react-bootstrap';
 import resources from './resource/color/ColorApp';
+import {useSelector} from 'react-redux';
+import { useHistory } from 'react-router-dom'
 
 function DashBoard() {
 
+    const history = useHistory();
+
+    const HoTenNV = useSelector(state => state.HoTen);
     useEffect(()=>{
         //disableScroll.on();
+
+        // Kiem Tra Account
+      
+        if(HoTenNV == "Chưa Có")
+        {
+            history.push("/");
+        }
+
     },[])
     return(
         <div>
