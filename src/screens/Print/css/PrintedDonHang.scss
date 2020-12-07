@@ -1,0 +1,69 @@
+.bill-container {
+    width: 100%;
+
+    .bill-header {
+        h1 {
+            margin: '5px 0';
+            text-align: center;
+        }
+
+        h3 {
+            margin: '5px 0';
+            text-align: center;
+            font-style: italic;
+        }
+    }
+
+    .bill-info-person {
+        height: 150px;
+        display: flex;
+        flex-direction: row;
+
+        .bill-info-person__left {
+            width: 70%;
+        }
+        .bill-info-person__right {
+            width: 30%;
+        }
+    }
+
+    .bill-donate {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        span {
+            font-size: 20px;
+        }
+    }
+
+    .bill-numberphone {
+        h4 {
+            text-align: center;
+            font-style: italic;
+        }
+    }
+
+    .bill-doneOder {
+        display: flex;
+        .nguoiGiaoHang {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-style: italic;
+        }
+        .nguoiNhanHang {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-style: italic;
+        }
+    }
+
+    .bill-table__text {
+        text-align: center;
+        margin: 0;
+    }
+}
