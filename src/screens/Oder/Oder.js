@@ -18,11 +18,11 @@ import NetWorking from '../../networking/fetchWithTimeout'
 import { Autocomplete } from '@material-ui/lab'
 import { useSelector } from 'react-redux'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
-import ReactToPrint from 'react-to-print'
-
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
 
+//import component in bill
+import ReactToPrint from 'react-to-print'
 import PrintedDonHang from '../Print/PrintedDonHang'
 
 import _ from 'lodash'
@@ -96,6 +96,8 @@ function Oder() {
     const [lstSuggest, setlstSuggest] = useState([])
 
     const [_responseSanPham, set_responseSanPham] = useState([])
+
+    const componentRef = useRef(null)
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
@@ -273,10 +275,11 @@ function Oder() {
     }
 
     function RenderKetQuaGioHang(arr) {
-        const result = arr.map((e) => {
-            return ItemCart(e)
-        })
-        setResultCart(result)
+        setResultCart(
+            arr.map((e) => {
+                return ItemCart(e)
+            })
+        )
         TinhToanThanhTien()
     }
 
@@ -362,6 +365,10 @@ function Oder() {
         return _itemRq
     }
 
+    // function InBill() {
+    //     return <PrintedDonHang ref={componentRef} />
+    // }
+
     async function DatHang() {
         settxtButtonNegative('OK')
         setMessLoading('    Đang Tiến Hành Đặt Hàng, Đợi Chút Nhé')
@@ -433,7 +440,8 @@ function Oder() {
                     _thanhtien = 0
                     _tongtien = 0
 
-                    //Khi đặt hàng thành công thì hiện thị bill để in
+                    //Khi đặt hàng thành công thì thực hiện in bill
+                    // InBill()
                 } else {
                     setStateSnackbar({
                         ...stateSnackbar,
@@ -565,11 +573,13 @@ function Oder() {
                     <TextField
                         id="outlined-basic"
                         label="Số lượng"
+                        margin="normal"
                         variant="outlined"
                         style={{ width: '100%' }}
                         onChange={(e) => {
                             // console.log(e.target.value)
                         }}
+                        autoFocus
                         onKeyPress={(event) => {
                             if (event.key === 'Enter') {
                                 setShowModalDienSoLuongSP(false)

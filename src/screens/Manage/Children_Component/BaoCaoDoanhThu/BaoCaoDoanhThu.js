@@ -4,7 +4,7 @@ import './css/BaoCaoDoanhThu.css'
 //import component react-bootstrap
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
-import { Row, Col,Modal, Spinner } from 'react-bootstrap'
+import { Row, Col, Modal, Spinner } from 'react-bootstrap'
 // import Table from 'react-bootstrap/Table'
 
 import Table from '@material-ui/core/Table'
@@ -14,33 +14,34 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
-import resources from '../../../../resource/color/ColorApp';
+import resources from '../../../../resource/color/ColorApp'
 
-import {Snackbar} from '@material-ui/core';
-import {Alert} from '@material-ui/lab';
-
-
+import { Snackbar, TextField } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 
 function BaoCaoDoanhThu(props) {
-   
     const [lstResult, setResult] = useState()
-    const [viewModeDropdown, setviewModelDropdown] = useState("Doanh Thu 7 Ngày Gần Đây");
-
+    const [viewModeDropdown, setviewModelDropdown] = useState(
+        'Doanh Thu 7 Ngày Gần Đây'
+    )
 
     // const [messLoading, setMessLoading] = useState(" Đang Lấy Thông Tin Khách Hàng!");
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false)
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
 
-    const [stateSnackbar,setStateSnackbar] = useState({openSnackbar:false,messSnackbar:"",isSuccess:false});
+    const [stateSnackbar, setStateSnackbar] = useState({
+        openSnackbar: false,
+        messSnackbar: '',
+        isSuccess: false,
+    })
 
-    const {openSnackbar,messSnackbar,isSuccess} = stateSnackbar;
+    const { openSnackbar, messSnackbar, isSuccess } = stateSnackbar
 
+    const [dateViewProduct, setDateViewProduct] = useState()
 
-    useEffect(() => {
-       
-    }, [])
+    useEffect(() => {}, [])
 
     var stt = 0
     function ItemDonHang(props) {
@@ -58,45 +59,41 @@ function BaoCaoDoanhThu(props) {
         )
     }
 
-    function RenderBaoCaoDoanhThu(arr)
-    {
+    function RenderBaoCaoDoanhThu(arr) {
         const _result = arr.map((e) => {
             return ItemDonHang(e)
         })
         setResult(_result)
     }
 
-    function handleDropDown(stt)
-    {
-        switch(stt)
-        {
+    function handleDropDown(stt) {
+        switch (stt) {
             case 0:
-                setviewModelDropdown("Doanh Thu Ngày Hôm Nay");
-                LoadDoanhThuHomNay();
-                break;
+                setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+                LoadDoanhThuHomNay()
+                break
             case 1:
-                setviewModelDropdown("Doanh Thu 7 Ngày Gần Đây");
-                LoadDoanhThuTheoTuan();
-                break;
+                setviewModelDropdown('Doanh Thu 7 Ngày Gần Đây')
+                LoadDoanhThuTheoTuan()
+                break
             case 2:
-                setviewModelDropdown("Doanh Thu Tháng Này");
-                LoadDoanhThuThangNay();
-                break;
+                setviewModelDropdown('Doanh Thu Tháng Này')
+                LoadDoanhThuThangNay()
+                break
             case 3:
-                setviewModelDropdown("Doanh Thu Tháng Trước");
-                LoadDoanhThuThangTruoc();
-                break;
+                setviewModelDropdown('Doanh Thu Tháng Trước')
+                LoadDoanhThuThangTruoc()
+                break
             case 4:
-                setviewModelDropdown("Doanh Thu Năm Nay");
-                LoadDoanhThuNamNay();
-                break;
+                setviewModelDropdown('Doanh Thu Năm Nay')
+                LoadDoanhThuNamNay()
+                break
             default:
-                    break;
+                break
         }
     }
 
-    function XuLyDuHoaDonThanhSanPham(arr)
-    {
+    function XuLyDuHoaDonThanhSanPham(arr) {
         //  var arrSanPham = [];
         // arr.map(e=>{
         //     e.lstSanPham.map(i=>{
@@ -110,137 +107,161 @@ function BaoCaoDoanhThu(props) {
         //                     _id:i.id,
         //                     TenSanPham:i.name,
         //                     soluongMua:i.soluongBan
-        //                 }) 
+        //                 })
         //         }
         //     })
         // })
         // return arrSanPham;
-
     }
 
-    function LoadDoanhThuNamNay()
-    {
-        var _d = new Date();
-        handleShow();
+    function LoadDoanhThuNamNay() {
+        var _d = new Date()
+        handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json'}
-        };
+            headers: { 'Content-Type': 'application/json' },
+        }
 
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNam?Year="+_d.getFullYear(),requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            handleClose();
-           if(res.success)
-           {
-               RenderBaoCaoDoanhThu(res.data);
-           }
-        }).catch(e=>
-            {
-                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+        fetch(
+            'https://phutungserver.herokuapp.com/donhang/DonHangTheoNam?Year=' +
+                _d.getFullYear(),
+            requestOptions
+        )
+            .then((res) => res.json())
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    RenderBaoCaoDoanhThu(res.data)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-                handleClose();
-            });
+                handleClose()
+            })
     }
 
-    function LoadDoanhThuThangNay()
-    {
-        var _d = new Date();
-        handleShow();
+    function LoadDoanhThuThangNay() {
+        var _d = new Date()
+        handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json'}
-        };
+            headers: { 'Content-Type': 'application/json' },
+        }
 
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month="+_d.getMonth(),requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            handleClose();
-           if(res.success)
-           {
-               var arrSP = XuLyDuHoaDonThanhSanPham(res.data);
-               RenderBaoCaoDoanhThu(arrSP);
-           }
-        }).catch(e=>
-            {
-                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+        fetch(
+            'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
+                _d.getMonth(),
+            requestOptions
+        )
+            .then((res) => res.json())
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    var arrSP = XuLyDuHoaDonThanhSanPham(res.data)
+                    RenderBaoCaoDoanhThu(arrSP)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-                handleClose();
-            });
+                handleClose()
+            })
     }
-    function LoadDoanhThuThangTruoc()
-    {
-        handleShow();
+    function LoadDoanhThuThangTruoc() {
+        handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json'}
-        };
-        var _d = new Date().getMonth();
-        _d-=1;
-        if(_d === -1)
-            _d = 11;
+            headers: { 'Content-Type': 'application/json' },
+        }
+        var _d = new Date().getMonth()
+        _d -= 1
+        if (_d === -1) _d = 11
 
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month="+_d,requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            handleClose();
-           if(res.success)
-           {
-               RenderBaoCaoDoanhThu(res.data);
-           }
-        }).catch(e=>
-            {
-                alert("Có Lỗi Ở Báo Cáo Doanh Thu! ");
+        fetch(
+            'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
+                _d,
+            requestOptions
+        )
+            .then((res) => res.json())
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    RenderBaoCaoDoanhThu(res.data)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-                handleClose();
-            });
+                handleClose()
+            })
     }
 
-
-    function LoadDoanhThuHomNay()
-    {
-        var _d = new Date();
-        handleShow();
+    function LoadDoanhThuHomNay() {
+        var _d = new Date()
+        handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json'}
-        };
-        
-        fetch("https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth="+_d.getDate(),requestOptions)
-        .then(res => res.json())
-        .then(res =>{
-            handleClose();
-           if(res.success)
-           {
-               RenderBaoCaoDoanhThu(res.data);
-               setStateSnackbar({...stateSnackbar,openSnackbar:true,messSnackbar:"Bạn Đang Xem Doanh Thu Hôm Nay !",isSuccess:true})
-           }
-        }).catch(e=>
-            {
-                setStateSnackbar({...stateSnackbar,isSuccess:false,messSnackbar:"Có Lỗi Ở Báo Cáo Doanh Thu! "+e,openSnackbar:true})
-                handleClose();
-            });
-    }
+            headers: { 'Content-Type': 'application/json' },
+        }
 
-   
+        fetch(
+            'https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth=' +
+                _d.getDate(),
+            requestOptions
+        )
+            .then((res) => res.json())
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    RenderBaoCaoDoanhThu(res.data)
+                    setStateSnackbar({
+                        ...stateSnackbar,
+                        openSnackbar: true,
+                        messSnackbar: 'Bạn Đang Xem Doanh Thu Hôm Nay !',
+                        isSuccess: true,
+                    })
+                }
+            })
+            .catch((e) => {
+                setStateSnackbar({
+                    ...stateSnackbar,
+                    isSuccess: false,
+                    messSnackbar: 'Có Lỗi Ở Báo Cáo Doanh Thu! ' + e,
+                    openSnackbar: true,
+                })
+                handleClose()
+            })
+    }
 
     return (
         <section className="baocao-container">
             <header className="baocao-header">
                 <h1
-                style={{paddingRight:200,color:resources.colorPrimary}}
-                className="title-baocao">Báo Cáo Doanh Thu</h1>
+                    style={{ paddingRight: 200, color: resources.colorPrimary }}
+                    className="title-baocao"
+                >
+                    Báo Cáo Doanh Thu
+                </h1>
             </header>
             <Row md={12} className="baocao-container__content">
                 <Col md={6} className="baocao-container__content-left">
-                    <Checkbox
-                        txtLabel="Xếp Theo Số Lượng Bán Nhiều Nhất"
-                        idCheck="mathang"
-                        
-                    />
-                    <Checkbox
-                        txtLabel="Xếp Theo Mặt Hàng Có Doanh Thu Cao Nhất"
-                        idCheck="soluong"
+                    <TextField
+                        type="date"
+                        variant="outlined"
+                        label="Xem doanh thu theo ngày"
+                        value={dateViewProduct}
+                        style={{
+                            width: '350px',
+                        }}
+                        onChange={(e) => {
+                            // var d = new Date(e.target.value)
+                            // setDateViewProduct(d)
+                            // console.log(d)
+                        }}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
                     />
                 </Col>
                 <Col
@@ -258,15 +279,14 @@ function BaoCaoDoanhThu(props) {
                             style={{
                                 width: '230px',
                                 height: '50px',
-                                backgroundColor:resources.colorPrimary
+                                backgroundColor: resources.colorPrimary,
                             }}
                         >
                             {viewModeDropdown}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-
-                        <Dropdown.Item
-                                onClick={e=>handleDropDown(0)}
+                            <Dropdown.Item
+                                onClick={(e) => handleDropDown(0)}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -275,8 +295,8 @@ function BaoCaoDoanhThu(props) {
                             >
                                 Doanh thu ngày hôm nay
                             </Dropdown.Item>
-                        <Dropdown.Item
-                                onClick={e=>handleDropDown(1)}
+                            <Dropdown.Item
+                                onClick={(e) => handleDropDown(1)}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -286,7 +306,7 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu 7 ngày gần đây
                             </Dropdown.Item>
                             <Dropdown.Item
-                              onClick={e=>handleDropDown(2)}
+                                onClick={(e) => handleDropDown(2)}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -296,7 +316,7 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu tháng này
                             </Dropdown.Item>
                             <Dropdown.Item
-                             onClick={e=>handleDropDown(3)}
+                                onClick={(e) => handleDropDown(3)}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -306,7 +326,7 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu tháng trước
                             </Dropdown.Item>
                             <Dropdown.Item
-                              onClick={e=>handleDropDown(4)}
+                                onClick={(e) => handleDropDown(4)}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -323,8 +343,8 @@ function BaoCaoDoanhThu(props) {
                             fontSize: '20px',
                             width: '150px',
                             height: '50px',
-                            backgroundColor:resources.colorPrimary,
-                            color:resources.colorText
+                            backgroundColor: resources.colorPrimary,
+                            color: resources.colorText,
                         }}
                     >
                         Xem
@@ -351,7 +371,7 @@ function BaoCaoDoanhThu(props) {
                                 <TableCell>Top</TableCell>
                                 <TableCell>Tên Sản Phẩm</TableCell>
                                 <TableCell>Số Lượng Bán Được</TableCell>
-                                <TableCell>Số Lượng Khách Mua</TableCell>
+                                <TableCell>Chi Phí</TableCell>
                                 <TableCell>Doanh Thu</TableCell>
                                 <TableCell>Khấu Trừ</TableCell>
                                 <TableCell>Lợi Nhuận</TableCell>
@@ -363,28 +383,39 @@ function BaoCaoDoanhThu(props) {
                 </TableContainer>
             </section>
             <Modal
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered
-                    show={show} onHide={handleClose}>
-                    <Modal.Body >
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={show}
+                onHide={handleClose}
+            >
+                <Modal.Body>
                     <Modal.Title>
-                    <Spinner animation="border" variant="success" role="status"></Spinner>
-          
-
+                        <Spinner
+                            animation="border"
+                            variant="success"
+                            role="status"
+                        ></Spinner>
                     </Modal.Title>
-                    </Modal.Body>
-                </Modal>
+                </Modal.Body>
+            </Modal>
 
-
-         <Snackbar 
-            open={openSnackbar}
-             autoHideDuration={2000}
-             onClose={() => {setStateSnackbar({...stateSnackbar,openSnackbar:false})}
-             }
-             >
-                <Alert onClose={()=>
-                setStateSnackbar({...stateSnackbar,openSnackbar:false})} severity={isSuccess?"success":"error"} >
-                            {messSnackbar}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={2000}
+                onClose={() => {
+                    setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
+                }}
+            >
+                <Alert
+                    onClose={() =>
+                        setStateSnackbar({
+                            ...stateSnackbar,
+                            openSnackbar: false,
+                        })
+                    }
+                    severity={isSuccess ? 'success' : 'error'}
+                >
+                    {messSnackbar}
                 </Alert>
             </Snackbar>
         </section>

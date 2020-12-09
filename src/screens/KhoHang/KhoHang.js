@@ -39,25 +39,25 @@ function KhoHang() {
     const [showDieuChinh, setDieuChinh] = useState(false)
 
     const [GiaTriMoi, setGiaTriMoi] = useState('')
-
     const [boolUpdateSanPham, setBoolUpdateSanPham] = useState(false)
     console.log(boolUpdateSanPham)
 
     function RenderKhoSanPham(arr) {
+        var stt = 0
         setLstResult(
             arr.map((e) => {
-                return ItemSanPham(e)
+                stt++
+                return <ItemSanPham data={e} soThuTu={stt} />
             })
         )
     }
 
-    var stt = 0
-    function ItemSanPham(e) {
-        stt++
-
+    function ItemSanPham(props) {
+        const e = props.data
+        const [boolUpdateSanPham, setBoolUpdateSanPham] = useState(false)
         return (
             <TableRow hover>
-                <TableCell>{stt}</TableCell>
+                <TableCell>{props.soThuTu}</TableCell>
                 <TableCell>
                     <input
                         value={e.name}
@@ -72,22 +72,86 @@ function KhoHang() {
                         }}
                     />
                 </TableCell>
-                <TableCell>{e.Donvi}</TableCell>
-                <TableCell>{e.price}</TableCell>
-                <TableCell>{e.amount}</TableCell>
-                <TableCell>{e.NhaCC}</TableCell>
-                <TableCell>{e.amountAlert}</TableCell>
+                <TableCell>
+                    <input
+                        value={e.Donvi}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: boolUpdateSanPham
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <input
+                        value={e.price}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: boolUpdateSanPham
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <input
+                        value={e.amount}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: boolUpdateSanPham
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <input
+                        value={e.NhaCC}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: boolUpdateSanPham
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <input
+                        value={e.amountAlert}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: boolUpdateSanPham
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                    />
+                </TableCell>
                 <TableCell>
                     <Button
-                        style={{ fontSize: 14 }}
-                        variant="success"
+                        variant={boolUpdateSanPham ? 'success' : 'primary'}
+                        style={{ fontSize: '14px', width: '120px' }}
                         onClick={(e) => {
-                            ID = 2
+                            // ID = 2
                             //setDieuChinh(true);
 
                             //Cho phép cập nhật giá trị của các trường
                             setBoolUpdateSanPham(!boolUpdateSanPham)
-                            console.log(boolUpdateSanPham)
                         }}
                     >
                         {boolUpdateSanPham ? 'Xong' : 'Cập nhật'}
@@ -101,7 +165,6 @@ function KhoHang() {
         setMessLoading('Đang Tải Thông Tin Sản Phẩm !')
 
         handleShow()
-
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -112,7 +175,7 @@ function KhoHang() {
                 handleClose()
                 if (res.success) {
                     arr_KhoHang = res.data
-                    setLstSanPham(res.data)
+                    // setLstSanPham(res.data)
                     RenderKhoSanPham(res.data)
                 }
             })
@@ -209,13 +272,20 @@ function KhoHang() {
                                 const textSearch = event.target.value.toLowerCase()
                                 const regex = new RegExp(textSearch)
 
+                                var stt = 0
                                 setLstResult(
                                     arr_KhoHang.map((e) => {
                                         if (
                                             regex.test(e.name.toLowerCase()) ||
                                             regex.test(e.NhaCC.toLowerCase())
                                         ) {
-                                            return ItemSanPham(e)
+                                            stt++
+                                            return (
+                                                <ItemSanPham
+                                                    data={e}
+                                                    soThuTu={stt}
+                                                />
+                                            )
                                         }
                                     })
                                 )
@@ -243,11 +313,8 @@ function KhoHang() {
                 <div>
                     <TableContainer
                         style={{
-                            height: 500,
-                            width: '93%',
-                            marginTop: 40,
-                            marginLeft: 30,
-                            marginRight: 30,
+                            height: '600px',
+                            width: '100%',
                         }}
                     >
                         <Table stickyHeader aria-label="sticky table">
