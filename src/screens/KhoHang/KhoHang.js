@@ -18,7 +18,7 @@ import resources from '../../resource/color/ColorApp'
 import NetWorking from '../../networking/fetchWithTimeout'
 import { TextField } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import _ from 'lodash'
+import _, { result } from 'lodash'
 
 var arr_KhoHang = []
 
@@ -39,8 +39,9 @@ function KhoHang() {
     const [showDieuChinh, setDieuChinh] = useState(false)
 
     const [GiaTriMoi, setGiaTriMoi] = useState('')
-    const [boolUpdateSanPham, setBoolUpdateSanPham] = useState(false)
-    console.log(boolUpdateSanPham)
+
+    const URL_API_SANPHAM = 'https://phutungserver.herokuapp.com/sanpham/'
+    const PAYLOAD_UPDATES_SANPHAM = 'CapNhatSanPham'
 
     function RenderKhoSanPham(arr) {
         var stt = 0
@@ -52,15 +53,71 @@ function KhoHang() {
         )
     }
 
+    function CapNhatSanPham(bodyRequest) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyRequest),
+        }
+        NetWorking(
+            URL_API_SANPHAM + PAYLOAD_UPDATES_SANPHAM,
+            requestOptions,
+            10000
+        )
+            .then((response) => {
+                if (response.success) {
+                    //Show dialog mess thành công
+                    handleShow()
+                    setMessLoading(response.mess)
+                }
+            })
+            .catch((error) => {
+                console.log(lỗi, error)
+                alert('Có Lỗi Ở Kho Hàng! ')
+                handleClose()
+            })
+    }
+
     function ItemSanPham(props) {
         const e = props.data
+
+        //State trạng thái của button cập nhật
         const [boolUpdateSanPham, setBoolUpdateSanPham] = useState(false)
+
+        //Các trường dữ liệu cập nhật sản phẩm
+        const [nameSanPham, setNameSanPham] = useState(e.name) //Name là key của object này, ko đc thay đổi
+        const [priceSanPham, setPriceSanPham] = useState(e.price)
+        const [amountSanPham, setAmountSanPham] = useState(e.amount)
+        const [amountAlertSanPham, setAmountAlertSanPham] = useState(
+            e.amountAlert
+        )
+        const [donviSanPham, setDonviSanPham] = useState(e.Donvi)
+        const [nhaCCSanPham, setNhaCCSanPham] = useState(e.NhaCC)
+        const [giaNhapSanPham, setGiaNhapSanPham] = useState(e.GiaNhap)
+        const [timeSanPham, setTimeSanPham] = useState(e.Time)
+        const [IDSpSanPham, setIDSpSanPham] = useState(e.IDSp)
+        const [SDTNhaCCSanPham, setSDTNhaCCSanPham] = useState(e.SDTNhaCC)
+
+        const bodyRequestAPIUpdateSP = {
+            name: nameSanPham,
+            price: +priceSanPham,
+            amount: +amountSanPham,
+            amountAlert: +amountAlertSanPham,
+            Donvi: donviSanPham,
+            NhaCC: nhaCCSanPham,
+            GiaNhap: giaNhapSanPham,
+            Time: timeSanPham,
+            IDSp: +IDSpSanPham,
+            SDTNhaCC: SDTNhaCCSanPham,
+        }
+
         return (
             <TableRow hover>
                 <TableCell>{props.soThuTu}</TableCell>
+                <TableCell>{e.name}</TableCell>
                 <TableCell>
                     <input
-                        value={e.name}
+                        value={donviSanPham}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -70,11 +127,14 @@ function KhoHang() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
+                        onChange={(e) => {
+                            setDonviSanPham(e.target.value)
+                        }}
                     />
                 </TableCell>
                 <TableCell>
                     <input
-                        value={e.Donvi}
+                        value={priceSanPham}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -84,11 +144,14 @@ function KhoHang() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
+                        onChange={(e) => {
+                            setPriceSanPham(e.target.value)
+                        }}
                     />
                 </TableCell>
                 <TableCell>
                     <input
-                        value={e.price}
+                        value={amountSanPham}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -98,11 +161,14 @@ function KhoHang() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
+                        onChange={(e) => {
+                            setAmountSanPham(e.target.value)
+                        }}
                     />
                 </TableCell>
                 <TableCell>
                     <input
-                        value={e.amount}
+                        value={nhaCCSanPham}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -112,11 +178,14 @@ function KhoHang() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
+                        onChange={(e) => {
+                            setNhaCCSanPham(e.target.value)
+                        }}
                     />
                 </TableCell>
                 <TableCell>
                     <input
-                        value={e.NhaCC}
+                        value={amountAlertSanPham}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -126,19 +195,8 @@ function KhoHang() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
-                    />
-                </TableCell>
-                <TableCell>
-                    <input
-                        value={e.amountAlert}
-                        style={{
-                            border: 'none ',
-                            outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
-                            backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                        onChange={(e) => {
+                            setAmountAlertSanPham(e.target.value)
                         }}
                     />
                 </TableCell>
@@ -147,11 +205,18 @@ function KhoHang() {
                         variant={boolUpdateSanPham ? 'success' : 'primary'}
                         style={{ fontSize: '14px', width: '120px' }}
                         onClick={(e) => {
+                            /*Code của Mẫn*/
                             // ID = 2
-                            //setDieuChinh(true);
+                            // setDieuChinh(true)
 
+                            /*Code của Hoàng*/
                             //Cho phép cập nhật giá trị của các trường
                             setBoolUpdateSanPham(!boolUpdateSanPham)
+
+                            //Kiểm tra button đang ở trạng thái đang cập nhật ?
+                            if (boolUpdateSanPham) {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
                         }}
                     >
                         {boolUpdateSanPham ? 'Xong' : 'Cập nhật'}
@@ -299,6 +364,7 @@ function KhoHang() {
                                 alignContent: 'center',
                                 alignSelf: 'center',
                                 marginTop: 10,
+                                cursor: 'pointer',
                             }}
                             onClick={(e) => {
                                 Refresh()

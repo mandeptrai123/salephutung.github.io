@@ -41,7 +41,7 @@ function BaoCaoDoanhThu(props) {
 
     const [dateViewProduct, setDateViewProduct] = useState()
 
-    useEffect(() => {}, [])
+    const URL_GET_DOANHTHU = 'https://phutungserver.herokuapp.com/doanhthu/'
 
     var stt = 0
     function ItemDonHang(props) {
@@ -113,6 +113,11 @@ function BaoCaoDoanhThu(props) {
         // })
         // return arrSanPham;
     }
+
+    useEffect(() => {
+        setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+        LoadDoanhThuHomNay()
+    }, [])
 
     function LoadDoanhThuNamNay() {
         var _d = new Date()
@@ -234,6 +239,83 @@ function BaoCaoDoanhThu(props) {
             })
     }
 
+    function LoadDoanhThuTheoNgayHoacTuan(date, PAYLOAD) {
+        const _itemRequest = {
+            Date: date,
+        }
+
+        const optionsRequest = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(_itemRequest),
+        }
+        handleShow()
+        fetch(URL_GET_DOANHTHU + PAYLOAD, optionsRequest)
+            .then((res) => {
+                return res.json()
+            })
+            .then((result) => {
+                RenderBaoCaoDoanhThu(result.data)
+                handleClose()
+            })
+            .catch((error) => {
+                console.log('Lỗi', error)
+                handleClose()
+            })
+    }
+
+    function LoadDoanhThuTheoThang(month) {
+        const _itemRequest = {
+            Month: month,
+        }
+        const optionsRequest = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(_itemRequest),
+        }
+        handleShow()
+        fetch(URL_GET_DOANHTHU + 'BaoCaoTheoThang', optionsRequest)
+            .then((res) => {
+                return res.json()
+            })
+            .then((result) => {
+                if (result.success) {
+                    RenderBaoCaoDoanhThu(result.data)
+                    handleClose()
+                }
+            })
+            .catch((error) => {
+                console.log('Lỗi', error)
+                handleClose()
+            })
+    }
+
+    function LoadDoanhThuTheoNam(year) {
+        const _itemRequest = {
+            Year: year,
+        }
+        const optionsRequest = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(_itemRequest),
+        }
+        handleShow()
+        fetch(URL_GET_DOANHTHU + 'BaoCaoTheoNam', optionsRequest)
+            .then((res) => {
+                return res.json()
+            })
+            .then((result) => {
+                if (result.success) {
+                    RenderBaoCaoDoanhThu(result.data)
+                    handleClose()
+                }
+            })
+            .catch((error) => {
+                console.log('Lỗi', error)
+                handleClose()
+            })
+    }
+
     return (
         <section className="baocao-container">
             <header className="baocao-header">
@@ -245,39 +327,76 @@ function BaoCaoDoanhThu(props) {
                 </h1>
             </header>
             <Row md={12} className="baocao-container__content">
-                <Col md={6} className="baocao-container__content-left">
+                <Col md={9} className="baocao-container__content-left">
                     <TextField
                         type="date"
                         variant="outlined"
                         label="Xem doanh thu theo ngày"
-                        value={dateViewProduct}
                         style={{
                             width: '350px',
                         }}
                         onChange={(e) => {
-                            // var d = new Date(e.target.value)
-                            // setDateViewProduct(d)
-                            // console.log(d)
+                            var d = new Date(e.target.value)
+                            setDateViewProduct(
+                                `${d.getFullYear()}-${
+                                    d.getMonth + 1
+                                }-${d.getDate()}`
+                            )
+                        }}
+                        onBlur={(e) => {
+                            if (dateViewProduct) {
+                                setviewModelDropdown('Doanh Thu Theo Ngày')
+                                LoadDoanhThuTheoNgayHoacTuan(
+                                    dateViewProduct,
+                                    'BaoCaoTheoNgay'
+                                )
+                            }
                         }}
                         InputLabelProps={{
                             shrink: true,
                         }}
                     />
+                    <TextField
+                        style={{
+                            margin: '0 5px',
+                            width: '270px',
+                        }}
+                        variant="outlined"
+                        label="Nhập tháng cần xem doanh thu"
+                        // onBlur={(e) => {
+                        //     LoadDoanhThuTheoThang(e.target.value)
+                        // }}
+                        onKeyPress={(e) => {
+                            if (e.key == 'Enter') {
+                                LoadDoanhThuTheoThang(e.target.value)
+                            }
+                        }}
+                    />
+                    <TextField
+                        style={{
+                            width: '250px',
+                        }}
+                        variant="outlined"
+                        label="Nhập năm cần xem doanh thu"
+                        // onBlur={(e) => {
+                        //     LoadDoanhThuTheoNam(e.target.value)
+                        // }}
+                        onKeyPress={(e) => {
+                            if (e.key == 'Enter') {
+                                LoadDoanhThuTheoNam(e.target.value)
+                            }
+                        }}
+                    />
                 </Col>
-                <Col
-                    md={6}
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-around',
-                        alignItems: 'center',
-                    }}
-                >
+                <Col md={3}>
                     <Dropdown>
                         <Dropdown.Toggle
                             variant="info"
                             id="dropdown-basic"
                             style={{
                                 width: '230px',
+                                dislay: 'flex',
+                                alignItems: 'center',
                                 height: '50px',
                                 backgroundColor: resources.colorPrimary,
                             }}
@@ -290,7 +409,9 @@ function BaoCaoDoanhThu(props) {
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
-                                    height: '60px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
                                 }}
                             >
                                 Doanh thu ngày hôm nay
@@ -300,7 +421,9 @@ function BaoCaoDoanhThu(props) {
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
-                                    height: '60px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
                                 }}
                             >
                                 Doanh thu 7 ngày gần đây
@@ -310,7 +433,9 @@ function BaoCaoDoanhThu(props) {
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
-                                    height: '60px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
                                 }}
                             >
                                 Doanh thu tháng này
@@ -320,7 +445,9 @@ function BaoCaoDoanhThu(props) {
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
-                                    height: '60px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
                                 }}
                             >
                                 Doanh thu tháng trước
@@ -330,25 +457,36 @@ function BaoCaoDoanhThu(props) {
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
-                                    height: '60px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
                                 }}
                             >
                                 Doanh thu năm nay
                             </Dropdown.Item>
+                            <Dropdown.Item
+                                style={{
+                                    fontSize: '15px',
+                                    width: '230px',
+                                    dislay: 'flex',
+                                    alignItems: 'center',
+                                    height: '40px',
+                                }}
+                                onClick={() => {
+                                    var dateNow = new Date()
+                                    setviewModelDropdown('Doanh Thu Tuần Này')
+                                    LoadDoanhThuTheoNgayHoacTuan(
+                                        `${dateNow.getFullYear()}-${
+                                            dateNow.getMonth() + 1
+                                        }-${dateNow.getDate()}`,
+                                        'BaoCaoTuanNay'
+                                    )
+                                }}
+                            >
+                                Doanh thu tuần này
+                            </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
-                    <Button
-                        variant="outline-info"
-                        style={{
-                            fontSize: '20px',
-                            width: '150px',
-                            height: '50px',
-                            backgroundColor: resources.colorPrimary,
-                            color: resources.colorText,
-                        }}
-                    >
-                        Xem
-                    </Button>
                 </Col>
             </Row>
             <section className="table-content">
@@ -389,12 +527,13 @@ function BaoCaoDoanhThu(props) {
                 onHide={handleClose}
             >
                 <Modal.Body>
-                    <Modal.Title>
+                    <Modal.Title style={{ display: 'flex' }}>
                         <Spinner
                             animation="border"
                             variant="success"
                             role="status"
                         ></Spinner>
+                        <h3>Đang tải</h3>
                     </Modal.Title>
                 </Modal.Body>
             </Modal>

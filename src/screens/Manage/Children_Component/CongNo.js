@@ -46,8 +46,6 @@ function CongNo() {
 
     const [stateModalDieuChinh, setStateModalDieuChinh] = useState({
         openDieuChinh: false,
-        CongNoCu: 0,
-        CongNoMoi: '',
         Pass: '',
     })
     const { openDieuChinh, CongNoCu, CongNoMoi, Pass } = stateModalDieuChinh
@@ -56,11 +54,16 @@ function CongNo() {
 
     const [showModalXemGiaoDich, setShowModalXemGiaoDich] = useState(false)
 
+    const [bodyRequestUpdateCongNo, setBodyRequestUpdateCongNo] = useState({})
+
     // const [disableUpdate, setDisableUpdate] = useState(false)
 
     function ItemCongNo(e) {
         var props = e.data
         const [isDisableUpdate, setIsDisableUpdate] = useState(false)
+        //State update công nợ
+        const [diaChi, setDiaChi] = useState(props.DiaChi)
+        const [congNo, setCongNo] = useState(props.Congno)
         return (
             <TableRow>
                 <TableCell>{e.soThuTu}</TableCell>
@@ -68,7 +71,7 @@ function CongNo() {
                 <TableCell>{props.Name}</TableCell>
                 <TableCell>
                     <input
-                        value={props.DiaChi}
+                        value={diaChi}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -78,11 +81,14 @@ function CongNo() {
                                 ? '1px solid black'
                                 : 'none',
                         }}
+                        onChange={(e) => {
+                            setDiaChi(e.target.value)
+                        }}
                     />
                 </TableCell>
                 <TableCell>
                     <input
-                        value={props.Congno}
+                        value={congNo}
                         style={{
                             border: 'none ',
                             outline: 'none',
@@ -91,6 +97,9 @@ function CongNo() {
                             borderBottom: isDisableUpdate
                                 ? '1px solid black'
                                 : 'none',
+                        }}
+                        onChange={(e) => {
+                            setCongNo(e.target.value)
                         }}
                     />
                 </TableCell>
@@ -104,12 +113,30 @@ function CongNo() {
                     <Button
                         variant={isDisableUpdate ? 'success' : 'primary'}
                         onClick={(e) => {
-                            // SDTSelected = props.SDT
-                            // setStateModalDieuChinh({
-                            //     ...stateModalDieuChinh,
-                            //     openDieuChinh: true,
-                            // })
+                            //Kiểm tra trạng thái của button cập nhật
                             setIsDisableUpdate(!isDisableUpdate)
+
+                            if (isDisableUpdate) {
+                                //Cho điền các thông tin cần thay đổi trc, sau đó mới hiện popup nhập mật khẩu
+                                setStateModalDieuChinh({
+                                    pass: '',
+                                    openDieuChinh: true,
+                                })
+
+                                //Lấy thời gian hiện tại
+                                var _d = new Date()
+                                var _time =
+                                    _d.getHours() + ':' + _d.getMinutes()
+
+                                bodyRequestUpdateCongNo.SDTKhach = props.SDT
+                                bodyRequestUpdateCongNo.SDT = props.SDT
+                                bodyRequestUpdateCongNo.Name = props.Name
+                                bodyRequestUpdateCongNo.SDTNV = SDTNV
+                                bodyRequestUpdateCongNo.Pass = PassLogin
+                                bodyRequestUpdateCongNo.DiaChi = diaChi
+                                bodyRequestUpdateCongNo.Congno = +congNo
+                                bodyRequestUpdateCongNo.Time = _time
+                            }
                         }}
                         style={{
                             width: '120px',
@@ -123,6 +150,11 @@ function CongNo() {
                         {isDisableUpdate ? 'Xong' : 'Cập nhật'}
                     </Button>
                     <Button
+                        style={{
+                            width: '120px',
+                            height: '40px',
+                            fontSize: '14px',
+                        }}
                         variant="info"
                         onClick={() => {
                             setShowModalXemGiaoDich(true)
@@ -189,6 +221,7 @@ function CongNo() {
 
     function OnFresh() {
         handleShow()
+        setMessLoading('Đang làm mới dữ liệu')
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -200,6 +233,7 @@ function CongNo() {
         )
             .then((res) => res.json())
             .then((res) => {
+                console.log(res)
                 handleClose()
                 if (res.success) {
                     arr_KhachHang = res.data
@@ -231,26 +265,23 @@ function CongNo() {
         return x
     }
 
-    function CapNhatCongNoMoi() {
+    function CapNhatCongNoMoi(itemRequest) {
         if (PassLogin != Pass) {
-            setMessLoading('Mật Khẩu Không Chính Xác !')
             handleShow()
+            setStateModalDieuChinh({
+                pass: '',
+                openDieuChinh: false,
+            })
+            alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
+            //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
+            OnFresh()
             return
         }
 
         handleCloseDieuChinh(false)
         setMessLoading('Đang Cập Nhật Công Nợ Mới !')
         handleShow()
-        var _d = new Date()
-        var _time = _d.getHours() + ':' + _d.getMinutes()
-        var itemRequest = {
-            SDTKhach: SDTSelected,
-            SDTNV: SDTNV,
-            Congno: parseInt(CongNoMoi),
-            Pass: Pass,
-            Time: _time,
-        }
-        console.log(JSON.stringify(itemRequest))
+
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -264,12 +295,10 @@ function CongNo() {
             .then((res) => res.json())
             .then((res) => {
                 handleClose()
+                console.log(res)
                 setMessResponse(res.mess)
-
                 setStateModalDieuChinh({
-                    ...stateModalDieuChinh,
                     openDieuChinh: false,
-                    CongNoMoi: '',
                     Pass: '',
                 })
                 setShowResponse(true)
@@ -302,7 +331,12 @@ function CongNo() {
                 Toàn Bộ Công Nợ
             </h1>
             <FontAwesomeIcon
-                style={{ position: 'absolute', right: 100, top: 10 }}
+                style={{
+                    position: 'absolute',
+                    right: 100,
+                    top: 10,
+                    cursor: 'pointer',
+                }}
                 onClick={(e) => {
                     OnFresh()
                 }}
@@ -325,6 +359,7 @@ function CongNo() {
                     var stt = 0
                     setResult(
                         arr_KhachHang.map((e) => {
+                            console.log(e)
                             if (regex.test(e.Name.toLowerCase())) {
                                 stt++
                                 return <ItemCongNo data={e} soThuTu={stt} />
@@ -423,26 +458,21 @@ function CongNo() {
                     <div style={{ width: '50%' }}>
                         <TextField
                             variant="outlined"
-                            placeholder="Công Nợ Mới"
                             style={{
                                 width: 200,
                                 height: 50,
                                 marginLeft: 40,
                                 marginTop: 5,
                                 marginBottom: 5,
+                                userSelect: 'none',
                             }}
-                            value={CongNoMoi}
-                            onChange={(e) => {
-                                setStateModalDieuChinh({
-                                    ...stateModalDieuChinh,
-                                    CongNoMoi: e.target.value,
-                                })
-                            }}
+                            value={SDTNV}
+                            label="Số điện thoại nhân viên"
                         />
                         <TextField
                             type="password"
                             variant="outlined"
-                            placeholder="Mật Khẩu Đăng Nhập"
+                            label="Mật Khẩu Đăng Nhập"
                             onChange={(e) => {
                                 setStateModalDieuChinh({
                                     ...stateModalDieuChinh,
@@ -463,7 +493,9 @@ function CongNo() {
                 <Modal.Footer>
                     <Button
                         onClick={(e) => {
-                            CapNhatCongNoMoi()
+                            if (bodyRequestUpdateCongNo) {
+                                CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                            }
                         }}
                     >
                         Lưu
@@ -471,12 +503,15 @@ function CongNo() {
                     <Button
                         onClick={(e) => {
                             setStateModalDieuChinh({
-                                ...stateModalDieuChinh,
+                                pass: '',
                                 openDieuChinh: false,
                             })
+
+                            //Cho tải lại dữ liệu để trở về như củ khi cập nhật thất bại
+                            OnFresh()
                         }}
                     >
-                        Huỷ
+                        Hủy
                     </Button>
                 </Modal.Footer>
             </Modal>

@@ -39,6 +39,7 @@
 
 .baocao-container__content .baocao-container__content-left {
   width: 60%;
+  display: flex;
 }
 
 .baocao-container__content .baocao-container__content-left .input-chekbox {

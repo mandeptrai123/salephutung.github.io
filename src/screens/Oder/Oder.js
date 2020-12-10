@@ -22,7 +22,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
 
 //import component in bill
-import ReactToPrint from 'react-to-print'
+import ReactToPrint, { useReactToPrint } from 'react-to-print'
 import PrintedDonHang from '../Print/PrintedDonHang'
 
 import _ from 'lodash'
@@ -97,13 +97,26 @@ function Oder() {
 
     const [_responseSanPham, set_responseSanPham] = useState([])
 
-    const componentRef = useRef(null)
+    const URL_API_SP = 'https://phutungserver.herokuapp.com/sanpham/'
+    const PAYLOAD_GET_ALL_SP = 'ToanBoSanPham'
+
+    //state chứa toàn bộ component ItemSanPham
+    const [UIAllSanPham, setUIAllSanPham] = useState()
+    //Lưu arr all sp đc trả về
+    const [dataArrAllSP, setDataArrAllSP] = useState()
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
     }
 
+    //Su li in bill
+    const componentRef = useRef()
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    })
+
     function ItemCart(props) {
+        // console.log(props)
         return (
             <TableRow hover>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
@@ -132,6 +145,7 @@ function Oder() {
                             arr_Cart[_index].price = e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
+                        onBlur={(e) => {}}
                         value={
                             parseInt(props.price) % 1 === 0 ? props.price : ''
                         }
@@ -188,6 +202,31 @@ function Oder() {
         )
     }
 
+    function GetAllSanPham() {
+        fetch(URL_API_SP + PAYLOAD_GET_ALL_SP)
+            .then((response) => {
+                return response.json()
+            })
+            .then((result) => {
+                //fetch đc api get all sp thành công
+                if (result.success) {
+                    RenderUIToanBoSanPham(result.data)
+                    setDataArrAllSP(result.data)
+                }
+            })
+            .catch((error) => {
+                console.log('lỗi', error)
+            })
+    }
+
+    function RenderUIToanBoSanPham(data) {
+        setUIAllSanPham(
+            data.map((e) => {
+                return ItemSanPham(e)
+            })
+        )
+    }
+
     function ItemSanPham(props) {
         return (
             <TableRow hover>
@@ -235,13 +274,20 @@ function Oder() {
         // handleOpenHieuChinh();
     }
     function Handle_AddToCart(_id) {
-        var _item = _responseSanPham.find((e) => e._id === _id)
+        //Tìm sản phẩm có id vừa đc nhấn chọn
+        var _item
+        dataArrAllSP.forEach((e) => {
+            if (e._id == _id) {
+                _item = e
+                return
+            }
+        })
 
         if (_item.amount < soluongBan) {
             setShowHieuChinh(false)
             setMessResponse('Số Lượng Trong Kho Không Đủ !')
             setShowResponse(true)
-            return
+            return false
         }
 
         // Tìm Xem Trong Giỏ Hàng Đã Có Sản Phẩm Này Chưa
@@ -249,6 +295,7 @@ function Oder() {
         if (indexAlready > -1) {
             setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
             setShow(true)
+            return false
         } else {
             _item.soluongBan = 1
             _item.pricesum = parseInt(_item.price)
@@ -300,7 +347,7 @@ function Oder() {
     function Handle_TimSP() {
         setMessLoading('    Đang Tìm Sản Phẩm, Đợi Chút Nhé')
         handleShow()
-        TimSanPham(contentSearch)
+        // TimSanPham(contentSearch)
     }
 
     // Kiểm Tra Thông Tin Khách Hàng .
@@ -349,6 +396,7 @@ function Oder() {
     }
     function XuLiThongTinKhach() {
         var d = new Date()
+
         var _itemRq = {
             SDTNV: '0969025915',
             NameNV: 'Man',
@@ -362,12 +410,9 @@ function Oder() {
             TraNo: 0,
             lstSanPham: arr_Cart,
         }
+
         return _itemRq
     }
-
-    // function InBill() {
-    //     return <PrintedDonHang ref={componentRef} />
-    // }
 
     async function DatHang() {
         settxtButtonNegative('OK')
@@ -383,7 +428,6 @@ function Oder() {
         }
         var _d = new Date()
         // Xem object request từ document của back-
-
         var itemRequest = XuLiThongTinKhach()
         itemRequest.Ghichu = ghichu
 
@@ -404,7 +448,7 @@ function Oder() {
                 : '0' + _d.getMilliseconds()
 
         itemRequest.Time = hours + ':' + minutes + ':' + milis
-        console.log(JSON.stringify(itemRequest))
+        // console.log(JSON.stringify(itemRequest))
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -439,9 +483,8 @@ function Oder() {
                     _tienkhachno = 0
                     _thanhtien = 0
                     _tongtien = 0
-
                     //Khi đặt hàng thành công thì thực hiện in bill
-                    // InBill()
+                    handlePrint()
                 } else {
                     setStateSnackbar({
                         ...stateSnackbar,
@@ -466,7 +509,7 @@ function Oder() {
     const handleHideHieuChinh = () => setShowHieuChinh(false)
     const handleOpenHieuChinh = () => setShowHieuChinh(true)
 
-    useEffect(() => {
+    function GetAllKhachHang() {
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -483,6 +526,11 @@ function Oder() {
                 }
             })
             .catch((e) => {})
+    }
+
+    useEffect(() => {
+        GetAllKhachHang()
+        GetAllSanPham()
     }, [])
 
     // Handle Popup Snackbar + Manage State
@@ -525,42 +573,43 @@ function Oder() {
             })
     }
 
-    function TimSanPham(name) {
-        if (name === '') {
-            handleClose()
-            return
-        }
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
+    // function TimSanPham(name) {
+    //     if (name === '') {
+    //         handleClose()
+    //         return
+    //     }
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json' },
+    //     }
 
-        let _URL =
-            'https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name=' +
-            name
-        NetWorking(_URL, requestOptions, 5000)
-            .then((res) => {
-                setContentSearch('')
-                if (res.success) {
-                    set_responseSanPham(res.data)
-                    RenderKetQuaTimKiem(res.data)
-                    handleClose()
-                } else {
-                    handleClose()
-                }
-            })
-            .catch((e) => {
-                setStateSnackbar({
-                    ...stateSnackbar,
-                    isSuccess: false,
-                    messSnackbar: e,
-                    openSnackbar: true,
-                })
-                handleClose()
-            })
-    }
+    //     let _URL =
+    //         'https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name=' +
+    //         name
+    //     NetWorking(_URL, requestOptions, 5000)
+    //         .then((res) => {
+    //             setContentSearch('')
+    //             if (res.success) {
+    //                 set_responseSanPham(res.data)
+    //                 RenderKetQuaTimKiem(res.data)
+    //                 handleClose()
+    //             } else {
+    //                 handleClose()
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             setStateSnackbar({
+    //                 ...stateSnackbar,
+    //                 isSuccess: false,
+    //                 messSnackbar: e,
+    //                 openSnackbar: true,
+    //             })
+    //             handleClose()
+    //         })
+    // }
 
     function ModalDienSoLuongSP() {
+        const [soLuongSanPhamDaChon, setSoLuongSanPhamDaChon] = useState(1)
         return (
             <Modal
                 show={showModalDienSoLuongSP}
@@ -577,7 +626,7 @@ function Oder() {
                         variant="outlined"
                         style={{ width: '100%' }}
                         onChange={(e) => {
-                            // console.log(e.target.value)
+                            setSoLuongSanPhamDaChon(e.target.value)
                         }}
                         autoFocus
                         onKeyPress={(event) => {
@@ -586,7 +635,19 @@ function Oder() {
 
                                 //sau khi điền sl sp thì thêm vào giỏ hàng
                                 if (idSanPham) {
-                                    Handle_AddToCart(idSanPham)
+                                    //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
+                                    //hoặc kiểm tra số lượng hàng có đủ hay không
+                                    if (Handle_AddToCart(idSanPham) == false) {
+                                        return
+                                    }
+                                    var _index = arr_Cart.findIndex(
+                                        (i) => i._id == idSanPham
+                                    )
+                                    arr_Cart[
+                                        _index
+                                    ].soluongBan = soLuongSanPhamDaChon
+
+                                    RenderKetQuaGioHang(arr_Cart)
                                 }
                             }
                         }}
@@ -600,7 +661,18 @@ function Oder() {
 
                             //sau khi điền sl sp thì thêm vào giỏ hàng
                             if (idSanPham) {
-                                Handle_AddToCart(idSanPham)
+                                //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
+                                //hoặc kiểm tra số lượng hàng có đủ hay không
+                                if (Handle_AddToCart(idSanPham) == false) {
+                                    return
+                                }
+                                var _index = arr_Cart.findIndex(
+                                    (i) => i._id == idSanPham
+                                )
+                                arr_Cart[
+                                    _index
+                                ].soluongBan = soLuongSanPhamDaChon
+                                RenderKetQuaGioHang(arr_Cart)
                             }
                         }}
                     >
@@ -617,6 +689,11 @@ function Oder() {
             className="oder-container"
         >
             <ModalDienSoLuongSP />
+
+            {/* UI bill */}
+            <div style={{ display: 'none' }}>
+                <PrintedDonHang ref={componentRef} />
+            </div>
 
             <header className="oder-header">
                 <div style={{ color: resources.colorPrimary, margin: 10 }}>
@@ -805,15 +882,18 @@ function Oder() {
 
             <div className="find-product">
                 <input
-                    onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                            TimSanPham(contentSearch)
-                        }
-                    }}
                     onChange={(e) => {
-                        setContentSearch(e.target.value)
+                        var textSearch = e.target.value
+                        const reg = new RegExp(textSearch.toLowerCase())
+
+                        setUIAllSanPham(
+                            dataArrAllSP.map((e) => {
+                                if (reg.test(e.name.toLowerCase())) {
+                                    return ItemSanPham(e)
+                                }
+                            })
+                        )
                     }}
-                    value={contentSearch}
                     style={{
                         color: resources.colorPrimary,
                         width: 300,
@@ -883,7 +963,7 @@ function Oder() {
                                     </TableRow>
                                 </TableHead>
 
-                                <TableBody>{resultList}</TableBody>
+                                <TableBody>{UIAllSanPham}</TableBody>
                             </Table>
                         </TableContainer>
                     </div>

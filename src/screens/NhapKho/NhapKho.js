@@ -402,7 +402,7 @@ function NhapKho() {
             return
         }
         _giaban = _a
-        setGiaBan(TienVietNam(input))
+        // setGiaBan(TienVietNam(input))
     }
 
     function onBlurGiaNhap(input) {
@@ -417,7 +417,7 @@ function NhapKho() {
             return
         }
         _giaban = _a
-        setGiaNhap(TienVietNam(input))
+        // setGiaNhap(TienVietNam(input))
     }
     return (
         <section
@@ -612,6 +612,11 @@ function NhapKho() {
                                 width={300}
                                 placeholder="Giá Nhập"
                             />
+                            {soluong && dongia ? (
+                                <p>Giá vốn: {parseInt(dongia / soluong)} đ</p>
+                            ) : (
+                                <p></p>
+                            )}
                         </div>
                     </li>
 
@@ -684,6 +689,7 @@ function NhapKho() {
                                     onChange={(e) => {
                                         setSDTNhaCC(e.target.value)
                                     }}
+                                    ref={NhaCCRef}
                                     variant="outlined"
                                 />
                             )}
@@ -783,6 +789,9 @@ function NhapKho() {
                                 Refresh()
                             }}
                             color={resources.colorPrimary}
+                            style={{
+                                cursor: 'pointer',
+                            }}
                             size="2x"
                             icon={faSyncAlt}
                         />

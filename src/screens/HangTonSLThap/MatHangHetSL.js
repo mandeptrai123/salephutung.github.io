@@ -22,6 +22,7 @@ import ListItem from '@material-ui/core/ListItem'
 import _ from 'lodash'
 import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 function MatHangHetSL() {
     const [show, setShow] = useState(false)
@@ -43,6 +44,11 @@ function MatHangHetSL() {
     function ItemNoiDung(props) {
         var indexItemNoiDung = ++stt
         var props = props.data
+        const [textToggleDropdown, setTextToggleDropdown] = useState(
+            props.DanhSachSP[0].Name
+        )
+        const [amount, setAmount] = useState(0)
+        // console.log(props)
 
         return (
             <TableRow>
@@ -50,20 +56,42 @@ function MatHangHetSL() {
                 <TableCell>{props.NhaCC}</TableCell>
                 <TableCell>{props.SDTNhaCC}</TableCell>
                 <TableCell>
-                    <List
-                        component="nav"
-                        aria-label="secondary mailbox folders"
+                    <Dropdown
+                        style={{
+                            width: '150px',
+                        }}
                     >
-                        {props.DanhSachSP.map((e) => {
-                            return (
-                                <ListItem onClick={(e) => {}} button>
-                                    {e.Name}
-                                </ListItem>
-                            )
-                        })}
-                    </List>
+                        <Dropdown.Toggle
+                            variant="success"
+                            id="dropdown-basic"
+                            style={{
+                                width: '100%',
+                                color: 'black',
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                boxShadow: 'none',
+                            }}
+                        >
+                            {textToggleDropdown}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {props.DanhSachSP.map((e) => {
+                                return (
+                                    <Dropdown.Item
+                                        onClick={() => {
+                                            setTextToggleDropdown(e.Name)
+                                            setAmount(e.amount)
+                                        }}
+                                    >
+                                        {e.Name}
+                                    </Dropdown.Item>
+                                )
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </TableCell>
-                <TableCell>3</TableCell>
+                <TableCell>{amount}</TableCell>
                 <TableCell>
                     <TextareaAutosize
                         rowsMin={3}
@@ -72,9 +100,13 @@ function MatHangHetSL() {
                         }}
                         placeholder="Ghi chú"
                         rowsMax={3}
-                        onBlur={(e) => {
-                            // Lưu ghi chú của mỗi sản phẩm vào arr
-                            listGhiChu[indexItemNoiDung] = e.target.value
+                        onBlur={(event) => {
+                            const objGhiChu = {
+                                TenNhaCC: props.NhaCC,
+                                NoiDungGhiChu: event.target.value,
+                            }
+                            // Lưu ghi chú và tên nhà cc vào arr
+                            listGhiChu[indexItemNoiDung] = objGhiChu
                         }}
                     />
                 </TableCell>
@@ -96,11 +128,16 @@ function MatHangHetSL() {
                     <h3>Gửi email cho nhà cung cấp</h3>
                 </Modal.Header>
                 <Modal.Body style={{ fontSize: '15px' }}>
-                    Chúng tôi cần đặt hàng thêm 1 số mặt hàng sau:
+                    Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số mặt
+                    hàng sau:
                     {listGhiChu.map((e) => {
-                        return <p style={{ marginBottom: '0' }}>- {e}</p>
+                        return (
+                            <p style={{ marginBottom: '0' }}>
+                                - Nhà cung cấp {e.TenNhaCC}: {e.NoiDungGhiChu}
+                            </p>
+                        )
                     })}
-                    Mong nhà cung cấp sớm cung cấp cho bên chúng tôi
+                    Mong các nhà cung cấp sớm cung cấp cho bên chúng tôi
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
@@ -144,8 +181,15 @@ function MatHangHetSL() {
                 handleClose()
                 if (res.success) {
                     var arr = []
+                    //Gôm các sản phẩm cùng nhà cung cấp
                     _.forEach(res.data, function (e) {
-                        e.DanhSachSP = [{ Name: e.name }]
+                        e.DanhSachSP = [
+                            {
+                                Name: e.name,
+                                amount: e.amount,
+                                amountAlert: e.amountAlert,
+                            },
+                        ]
                         var isAlready = _.some(arr, { NhaCC: e.NhaCC })
                         if (!isAlready) {
                             arr.push(e)
@@ -153,11 +197,13 @@ function MatHangHetSL() {
                             var index = _.findIndex(arr, function (o) {
                                 return o.NhaCC == e.NhaCC
                             })
-                            arr[index].DanhSachSP.push({ Name: e.name })
+                            arr[index].DanhSachSP.push({
+                                Name: e.name,
+                                amount: e.amount,
+                                amountAlert: e.amountAlert,
+                            })
                         }
                     })
-
-                    console.log(arr)
 
                     UpdateHangThieuSL(arr.reverse())
                 }
@@ -186,7 +232,7 @@ function MatHangHetSL() {
                     }}
                     className="title"
                 >
-                    Sản Phẩm Hết Số Lượng
+                    Sản Phẩm Có Số Lượng Thấp
                 </h3>
                 <div
                     style={{
@@ -196,7 +242,7 @@ function MatHangHetSL() {
                     }}
                 >
                     <FontAwesomeIcon
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 10, cursor: 'pointer' }}
                         onClick={(e) => {
                             Refresh()
                         }}
@@ -212,6 +258,10 @@ function MatHangHetSL() {
                         }}
                         onClick={() => {
                             setShowModalSendEmailGhiChu(true)
+
+                            listGhiChu.forEach((e) => {
+                                console.log(e)
+                            })
                         }}
                     />
                 </div>
