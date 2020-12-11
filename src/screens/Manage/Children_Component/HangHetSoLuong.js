@@ -51,7 +51,7 @@ function HangThieuSL() {
         }
 
         let _URL = 'https://phutungserver.herokuapp.com/quanli/MatHangHetSL'
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {

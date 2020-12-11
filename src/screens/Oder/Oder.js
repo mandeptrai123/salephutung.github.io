@@ -213,7 +213,11 @@ function Oder() {
     }
 
     function GetAllSanPham() {
-        fetch(URL_API_SP + PAYLOAD_GET_ALL_SP)
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        }
+        fetch(URL_API_SP + PAYLOAD_GET_ALL_SP, requestOptions)
             .then((response) => {
                 return response.json()
             })
@@ -469,7 +473,7 @@ function Oder() {
         }
         let _URL = 'https://phutungserver.herokuapp.com/donhang/ThemDonHang'
         // console.log(JSON.stringify(itemRequest))
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
@@ -532,7 +536,7 @@ function Oder() {
         let _URL =
             'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
 
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     arr_KhachHang = res.data
@@ -568,7 +572,7 @@ function Oder() {
             'https://phutungserver.herokuapp.com/khachhang/TimKhachHang?SDT=' +
             sdt
 
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     if (res.data != null) {
@@ -600,7 +604,7 @@ function Oder() {
     //     let _URL =
     //         'https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name=' +
     //         name
-    //     NetWorking(_URL, requestOptions, 5000)
+    //     NetWorking(_URL, requestOptions)
     //         .then((res) => {
     //             setContentSearch('')
     //             if (res.success) {

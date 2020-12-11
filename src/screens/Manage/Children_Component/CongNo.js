@@ -15,6 +15,7 @@ import TableRow from '@material-ui/core/TableRow'
 import resources from '../../../resource/color/ColorApp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import NetWorking from '../../../networking/fetchWithTimeout'
 
 import { useSelector } from 'react-redux'
 
@@ -226,11 +227,9 @@ function CongNo() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         }
-
-        fetch(
-            'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang',
-            requestOptions
-        )
+        const _URL =
+            'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
+        NetWorking(_URL, requestOptions)
             .then((res) => res.json())
             .then((res) => {
                 console.log(res)
@@ -288,10 +287,10 @@ function CongNo() {
             body: JSON.stringify(itemRequest),
         }
 
-        fetch(
-            'https://phutungserver.herokuapp.com/khachhang/CapNhatCongNo',
-            requestOptions
-        )
+        const _URL =
+            'https://phutungserver.herokuapp.com/khachhang/CapNhatCongNo'
+
+        NetWorking(_URL, requestOptions)
             .then((res) => res.json())
             .then((res) => {
                 handleClose()

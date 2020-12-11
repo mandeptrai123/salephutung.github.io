@@ -227,7 +227,7 @@ function NhapKho() {
         }
         let _URL = 'https://phutungserver.herokuapp.com/sanpham/NhatKySanPham'
 
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     arr_NhatKy = res.data
@@ -277,7 +277,7 @@ function NhapKho() {
         }
         let _URL = 'https://phutungserver.herokuapp.com/sanpham/ThemSanPham'
 
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     // Reset Field Input
@@ -349,7 +349,7 @@ function NhapKho() {
         }
         let _URL = 'https://phutungserver.herokuapp.com/cungcap/ToanBoNhaCC'
 
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     arr_NhaCC = res.data
@@ -374,7 +374,7 @@ function NhapKho() {
             'https://phutungserver.herokuapp.com/sanpham/TimKiemNhatKy?name=' +
             valueNhatKy
 
-        NetWorking(_URL, requestOptions, 5000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     UpdateNhatKy(res.data)

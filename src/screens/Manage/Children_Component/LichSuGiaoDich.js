@@ -72,7 +72,7 @@ function LichSuGiaoDich() {
 
         let _URL =
             'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     _arrKhachHang = res.data
@@ -96,7 +96,7 @@ function LichSuGiaoDich() {
         }
 
         let _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     SetlstSuggestSanPham(res.data)
@@ -219,7 +219,7 @@ function LichSuGiaoDich() {
         let _URL =
             'https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?date=' +
             dateCurrent
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {

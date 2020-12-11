@@ -15,6 +15,7 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
 import resources from '../../../../resource/color/ColorApp'
+import NetWorking from '../../../../networking/fetchWithTimeout'
 
 import { Snackbar, TextField } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
@@ -251,7 +252,7 @@ function BaoCaoDoanhThu(props) {
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
-        fetch(URL_GET_DOANHTHU + PAYLOAD, optionsRequest)
+        NetWorking(URL_GET_DOANHTHU + PAYLOAD, optionsRequest)
             .then((res) => {
                 return res.json()
             })
@@ -280,7 +281,7 @@ function BaoCaoDoanhThu(props) {
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
-        fetch(URL_GET_DOANHTHU + 'BaoCaoTheoThang', optionsRequest)
+        NetWorking(URL_GET_DOANHTHU + 'BaoCaoTheoThang', optionsRequest)
             .then((res) => {
                 return res.json()
             })
@@ -309,7 +310,7 @@ function BaoCaoDoanhThu(props) {
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
-        fetch(URL_GET_DOANHTHU + 'BaoCaoTheoNam', optionsRequest)
+        NetWorking(URL_GET_DOANHTHU + 'BaoCaoTheoNam', optionsRequest)
             .then((res) => {
                 return res.json()
             })

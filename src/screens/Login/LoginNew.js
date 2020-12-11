@@ -95,7 +95,7 @@ export default function SignIn() {
             '&Pass=' +
             Pass
 
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 setShowLoading(false)
                 if (res.success) {

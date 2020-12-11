@@ -59,11 +59,7 @@ function KhoHang() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyRequest),
         }
-        NetWorking(
-            URL_API_SANPHAM + PAYLOAD_UPDATES_SANPHAM,
-            requestOptions,
-            10000
-        )
+        NetWorking(URL_API_SANPHAM + PAYLOAD_UPDATES_SANPHAM, requestOptions)
             .then((response) => {
                 if (response.success) {
                     //Show dialog mess thành công
@@ -235,7 +231,7 @@ function KhoHang() {
             headers: { 'Content-Type': 'application/json' },
         }
         let _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
@@ -271,7 +267,7 @@ function KhoHang() {
         }
         let _URL =
             'https://phutungserver.herokuapp.com/sanpham/CapNhatSLSanPham'
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
@@ -295,7 +291,7 @@ function KhoHang() {
         }
         let _URL =
             'https://phutungserver.herokuapp.com/sanpham/CapNhatGiaBanSanPham'
-        NetWorking(_URL, requestOptions, 10000)
+        NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
