@@ -43,6 +43,9 @@ function BaoCaoDoanhThu(props) {
 
     const URL_GET_DOANHTHU = 'https://phutungserver.herokuapp.com/doanhthu/'
 
+    //State để hiện thị ngày thàng năm của doanh thu đang xem trên UI
+    const [viewDoanhThuMonthYear, setViewDoanhThuMonthYear] = useState('')
+
     var stt = 0
     function ItemDonHang(props) {
         stt++
@@ -66,183 +69,181 @@ function BaoCaoDoanhThu(props) {
         setResult(_result)
     }
 
-    function handleDropDown(stt) {
-        switch (stt) {
-            case 0:
-                setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
-                LoadDoanhThuHomNay()
-                break
-            case 1:
-                setviewModelDropdown('Doanh Thu 7 Ngày Gần Đây')
-                // LoadDoanhThuTheoTuan()
-                break
-            case 2:
-                setviewModelDropdown('Doanh Thu Tháng Này')
-                LoadDoanhThuThangNay()
-                break
-            case 3:
-                setviewModelDropdown('Doanh Thu Tháng Trước')
-                LoadDoanhThuThangTruoc()
-                break
-            case 4:
-                setviewModelDropdown('Doanh Thu Năm Nay')
-                LoadDoanhThuNamNay()
-                break
-            default:
-                break
-        }
-    }
+    // function handleDropDown(stt) {
+    //     switch (stt) {
+    //         case 0:
+    //             setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+    //             LoadDoanhThuHomNay()
+    //             break
+    //         case 1:
+    //             setviewModelDropdown('Doanh Thu 7 Ngày Gần Đây')
+    //             // LoadDoanhThuTheoTuan()
+    //             break
+    //         case 2:
+    //             setviewModelDropdown('Doanh Thu Tháng Này')
+    //             LoadDoanhThuThangNay()
+    //             break
+    //         case 3:
+    //             setviewModelDropdown('Doanh Thu Tháng Trước')
+    //             LoadDoanhThuThangTruoc()
+    //             break
+    //         case 4:
+    //             setviewModelDropdown('Doanh Thu Năm Nay')
+    //             LoadDoanhThuNamNay()
+    //             break
+    //         default:
+    //             break
+    //     }
+    // }
 
-    function XuLyDuHoaDonThanhSanPham(arr) {
-        //  var arrSanPham = [];
-        // arr.map(e=>{
-        //     e.lstSanPham.map(i=>{
-        //         if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
-        //         {
-        //             arrSanPham[arrSanPham.findIndex(item=>{item._id == i._id})].soluongMua += new Number(i.SoLuongBan);
-        //         }else
-        //         {
-        //             arrSanPham.push(
-        //                 {
-        //                     _id:i.id,
-        //                     TenSanPham:i.name,
-        //                     soluongMua:i.soluongBan
-        //                 })
-        //         }
-        //     })
-        // })
-        // return arrSanPham;
-    }
+    // function XuLyDuHoaDonThanhSanPham(arr) {
+    //      var arrSanPham = [];
+    //     arr.map(e=>{
+    //         e.lstSanPham.map(i=>{
+    //             if(arrSanPham.findIndex(item=>{item._id == i._id}) > -1 )
+    //             {
+    //                 arrSanPham[arrSanPham.findIndex(item=>{item._id == i._id})].soluongMua += new Number(i.SoLuongBan);
+    //             }else
+    //             {
+    //                 arrSanPham.push(
+    //                     {
+    //                         _id:i.id,
+    //                         TenSanPham:i.name,
+    //                         soluongMua:i.soluongBan
+    //                     })
+    //             }
+    //         })
+    //     })
+    //     return arrSanPham;
+    // }
 
-    useEffect(() => {
-        setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
-        LoadDoanhThuHomNay()
-    }, [])
+    // function LoadDoanhThuNamNay() {
+    //     var _d = new Date()
+    //     handleShow()
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json' },
+    //     }
 
-    function LoadDoanhThuNamNay() {
-        var _d = new Date()
-        handleShow()
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
+    //     fetch(
+    //         'https://phutungserver.herokuapp.com/donhang/DonHangTheoNam?Year=' +
+    //             _d.getFullYear(),
+    //         requestOptions
+    //     )
+    //         .then((res) => res.json())
+    //         .then((res) => {
+    //             handleClose()
+    //             if (res.success) {
+    //                 RenderBaoCaoDoanhThu(res.data)
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-        fetch(
-            'https://phutungserver.herokuapp.com/donhang/DonHangTheoNam?Year=' +
-                _d.getFullYear(),
-            requestOptions
-        )
-            .then((res) => res.json())
-            .then((res) => {
-                handleClose()
-                if (res.success) {
-                    RenderBaoCaoDoanhThu(res.data)
-                }
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
+    //             handleClose()
+    //         })
+    // }
 
-                handleClose()
-            })
-    }
+    // function LoadDoanhThuThangNay() {
+    //     var _d = new Date()
+    //     handleShow()
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json' },
+    //     }
 
-    function LoadDoanhThuThangNay() {
-        var _d = new Date()
-        handleShow()
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
+    //     fetch(
+    //         'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
+    //             _d.getMonth(),
+    //         requestOptions
+    //     )
+    //         .then((res) => res.json())
+    //         .then((res) => {
+    //             handleClose()
+    //             if (res.success) {
+    //                 var arrSP = XuLyDuHoaDonThanhSanPham(res.data)
+    //                 RenderBaoCaoDoanhThu(arrSP)
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-        fetch(
-            'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
-                _d.getMonth(),
-            requestOptions
-        )
-            .then((res) => res.json())
-            .then((res) => {
-                handleClose()
-                if (res.success) {
-                    var arrSP = XuLyDuHoaDonThanhSanPham(res.data)
-                    RenderBaoCaoDoanhThu(arrSP)
-                }
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
+    //             handleClose()
+    //         })
+    // }
 
-                handleClose()
-            })
-    }
-    function LoadDoanhThuThangTruoc() {
-        handleShow()
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
-        var _d = new Date().getMonth()
-        _d -= 1
-        if (_d === -1) _d = 11
+    // function LoadDoanhThuThangTruoc() {
+    //     handleShow()
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json' },
+    //     }
+    //     var _d = new Date().getMonth()
+    //     _d -= 1
+    //     if (_d === -1) _d = 11
 
-        fetch(
-            'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
-                _d,
-            requestOptions
-        )
-            .then((res) => res.json())
-            .then((res) => {
-                handleClose()
-                if (res.success) {
-                    RenderBaoCaoDoanhThu(res.data)
-                }
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
+    //     fetch(
+    //         'https://phutungserver.herokuapp.com/donhang/DonHangTheoThang?Month=' +
+    //             _d,
+    //         requestOptions
+    //     )
+    //         .then((res) => res.json())
+    //         .then((res) => {
+    //             handleClose()
+    //             if (res.success) {
+    //                 RenderBaoCaoDoanhThu(res.data)
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
 
-                handleClose()
-            })
-    }
+    //             handleClose()
+    //         })
+    // }
 
-    function LoadDoanhThuHomNay() {
-        var _d = new Date()
-        handleShow()
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
+    // function LoadDoanhThuHomNay() {
+    //     var _d = new Date()
+    //     handleShow()
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/json' },
+    //     }
 
-        fetch(
-            'https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth=' +
-                _d.getDate(),
-            requestOptions
-        )
-            .then((res) => res.json())
-            .then((res) => {
-                handleClose()
-                if (res.success) {
-                    RenderBaoCaoDoanhThu(res.data)
-                    setStateSnackbar({
-                        ...stateSnackbar,
-                        openSnackbar: true,
-                        messSnackbar: 'Bạn Đang Xem Doanh Thu Hôm Nay !',
-                        isSuccess: true,
-                    })
-                }
-            })
-            .catch((e) => {
-                setStateSnackbar({
-                    ...stateSnackbar,
-                    isSuccess: false,
-                    messSnackbar: 'Có Lỗi Ở Báo Cáo Doanh Thu! ' + e,
-                    openSnackbar: true,
-                })
-                handleClose()
-            })
-    }
+    //     fetch(
+    //         'https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?dateofMonth=' +
+    //             _d.getDate(),
+    //         requestOptions
+    //     )
+    //         .then((res) => res.json())
+    //         .then((res) => {
+    //             handleClose()
+    //             if (res.success) {
+    //                 RenderBaoCaoDoanhThu(res.data)
+    //                 setStateSnackbar({
+    //                     ...stateSnackbar,
+    //                     openSnackbar: true,
+    //                     messSnackbar: 'Bạn Đang Xem Doanh Thu Hôm Nay !',
+    //                     isSuccess: true,
+    //                 })
+    //             }
+    //         })
+    //         .catch((e) => {
+    //             setStateSnackbar({
+    //                 ...stateSnackbar,
+    //                 isSuccess: false,
+    //                 messSnackbar: 'Có Lỗi Ở Báo Cáo Doanh Thu! ' + e,
+    //                 openSnackbar: true,
+    //             })
+    //             handleClose()
+    //         })
+    // }
 
     function LoadDoanhThuTheoNgayHoacTuan(date, PAYLOAD) {
         const _itemRequest = {
             Date: date,
         }
+
+        setViewDoanhThuMonthYear(date)
 
         const optionsRequest = {
             method: 'POST',
@@ -255,11 +256,14 @@ function BaoCaoDoanhThu(props) {
                 return res.json()
             })
             .then((result) => {
-                RenderBaoCaoDoanhThu(result.data)
+                if (result.success) {
+                    RenderBaoCaoDoanhThu(result.data)
+                }
                 handleClose()
             })
             .catch((error) => {
                 console.log('Lỗi', error)
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
     }
@@ -268,6 +272,8 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Month: month,
         }
+        setViewDoanhThuMonthYear(month)
+
         const optionsRequest = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -281,11 +287,12 @@ function BaoCaoDoanhThu(props) {
             .then((result) => {
                 if (result.success) {
                     RenderBaoCaoDoanhThu(result.data)
-                    handleClose()
                 }
+                handleClose()
             })
             .catch((error) => {
                 console.log('Lỗi', error)
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
     }
@@ -294,6 +301,8 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Year: year,
         }
+        setViewDoanhThuMonthYear(year)
+
         const optionsRequest = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -307,14 +316,27 @@ function BaoCaoDoanhThu(props) {
             .then((result) => {
                 if (result.success) {
                     RenderBaoCaoDoanhThu(result.data)
-                    handleClose()
                 }
+                handleClose()
             })
             .catch((error) => {
                 console.log('Lỗi', error)
+                alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
     }
+
+    useEffect(() => {
+        //Khi vào lịch sử giao dịch thì mặc định cho xem doanh thu hôm nay
+        var dateNow = new Date()
+        setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+        LoadDoanhThuTheoNgayHoacTuan(
+            `${dateNow.getFullYear()}-${
+                dateNow.getMonth() + 1
+            }-${dateNow.getDate()}`,
+            'BaoCaoTheoNgay'
+        )
+    }, [])
 
     return (
         <section className="baocao-container">
@@ -343,15 +365,6 @@ function BaoCaoDoanhThu(props) {
                                 }-${d.getDate()}`
                             )
                         }}
-                        // onBlur={(e) => {
-                        //     if (dateViewProduct) {
-                        //         setviewModelDropdown('Doanh Thu Theo Ngày')
-                        //         LoadDoanhThuTheoNgayHoacTuan(
-                        //             dateViewProduct,
-                        //             'BaoCaoTheoNgay'
-                        //         )
-                        //     }
-                        // }}
                         onKeyPress={(e) => {
                             if (e.key == 'Enter') {
                                 if (dateViewProduct) {
@@ -389,9 +402,6 @@ function BaoCaoDoanhThu(props) {
                         }}
                         variant="outlined"
                         label="Nhập năm cần xem doanh thu"
-                        // onBlur={(e) => {
-                        //     LoadDoanhThuTheoNam(e.target.value)
-                        // }}
                         onKeyPress={(e) => {
                             if (e.key == 'Enter') {
                                 LoadDoanhThuTheoNam(e.target.value)
@@ -416,7 +426,18 @@ function BaoCaoDoanhThu(props) {
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                             <Dropdown.Item
-                                onClick={(e) => handleDropDown(0)}
+                                onClick={(e) => {
+                                    var dateNow = new Date()
+                                    setviewModelDropdown(
+                                        'Doanh Thu Ngày Hôm Nay'
+                                    )
+                                    LoadDoanhThuTheoNgayHoacTuan(
+                                        `${dateNow.getFullYear()}-${
+                                            dateNow.getMonth() + 1
+                                        }-${dateNow.getDate()}`,
+                                        'BaoCaoTheoNgay'
+                                    )
+                                }}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -428,7 +449,25 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu ngày hôm nay
                             </Dropdown.Item>
                             <Dropdown.Item
-                                onClick={(e) => handleDropDown(1)}
+                                onClick={(e) => {
+                                    var dateNow = new Date()
+                                    const milisecondsDay7BeforeDateNow =
+                                        dateNow.getTime() - 604800000
+                                    //7 ngày trước của ngày hiện tại
+                                    const day7BeforeDateNow = new Date(
+                                        milisecondsDay7BeforeDateNow
+                                    )
+                                    console.log(day7BeforeDateNow)
+                                    setviewModelDropdown(
+                                        'Doanh Thu 7 Ngày Gần Đây'
+                                    )
+                                    LoadDoanhThuTheoNgayHoacTuan(
+                                        `${day7BeforeDateNow.getFullYear()}-${
+                                            day7BeforeDateNow.getMonth() + 1
+                                        }-${day7BeforeDateNow.getDate()}`,
+                                        'BaoCaoTuanNay'
+                                    )
+                                }}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -440,7 +479,12 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu 7 ngày gần đây
                             </Dropdown.Item>
                             <Dropdown.Item
-                                onClick={(e) => handleDropDown(2)}
+                                onClick={(e) => {
+                                    setviewModelDropdown('Doanh Thu Tháng Này')
+                                    const _d = new Date()
+                                    const month = _d.getMonth() //Tháng này
+                                    LoadDoanhThuTheoThang(month + 1)
+                                }}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -452,7 +496,14 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu tháng này
                             </Dropdown.Item>
                             <Dropdown.Item
-                                onClick={(e) => handleDropDown(3)}
+                                onClick={(e) => {
+                                    setviewModelDropdown(
+                                        'Doanh Thu Tháng Trước'
+                                    )
+                                    const _d = new Date()
+                                    const month = _d.getMonth() //Tháng trước
+                                    LoadDoanhThuTheoThang(month)
+                                }}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -464,7 +515,12 @@ function BaoCaoDoanhThu(props) {
                                 Doanh thu tháng trước
                             </Dropdown.Item>
                             <Dropdown.Item
-                                onClick={(e) => handleDropDown(4)}
+                                onClick={(e) => {
+                                    setviewModelDropdown('Doanh Thu Năm Nay')
+                                    const _d = new Date()
+                                    const years = _d.getFullYear() // Năm nay
+                                    LoadDoanhThuTheoNam(years)
+                                }}
                                 style={{
                                     fontSize: '15px',
                                     width: '230px',
@@ -507,7 +563,8 @@ function BaoCaoDoanhThu(props) {
                         textAlign: 'left',
                     }}
                 >
-                    Bạn đang xem doanh thu tháng 9/2020 , Số Đơn Hàng Tăng : 10
+                    Bạn đang xem doanh thu ngày/tháng/năm{' '}
+                    {viewDoanhThuMonthYear} , Số Đơn Hàng Tăng : 10
                 </h4>
                 <TableContainer
                     style={{
