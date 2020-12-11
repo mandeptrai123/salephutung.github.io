@@ -289,7 +289,6 @@ function NhapKho() {
                     setSL('')
                     setSLBaoDong('')
                     setGiaBan('')
-                    setSDTNhaCC('')
 
                     arr_NhatKy = arr_NhatKy.reverse()
                     arr_NhatKy.push({
@@ -678,8 +677,9 @@ function NhapKho() {
                                 paddingLeft: 5,
                                 marginTop: 5,
                             }}
+                            inputValue={sdtnhacc}
                             onInputChange={(event, newInputValue) => {
-                                //setSDTNhaCC(newInputValue);
+                                setSDTNhaCC(newInputValue)
                             }}
                             renderInput={(params) => (
                                 <TextField

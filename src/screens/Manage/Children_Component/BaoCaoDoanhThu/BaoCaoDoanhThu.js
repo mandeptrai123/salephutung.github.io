@@ -74,7 +74,7 @@ function BaoCaoDoanhThu(props) {
                 break
             case 1:
                 setviewModelDropdown('Doanh Thu 7 Ngày Gần Đây')
-                LoadDoanhThuTheoTuan()
+                // LoadDoanhThuTheoTuan()
                 break
             case 2:
                 setviewModelDropdown('Doanh Thu Tháng Này')
@@ -343,13 +343,24 @@ function BaoCaoDoanhThu(props) {
                                 }-${d.getDate()}`
                             )
                         }}
-                        onBlur={(e) => {
-                            if (dateViewProduct) {
-                                setviewModelDropdown('Doanh Thu Theo Ngày')
-                                LoadDoanhThuTheoNgayHoacTuan(
-                                    dateViewProduct,
-                                    'BaoCaoTheoNgay'
-                                )
+                        // onBlur={(e) => {
+                        //     if (dateViewProduct) {
+                        //         setviewModelDropdown('Doanh Thu Theo Ngày')
+                        //         LoadDoanhThuTheoNgayHoacTuan(
+                        //             dateViewProduct,
+                        //             'BaoCaoTheoNgay'
+                        //         )
+                        //     }
+                        // }}
+                        onKeyPress={(e) => {
+                            if (e.key == 'Enter') {
+                                if (dateViewProduct) {
+                                    setviewModelDropdown('Doanh Thu Theo Ngày')
+                                    LoadDoanhThuTheoNgayHoacTuan(
+                                        dateViewProduct,
+                                        'BaoCaoTheoNgay'
+                                    )
+                                }
                             }
                         }}
                         InputLabelProps={{

@@ -417,6 +417,16 @@ function KhoHang() {
                             role="status"
                         ></Spinner>
                         {messLoading}
+                        <Button
+                            onClick={() => {
+                                handleClose()
+                            }}
+                            style={{
+                                marginLeft: '40px',
+                            }}
+                        >
+                            Đóng
+                        </Button>
                     </Modal.Title>
                 </Modal.Body>
             </Modal>

@@ -105,18 +105,27 @@ function Oder() {
     //Lưu arr all sp đc trả về
     const [dataArrAllSP, setDataArrAllSP] = useState()
 
+    //Su li in bill
+    const componentRef = useRef(null)
+    const [stateModal, setStateModal] = useState({
+        open: false,
+        itemSelected: null,
+    })
+
+    //Thêm thuộc tính cho api đặt hàng
+    //Hoàng code
+    const [priceNhap, setPriceNhap] = useState(0)
+    const [doanhThu, setDoanhThu] = useState(0)
+    const [giaVon, setGiaVon] = useState(0)
+    const [khoanThu, setKhoanThu] = useState(0)
+    const [khoanChi, setKhoanChi] = useState(0)
+    const [loiNhuan, setLoiNhuan] = useState(0)
+
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
     }
 
-    //Su li in bill
-    const componentRef = useRef()
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-    })
-
     function ItemCart(props) {
-        // console.log(props)
         return (
             <TableRow hover>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
@@ -143,6 +152,7 @@ function Oder() {
                                 (i) => i._id === props._id
                             )
                             arr_Cart[_index].price = e.target.value
+
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         onBlur={(e) => {}}
@@ -310,11 +320,12 @@ function Oder() {
     function TinhToanThanhTien() {
         // Tính Toán Thành Tiền
         var _sum = 0
+
         arr_Cart.map((e) => {
-            _sum += e.price * e.soluongBan
+            _sum += e.price * e.soluongBan //Tính tổng tiền trên mỗi item giỏ hàng
+
             return _sum
         })
-
         _tongtien = _sum
 
         _thanhtien = _tongtien - _tienkhachno
@@ -409,6 +420,9 @@ function Oder() {
             TimeOfDay: d.getHours() + ':' + d.getMinutes(),
             TraNo: 0,
             lstSanPham: arr_Cart,
+
+            /*Hoàng code, các thuộc tính cần thêm vào api đặt hàng */
+            doanhthu: doanhThu,
         }
 
         return _itemRq
@@ -420,7 +434,6 @@ function Oder() {
         handleShow()
 
         // Kiem Tra Data Truoc Khi Gui
-
         var isValid = await isValidData()
         if (!isValid) {
             handleClose()
@@ -455,7 +468,7 @@ function Oder() {
             body: JSON.stringify(itemRequest),
         }
         let _URL = 'https://phutungserver.herokuapp.com/donhang/ThemDonHang'
-
+        // console.log(JSON.stringify(itemRequest))
         NetWorking(_URL, requestOptions, 5000)
             .then((res) => {
                 handleClose()
@@ -483,8 +496,9 @@ function Oder() {
                     _tienkhachno = 0
                     _thanhtien = 0
                     _tongtien = 0
-                    //Khi đặt hàng thành công thì thực hiện in bill
-                    handlePrint()
+
+                    // Khi đặt hàng thành công thì thực hiện in bill
+                    handleClickPrint()
                 } else {
                     setStateSnackbar({
                         ...stateSnackbar,
@@ -683,17 +697,49 @@ function Oder() {
         )
     }
 
+    function ModalShowBill() {
+        return (
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                size="lg"
+                show={stateModal.open}
+            >
+                <Modal.Body
+                    style={{
+                        overflow: 'hidden',
+                    }}
+                >
+                    <PrintedDonHang
+                        ref={componentRef}
+                        item={stateModal.itemSelected}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <ReactToPrint
+                        trigger={() => <Button>In</Button>}
+                        content={() => componentRef.current}
+                    />
+                    <Button
+                        variant="danger"
+                        onClick={(e) => {
+                            setStateModal({ ...stateModal, open: false })
+                        }}
+                    >
+                        Hủy Bỏ
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
     return (
         <section
             style={{ marginLeft: 20, marginRight: 40 }}
             className="oder-container"
         >
             <ModalDienSoLuongSP />
-
-            {/* UI bill */}
-            <div style={{ display: 'none' }}>
-                <PrintedDonHang ref={componentRef} />
-            </div>
+            <ModalShowBill />
 
             <header className="oder-header">
                 <div style={{ color: resources.colorPrimary, margin: 10 }}>
@@ -775,8 +821,7 @@ function Oder() {
                             freeSolo={true}
                             id="combo-box-sdt"
                             options={lstSuggest}
-                            inputValue={ValueSDT}
-                            onIn
+                            // inputValue={ValueSDT}
                             getOptionLabel={(option) => option.SDT}
                             style={{ width: 200, marginLeft: 50 }}
                             renderInput={(params) => (
@@ -784,13 +829,11 @@ function Oder() {
                                     {...params}
                                     style={{ height: 50, marginRight: 30 }}
                                     onChange={(e) => {
-                                        setSoDienThoai(e.target.value)
-                                        if (ValueSDT != null) {
-                                        }
+                                        setValueSDT(e.target.value)
                                     }}
-                                    text={sodienthoai}
                                     label="Số Điện Thoại"
                                     variant="outlined"
+                                    value={ValueSDT}
                                 />
                             )}
                         />
@@ -799,11 +842,11 @@ function Oder() {
                     <div className="input-content">
                         <Autocomplete
                             freeSolo={true}
-                            inputValue={ValueDiaChi}
                             id="combo-box-diachi"
                             onInputChange={(event, newInputValue) => {
                                 setDiaChi(newInputValue)
                             }}
+                            // inputValue={ValueDiaChi}
                             options={lstSuggest}
                             getOptionLabel={(option) => option.DiaChi}
                             style={{ width: 200, marginLeft: 50 }}
@@ -812,11 +855,9 @@ function Oder() {
                                     {...params}
                                     style={{ height: 50, marginRight: 30 }}
                                     onChange={(e) => {
-                                        setDiaChi(e.target.value)
-                                        if (ValueDiaChi != null) {
-                                        }
+                                        setValueDiaChi(e.target.value)
                                     }}
-                                    text={diachi}
+                                    value={ValueDiaChi}
                                     variant="outlined"
                                     label="Địa Chỉ"
                                 />
@@ -829,7 +870,7 @@ function Oder() {
                         required={true}
                         label="Ngày Đặt Hàng"
                         type="date"
-                        value={dateOrder}
+                        defaultValue={dateOrder}
                         style={{
                             marginLeft: 30,
                             marginTop: 5,

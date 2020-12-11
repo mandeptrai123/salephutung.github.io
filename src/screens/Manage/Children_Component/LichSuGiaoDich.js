@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 
-import ReactToPrint from 'react-to-print'
+import ReactToPrint, { useReactToPrint } from 'react-to-print'
 import PrintedDonHang from '../../Print/PrintedDonHang'
 import { Autocomplete } from '@material-ui/lab'
 
@@ -196,7 +196,9 @@ function LichSuGiaoDich() {
                 </TableCell>
                 <TableCell>
                     <Button
-                        onClick={() => action(props)}
+                        onClick={() => {
+                            action(props)
+                        }}
                         variant="contained"
                         color="primary"
                     >
@@ -221,6 +223,7 @@ function LichSuGiaoDich() {
             .then((res) => {
                 handleClose()
                 if (res.success) {
+                    console.log(res)
                     _arrDonHang = res.data
                     RenderDonHangTrongNgay(res.data)
                 }
