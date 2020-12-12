@@ -217,10 +217,7 @@ function Oder() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         }
-        fetch(URL_API_SP + PAYLOAD_GET_ALL_SP, requestOptions)
-            .then((response) => {
-                return response.json()
-            })
+        NetWorking(URL_API_SP + PAYLOAD_GET_ALL_SP, requestOptions)
             .then((result) => {
                 //fetch đc api get all sp thành công
                 if (result.success) {
@@ -409,6 +406,7 @@ function Oder() {
 
         return true
     }
+
     function XuLiThongTinKhach() {
         var d = new Date()
 

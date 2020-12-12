@@ -253,9 +253,6 @@ function BaoCaoDoanhThu(props) {
         }
         handleShow()
         NetWorking(URL_GET_DOANHTHU + PAYLOAD, optionsRequest)
-            .then((res) => {
-                return res.json()
-            })
             .then((result) => {
                 if (result.success) {
                     RenderBaoCaoDoanhThu(result.data)
@@ -282,9 +279,6 @@ function BaoCaoDoanhThu(props) {
         }
         handleShow()
         NetWorking(URL_GET_DOANHTHU + 'BaoCaoTheoThang', optionsRequest)
-            .then((res) => {
-                return res.json()
-            })
             .then((result) => {
                 if (result.success) {
                     RenderBaoCaoDoanhThu(result.data)
@@ -311,9 +305,6 @@ function BaoCaoDoanhThu(props) {
         }
         handleShow()
         NetWorking(URL_GET_DOANHTHU + 'BaoCaoTheoNam', optionsRequest)
-            .then((res) => {
-                return res.json()
-            })
             .then((result) => {
                 if (result.success) {
                     RenderBaoCaoDoanhThu(result.data)

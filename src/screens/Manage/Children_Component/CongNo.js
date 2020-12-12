@@ -230,7 +230,6 @@ function CongNo() {
         const _URL =
             'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
         NetWorking(_URL, requestOptions)
-            .then((res) => res.json())
             .then((res) => {
                 console.log(res)
                 handleClose()
@@ -291,7 +290,6 @@ function CongNo() {
             'https://phutungserver.herokuapp.com/khachhang/CapNhatCongNo'
 
         NetWorking(_URL, requestOptions)
-            .then((res) => res.json())
             .then((res) => {
                 handleClose()
                 console.log(res)
