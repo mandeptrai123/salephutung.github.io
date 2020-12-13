@@ -93,6 +93,9 @@ function Oder() {
     //Lưu _id sản phẩm khi nhấn chọn
     const [idSanPham, setIdSanPham] = useState()
 
+    //Lưu obj sản phẩm khi nhấn chọn
+    const [objSanPham, setObjSanPham] = useState()
+
     const [lstSuggest, setlstSuggest] = useState([])
 
     const [_responseSanPham, set_responseSanPham] = useState([])
@@ -231,9 +234,13 @@ function Oder() {
     }
 
     function RenderUIToanBoSanPham(data) {
+        var soLuongSanPhamCanRender = 0
         setUIAllSanPham(
             data.map((e) => {
-                return ItemSanPham(e)
+                soLuongSanPhamCanRender++
+                if (soLuongSanPhamCanRender < 21) {
+                    return ItemSanPham(e)
+                }
             })
         )
     }
@@ -257,6 +264,9 @@ function Oder() {
                                 // Lưu state id sản phẩm vừa đc nhấn chọn
                                 setIdSanPham(props._id)
 
+                                //Lưu obj sản phẩm khi click vào mỗi một item sản phẩm
+                                setObjSanPham(props)
+
                                 // Show modal điền số lượng sản phẩm khi nhấn chọn sản phẩm
                                 setShowModalDienSoLuongSP(true)
                             } else {
@@ -276,14 +286,6 @@ function Oder() {
         )
     }
 
-    function ShowHieuChinhSoLuong(id) {
-        // setsoluongBan("");
-        // setghichuDonHang("");
-        // // Show Modal
-        // var _item = _responseSanPham.find(e=>e._id===id);
-        // itemSelected = _item;
-        // handleOpenHieuChinh();
-    }
     function Handle_AddToCart(_id) {
         //Tìm sản phẩm có id vừa đc nhấn chọn
         var _item
@@ -340,26 +342,6 @@ function Oder() {
             })
         )
         TinhToanThanhTien()
-    }
-
-    function RenderKetQuaTimKiem(arr) {
-        const result = arr.map((e) => {
-            return ItemSanPham(e)
-        })
-        setResultSearch(result)
-    }
-
-    function LoadKhach() {
-        setMessLoading('    Đang Tải Thông Tin Khách, Đợi Chút Nhé')
-        handleShow()
-        TimKhachHang(sodienthoai)
-        TinhToanThanhTien()
-    }
-
-    function Handle_TimSP() {
-        setMessLoading('    Đang Tìm Sản Phẩm, Đợi Chút Nhé')
-        handleShow()
-        // TimSanPham(contentSearch)
     }
 
     // Kiểm Tra Thông Tin Khách Hàng .
@@ -463,7 +445,7 @@ function Oder() {
                 : '0' + _d.getMilliseconds()
 
         itemRequest.Time = hours + ':' + minutes + ':' + milis
-        // console.log(JSON.stringify(itemRequest))
+        console.log(JSON.stringify(itemRequest))
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -487,13 +469,6 @@ function Oder() {
                     setValueSDT('')
                     setValueDiaChi('')
                     setValueName('')
-
-                    setStateSnackbar({
-                        ...stateSnackbar,
-                        isSuccess: true,
-                        messSnackbar: 'Đặt Hàng Thành Công !',
-                        openSnackbar: true,
-                    })
 
                     _tienkhachno = 0
                     _thanhtien = 0
@@ -545,8 +520,8 @@ function Oder() {
     }
 
     useEffect(() => {
-        GetAllKhachHang()
         GetAllSanPham()
+        GetAllKhachHang()
     }, [])
 
     // Handle Popup Snackbar + Manage State
@@ -589,41 +564,6 @@ function Oder() {
             })
     }
 
-    // function TimSanPham(name) {
-    //     if (name === '') {
-    //         handleClose()
-    //         return
-    //     }
-    //     const requestOptions = {
-    //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json' },
-    //     }
-
-    //     let _URL =
-    //         'https://phutungserver.herokuapp.com/sanpham/TimKiemSanPham?name=' +
-    //         name
-    //     NetWorking(_URL, requestOptions)
-    //         .then((res) => {
-    //             setContentSearch('')
-    //             if (res.success) {
-    //                 set_responseSanPham(res.data)
-    //                 RenderKetQuaTimKiem(res.data)
-    //                 handleClose()
-    //             } else {
-    //                 handleClose()
-    //             }
-    //         })
-    //         .catch((e) => {
-    //             setStateSnackbar({
-    //                 ...stateSnackbar,
-    //                 isSuccess: false,
-    //                 messSnackbar: e,
-    //                 openSnackbar: true,
-    //             })
-    //             handleClose()
-    //         })
-    // }
-
     function ModalDienSoLuongSP() {
         const [soLuongSanPhamDaChon, setSoLuongSanPhamDaChon] = useState(1)
         return (
@@ -639,6 +579,7 @@ function Oder() {
                         id="outlined-basic"
                         label="Số lượng"
                         margin="normal"
+                        type="number"
                         variant="outlined"
                         style={{ width: '100%' }}
                         onChange={(e) => {
@@ -647,24 +588,7 @@ function Oder() {
                         autoFocus
                         onKeyPress={(event) => {
                             if (event.key === 'Enter') {
-                                setShowModalDienSoLuongSP(false)
-
-                                //sau khi điền sl sp thì thêm vào giỏ hàng
-                                if (idSanPham) {
-                                    //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
-                                    //hoặc kiểm tra số lượng hàng có đủ hay không
-                                    if (Handle_AddToCart(idSanPham) == false) {
-                                        return
-                                    }
-                                    var _index = arr_Cart.findIndex(
-                                        (i) => i._id == idSanPham
-                                    )
-                                    arr_Cart[
-                                        _index
-                                    ].soluongBan = soLuongSanPhamDaChon
-
-                                    RenderKetQuaGioHang(arr_Cart)
-                                }
+                                handleClickThemSanPham(soLuongSanPhamDaChon)
                             }
                         }}
                     />
@@ -673,23 +597,7 @@ function Oder() {
                     <Button
                         variant="secondary"
                         onClick={() => {
-                            setShowModalDienSoLuongSP(false)
-
-                            //sau khi điền sl sp thì thêm vào giỏ hàng
-                            if (idSanPham) {
-                                //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
-                                //hoặc kiểm tra số lượng hàng có đủ hay không
-                                if (Handle_AddToCart(idSanPham) == false) {
-                                    return
-                                }
-                                var _index = arr_Cart.findIndex(
-                                    (i) => i._id == idSanPham
-                                )
-                                arr_Cart[
-                                    _index
-                                ].soluongBan = soLuongSanPhamDaChon
-                                RenderKetQuaGioHang(arr_Cart)
-                            }
+                            handleClickThemSanPham(soLuongSanPhamDaChon)
                         }}
                     >
                         Thêm sản phẩm
@@ -735,6 +643,44 @@ function Oder() {
         )
     }
 
+    function handleClickThemSanPham(soLuongSanPhamDaChon) {
+        setShowModalDienSoLuongSP(false)
+
+        //sau khi điền sl sp thì thêm vào giỏ hàng
+        if (idSanPham) {
+            //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k
+            //Kiểm tra số lượng > 0
+            if (
+                objSanPham.amount < soLuongSanPhamDaChon ||
+                soLuongSanPhamDaChon < 0
+            ) {
+                setStateSnackbar({
+                    ...stateSnackbar,
+                    messSnackbar:
+                        soLuongSanPhamDaChon < 0
+                            ? 'Số lượng phải lớn hơn 0'
+                            : 'Số lượng hiện tại không đủ !',
+                    isSuccess: false,
+                    openSnackbar: true,
+                })
+                return
+            }
+            //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
+            //hoặc kiểm tra số lượng hàng có đủ hay không
+            if (Handle_AddToCart(idSanPham) == false) {
+                return
+            }
+            var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
+            arr_Cart[_index].soluongBan = soLuongSanPhamDaChon
+
+            RenderKetQuaGioHang(arr_Cart)
+        }
+    }
+
+    var soLuongTenKhachRender = 0
+    var soLuongSDTRender = 0
+    var soLuongDiaChiRender = 0
+
     return (
         <section
             style={{ marginLeft: 20, marginRight: 40 }}
@@ -760,7 +706,7 @@ function Oder() {
                         <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
-                            options={lstSuggest}
+                            options={lstSuggest.slice(0, 20)}
                             getOptionLabel={(option) => option.Name}
                             style={{ width: 200 }}
                             inputValue={ValueName}
@@ -822,7 +768,7 @@ function Oder() {
                         <Autocomplete
                             freeSolo={true}
                             id="combo-box-sdt"
-                            options={lstSuggest}
+                            options={lstSuggest.slice(0, 20)}
                             // inputValue={ValueSDT}
                             getOptionLabel={(option) => option.SDT}
                             style={{ width: 200, marginLeft: 50 }}
@@ -849,7 +795,7 @@ function Oder() {
                                 setDiaChi(newInputValue)
                             }}
                             // inputValue={ValueDiaChi}
-                            options={lstSuggest}
+                            options={lstSuggest.slice(0, 20)}
                             getOptionLabel={(option) => option.DiaChi}
                             style={{ width: 200, marginLeft: 50 }}
                             renderInput={(params) => (
@@ -929,10 +875,16 @@ function Oder() {
                         var textSearch = e.target.value
                         const reg = new RegExp(textSearch.toLowerCase())
 
+                        var max20SanPhamSearch = 0
+
                         setUIAllSanPham(
                             dataArrAllSP.map((e) => {
                                 if (reg.test(e.name.toLowerCase())) {
-                                    return ItemSanPham(e)
+                                    //Do dữ liệu nhiều nên render 20 sản phẩm khi search
+                                    max20SanPhamSearch++
+                                    if (max20SanPhamSearch < 21) {
+                                        return ItemSanPham(e)
+                                    }
                                 }
                             })
                         )

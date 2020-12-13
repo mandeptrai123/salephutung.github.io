@@ -76,12 +76,13 @@ function NhapKho() {
     const NhaCCRef = useRef()
     const SDTNhaCCRef = useRef()
 
-    //valid emptry Tên Sản Phẩm , Số Lượng , Đơn Vị, Giá nhập Sỉ , Giá Bán Lẻ
+    //valid emptry Tên Sản Phẩm , Số Lượng , Đơn Vị, Giá nhập Sỉ , Giá Bán Lẻ, sl báo động
     const [validEmptyTenSP, setValidEmptyTenSP] = useState(false)
     const [validEmptySLSP, setValidEmptySLSP] = useState(false)
     const [validEmptyDonVi, setValidEmptyDonVi] = useState(false)
     const [validEmptyGiaNS, setValidEmptyGiaNS] = useState(false)
     const [validEmptyGiaBL, setValidEmptyGiaBL] = useState(false)
+    const [validEmptySLBD, setValidEmptySLBD] = useState(false)
 
     async function isValidInput() {
         // Tránh Rò Rỉ Dữ Liệu Nên Không Gán Trực Tiếp
@@ -141,7 +142,7 @@ function NhapKho() {
             setStateSnackbar({
                 ...stateSnackbar,
                 open: true,
-                messSnackbar: 'Vui Lòng Điền Tên Sản Phẩm',
+                messSnackbar: 'Vui Lòng Điền Tên Nhà Cung Cấp',
             })
             return false
         }
@@ -553,22 +554,42 @@ function NhapKho() {
                         <h6 style={{ color: resources.colorPrimary }}>
                             Số Lượng Báo Động
                         </h6>
-                        <input
-                            style={{ height: 50, width: '250px' }}
-                            variant="outlined"
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    DonGiaRef.current.focus()
-                                }
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '250px',
                             }}
-                            ref={SLBaoDongRef}
-                            onChange={(e) => {
-                                setSLBaoDong(e.target.value)
-                            }}
-                            value={soluongbaodong}
-                            width={300}
-                            placeholder="Số Lượng Báo Động"
-                        />
+                        >
+                            <span style={{ color: 'red' }}>
+                                {validEmptySLBD
+                                    ? ''
+                                    : '* Vui lòng điền vào số lượng báo động'}
+                            </span>
+                            <input
+                                style={{ height: 50, width: '250px' }}
+                                variant="outlined"
+                                onKeyPress={(event) => {
+                                    if (event.key === 'Enter') {
+                                        DonGiaRef.current.focus()
+                                    }
+                                }}
+                                ref={SLBaoDongRef}
+                                onChange={(e) => {
+                                    setSLBaoDong(e.target.value)
+                                }}
+                                onBlur={() => {
+                                    if (soluongbaodong) {
+                                        setValidEmptySLBD(true)
+                                    } else {
+                                        setValidEmptySLBD(false)
+                                    }
+                                }}
+                                value={soluongbaodong}
+                                width={300}
+                                placeholder="Số Lượng Báo Động"
+                            />
+                        </div>
                     </li>
 
                     <li className="item__input">

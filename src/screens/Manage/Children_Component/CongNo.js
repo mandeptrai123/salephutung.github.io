@@ -252,11 +252,15 @@ function CongNo() {
             arr.map((e) => {
                 _congno += parseInt(e.Congno)
                 stt++
-                return <ItemCongNo data={e} soThuTu={stt} />
+                //Lấy 20 sản phẩm để render UI công nợ
+                if (stt < 21) {
+                    return <ItemCongNo data={e} soThuTu={stt} />
+                }
             })
         )
         setTotalCongNo(TienVietNam(_congno))
     }
+
     function TienVietNam(input) {
         var x = parseInt(input)
         x = x.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
@@ -356,10 +360,11 @@ function CongNo() {
                     var stt = 0
                     setResult(
                         arr_KhachHang.map((e) => {
-                            console.log(e)
-                            if (regex.test(e.Name.toLowerCase())) {
+                            if (regex.exec(e.Name.toLowerCase())) {
                                 stt++
-                                return <ItemCongNo data={e} soThuTu={stt} />
+                                if (stt < 21) {
+                                    return <ItemCongNo data={e} soThuTu={stt} />
+                                }
                             }
                         })
                     )

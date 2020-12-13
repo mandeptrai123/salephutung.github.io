@@ -48,7 +48,10 @@ function KhoHang() {
         setLstResult(
             arr.map((e) => {
                 stt++
-                return <ItemSanPham data={e} soThuTu={stt} />
+                //Do dữ liệu nhiều lấy 20 sản phẩm
+                if (stt < 21) {
+                    return <ItemSanPham data={e} soThuTu={stt} />
+                }
             })
         )
     }
@@ -328,25 +331,28 @@ function KhoHang() {
                             style={{
                                 width: '100%',
                             }}
+                            pattern="[A-Za-z]"
                             label="Nhập tên sản phẩm hoặc nhà cung cấp cần tìm"
                             onChange={(event) => {
                                 const textSearch = event.target.value.toLowerCase()
                                 const regex = new RegExp(textSearch)
-
                                 var stt = 0
                                 setLstResult(
                                     arr_KhoHang.map((e) => {
                                         if (
-                                            regex.test(e.name.toLowerCase()) ||
-                                            regex.test(e.NhaCC.toLowerCase())
+                                            regex.exec(e.name.toLowerCase()) ||
+                                            regex.exec(e.NhaCC.toLowerCase())
                                         ) {
                                             stt++
-                                            return (
-                                                <ItemSanPham
-                                                    data={e}
-                                                    soThuTu={stt}
-                                                />
-                                            )
+                                            //Do dữ liệu nhiều nên render 20 sản phẩm
+                                            if (stt < 21) {
+                                                return (
+                                                    <ItemSanPham
+                                                        data={e}
+                                                        soThuTu={stt}
+                                                    />
+                                                )
+                                            }
                                         }
                                     })
                                 )
