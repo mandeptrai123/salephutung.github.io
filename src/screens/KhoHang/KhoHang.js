@@ -57,6 +57,8 @@ function KhoHang() {
     }
 
     function CapNhatSanPham(bodyRequest) {
+        handleShow()
+        setMessLoading('Đang cập nhật!')
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -65,9 +67,8 @@ function KhoHang() {
         NetWorking(URL_API_SANPHAM + PAYLOAD_UPDATES_SANPHAM, requestOptions)
             .then((response) => {
                 if (response.success) {
-                    //Show dialog mess thành công
-                    handleShow()
-                    setMessLoading(response.mess)
+                    //Show mess thành công
+                    handleClose()
                 }
             })
             .catch((error) => {
@@ -227,7 +228,6 @@ function KhoHang() {
 
     function Refresh() {
         setMessLoading('Đang Tải Thông Tin Sản Phẩm !')
-
         handleShow()
         const requestOptions = {
             method: 'GET',
@@ -419,16 +419,6 @@ function KhoHang() {
                             role="status"
                         ></Spinner>
                         {messLoading}
-                        <Button
-                            onClick={() => {
-                                handleClose()
-                            }}
-                            style={{
-                                marginLeft: '40px',
-                            }}
-                        >
-                            Đóng
-                        </Button>
                     </Modal.Title>
                 </Modal.Body>
             </Modal>
