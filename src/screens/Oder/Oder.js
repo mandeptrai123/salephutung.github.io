@@ -445,14 +445,12 @@ function Oder() {
                 : '0' + _d.getMilliseconds()
 
         itemRequest.Time = hours + ':' + minutes + ':' + milis
-        console.log(JSON.stringify(itemRequest))
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(itemRequest),
         }
         let _URL = 'https://phutungserver.herokuapp.com/donhang/ThemDonHang'
-        // console.log(JSON.stringify(itemRequest))
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -703,7 +701,7 @@ function Oder() {
                     className="container-input"
                 >
                     <div className="input-content">
-                        <Autocomplete
+                        {/* <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
                             options={lstSuggest.slice(0, 20)}
@@ -761,16 +759,25 @@ function Oder() {
                                     variant="outlined"
                                 />
                             )}
+                        /> */}
+                        <TextField
+                            label="Tên Khách"
+                            onChange={(e) => {
+                                setTenKhach(e.target.value)
+                            }}
+                            value={tenkhach}
+                            variant="outlined"
                         />
                     </div>
 
                     <div className="input-content">
-                        <Autocomplete
+                        {/* <Autocomplete
                             freeSolo={true}
                             id="combo-box-sdt"
-                            options={lstSuggest.slice(0, 20)}
-                            // inputValue={ValueSDT}
-                            getOptionLabel={(option) => option.SDT}
+                            // lstSuggest.slice(0, 20)  
+                            options={[1, 2, 3]}
+                            inputValue={ValueSDT}
+                            // getOptionLabel={(option) => option.SDT}
                             style={{ width: 200, marginLeft: 50 }}
                             renderInput={(params) => (
                                 <TextField
@@ -784,19 +791,29 @@ function Oder() {
                                     value={ValueSDT}
                                 />
                             )}
+                        /> */}
+                        <TextField
+                            style={{ height: 50, marginRight: 30 }}
+                            onChange={(e) => {
+                                setSoDienThoai(e.target.value)
+                            }}
+                            label="Số Điện Thoại"
+                            variant="outlined"
+                            value={sodienthoai}
                         />
                     </div>
 
                     <div className="input-content">
-                        <Autocomplete
+                        {/* <Autocomplete
                             freeSolo={true}
                             id="combo-box-diachi"
-                            onInputChange={(event, newInputValue) => {
-                                setDiaChi(newInputValue)
-                            }}
-                            // inputValue={ValueDiaChi}
-                            options={lstSuggest.slice(0, 20)}
-                            getOptionLabel={(option) => option.DiaChi}
+                            // onInputChange={(event, newInputValue) => {
+                            //     setDiaChi(newInputValue)
+                            // }}
+                            inputValue={ValueDiaChi}
+                            // options={lstSuggest.slice(0, 20)}
+                            options={[1, 2, 3, 4]}
+                            // getOptionLabel={(option) => option.DiaChi}
                             style={{ width: 200, marginLeft: 50 }}
                             renderInput={(params) => (
                                 <TextField
@@ -810,6 +827,15 @@ function Oder() {
                                     label="Địa Chỉ"
                                 />
                             )}
+                        /> */}
+                        <TextField
+                            style={{ height: 50, marginRight: 30 }}
+                            onChange={(e) => {
+                                setDiaChi(e.target.value)
+                            }}
+                            value={diachi}
+                            variant="outlined"
+                            label="Địa Chỉ"
                         />
                     </div>
 
