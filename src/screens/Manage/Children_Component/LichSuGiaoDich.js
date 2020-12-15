@@ -419,7 +419,11 @@ function LichSuGiaoDich() {
                 size="lg"
                 show={stateModal.open}
             >
-                <Modal.Body>
+                <Modal.Body
+                    style={{
+                        overflow: 'hidden',
+                    }}
+                >
                     <PrintedDonHang
                         ref={componentRef}
                         item={stateModal.itemSelected}

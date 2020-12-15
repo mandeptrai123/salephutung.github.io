@@ -16,10 +16,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt, faTrash } from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../networking/fetchWithTimeout'
 import { Autocomplete } from '@material-ui/lab'
-import { useSelector } from 'react-redux'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
+
+import { useSelector, useDispatch } from 'react-redux'
+
+//Action
+import { AllSanPham } from '../../Redux/ActionType'
 
 //import component in bill
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
@@ -100,9 +104,6 @@ function Oder() {
 
     const [_responseSanPham, set_responseSanPham] = useState([])
 
-    const URL_API_SP = 'https://phutungserver.herokuapp.com/sanpham/'
-    const PAYLOAD_GET_ALL_SP = 'ToanBoSanPham'
-
     //state chứa toàn bộ component ItemSanPham
     const [UIAllSanPham, setUIAllSanPham] = useState()
     //Lưu arr all sp đc trả về
@@ -123,6 +124,8 @@ function Oder() {
     const [khoanThu, setKhoanThu] = useState(0)
     const [khoanChi, setKhoanChi] = useState(0)
     const [loiNhuan, setLoiNhuan] = useState(0)
+
+    const dispatch = useDispatch()
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
@@ -216,20 +219,31 @@ function Oder() {
     }
 
     function GetAllSanPham() {
+        setShow(true)
+        setMessLoading('Đang Tải Sản Phẩm Đợi Chút Nhé!')
+
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         }
-        NetWorking(URL_API_SP + PAYLOAD_GET_ALL_SP, requestOptions)
+        const _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
+        NetWorking(_URL, requestOptions)
             .then((result) => {
+                setShow(false)
+
                 //fetch đc api get all sp thành công
                 if (result.success) {
+                    //Thêm tất cả sp vào store
+                    dispatch({ type: AllSanPham, dataSanPham: result.data })
+
                     RenderUIToanBoSanPham(result.data)
                     setDataArrAllSP(result.data)
                 }
             })
             .catch((error) => {
                 console.log('lỗi', error)
+
+                setShow(false)
             })
     }
 
@@ -455,6 +469,17 @@ function Oder() {
             .then((res) => {
                 handleClose()
                 if (res.success) {
+                    // Khi đặt hàng thành công thì thực hiện in bill
+                    // Tạo obj bill để in bill
+                    const objBill = {
+                        TenKhach: tenkhach,
+                        DiaChiKhach: diachi,
+                        SDTKhach: sodienthoai,
+                        lstSanPham: arr_Cart,
+                    }
+                    console.log(objBill)
+                    handleClickPrint(objBill)
+
                     setResultCart([])
                     setGhiChu('')
                     setThanhTien(0)
@@ -471,9 +496,6 @@ function Oder() {
                     _tienkhachno = 0
                     _thanhtien = 0
                     _tongtien = 0
-
-                    // Khi đặt hàng thành công thì thực hiện in bill
-                    handleClickPrint()
                 } else {
                     setStateSnackbar({
                         ...stateSnackbar,
@@ -701,72 +723,64 @@ function Oder() {
                     className="container-input"
                 >
                     <div className="input-content">
-                        {/* <Autocomplete
+                        <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
-                            options={lstSuggest.slice(0, 20)}
+                            options={lstSuggest.slice(0, 30)}
                             getOptionLabel={(option) => option.Name}
                             style={{ width: 200 }}
-                            inputValue={ValueName}
+                            inputValue={tenkhach}
                             onInputChange={(event, newInputValue) => {
                                 setTenKhach(newInputValue)
-                                setValueName(newInputValue)
-                                if (newInputValue != null) {
-                                    for (
-                                        var i = 0;
-                                        i < arr_KhachHang.length;
-                                        i++
-                                    ) {
-                                        if (
-                                            arr_KhachHang[i].Name ==
-                                            newInputValue
-                                        ) {
-                                            setSoDienThoai(arr_KhachHang[i].SDT)
-                                            setValueSDT(arr_KhachHang[i].SDT)
+                                //     setValueName(newInputValue)
+                                //     if (newInputValue != null) {
+                                //         for (
+                                //             var i = 0;
+                                //             i < arr_KhachHang.length;
+                                //             i++
+                                //         ) {
+                                //             if (
+                                //                 arr_KhachHang[i].Name ==
+                                //                 newInputValue
+                                //             ) {
+                                //                 setSoDienThoai(arr_KhachHang[i].SDT)
+                                //                 setValueSDT(arr_KhachHang[i].SDT)
 
-                                            setDiaChi(arr_KhachHang[i].DiaChi)
-                                            setValueDiaChi(
-                                                arr_KhachHang[i].DiaChi
-                                            )
-                                            break
-                                        }
-                                    }
-                                }
+                                //                 setDiaChi(arr_KhachHang[i].DiaChi)
+                                //                 setValueDiaChi(
+                                //                     arr_KhachHang[i].DiaChi
+                                //                 )
+                                //                 break
+                                //             }
+                                //         }
+                                //     }
                             }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="Tên Khách"
-                                    text={tenkhach}
+                                    value={tenkhach}
                                     onChange={(e) => {
                                         setTenKhach(e.target.value)
-                                        if (ValueName != null) {
-                                            var obj = _.find(
-                                                arr_KhachHang,
-                                                function (e) {
-                                                    return e.Name == ValueName
-                                                }
-                                            )
-                                            if (obj != null) {
-                                                setValueSDT(obj.SDTKhach)
-                                                setValueDiaChi(obj.DiaChiKhach)
-                                            } else {
-                                                setValueSDT('')
-                                                setValueDiaChi('')
-                                            }
-                                        }
+                                        // if (ValueName != null) {
+                                        //     var obj = _.find(
+                                        //         arr_KhachHang,
+                                        //         function (e) {
+                                        //             return e.Name == ValueName
+                                        //         }
+                                        //     )
+                                        //     if (obj != null) {
+                                        //         setValueSDT(obj.SDTKhach)
+                                        //         setValueDiaChi(obj.DiaChiKhach)
+                                        //     } else {
+                                        //         setValueSDT('')
+                                        //         setValueDiaChi('')
+                                        //     }
+                                        // }
                                     }}
                                     variant="outlined"
                                 />
                             )}
-                        /> */}
-                        <TextField
-                            label="Tên Khách"
-                            onChange={(e) => {
-                                setTenKhach(e.target.value)
-                            }}
-                            value={tenkhach}
-                            variant="outlined"
                         />
                     </div>
 
@@ -902,7 +916,6 @@ function Oder() {
                         const reg = new RegExp(textSearch.toLowerCase())
 
                         var max20SanPhamSearch = 0
-
                         setUIAllSanPham(
                             dataArrAllSP.map((e) => {
                                 if (reg.test(e.name.toLowerCase())) {

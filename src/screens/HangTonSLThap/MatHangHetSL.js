@@ -180,6 +180,7 @@ function MatHangHetSL() {
             .then((res) => {
                 handleClose()
                 if (res.success) {
+                    console.log(res)
                     var arr = []
                     //Gôm các sản phẩm cùng nhà cung cấp
                     _.forEach(res.data, function (e) {

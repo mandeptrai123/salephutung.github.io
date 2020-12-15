@@ -19,8 +19,10 @@ import NetWorking from '../../networking/fetchWithTimeout'
 import { TextField } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
 import _, { result } from 'lodash'
+import { useSelector, useDispatch } from 'react-redux'
 
-var arr_KhoHang = []
+//Action
+import { AllSanPham } from '../../Redux/ActionType'
 
 var ID = 0
 
@@ -40,11 +42,12 @@ function KhoHang() {
 
     const [GiaTriMoi, setGiaTriMoi] = useState('')
 
-    const URL_API_SANPHAM = 'https://phutungserver.herokuapp.com/sanpham/'
-    const PAYLOAD_UPDATES_SANPHAM = 'CapNhatSanPham'
+    const TatCaSanPham = useSelector((state) => state.AllSanPham)
+    const dispatch = useDispatch()
 
     function RenderKhoSanPham(arr) {
         var stt = 0
+        console.log('render: ')
         setLstResult(
             arr.map((e) => {
                 stt++
@@ -64,11 +67,14 @@ function KhoHang() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyRequest),
         }
-        NetWorking(URL_API_SANPHAM + PAYLOAD_UPDATES_SANPHAM, requestOptions)
+        const _URL =
+            'https://phutungserver.herokuapp.com/sanpham/CapNhatSanPham'
+        NetWorking(_URL, requestOptions)
             .then((response) => {
+                handleClose()
+
                 if (response.success) {
-                    //Show mess thành công
-                    handleClose()
+                    console.log('Cập nhật thành công')
                 }
             })
             .catch((error) => {
@@ -237,15 +243,16 @@ function KhoHang() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
+                console.log(res)
                 if (res.success) {
-                    arr_KhoHang = res.data
-                    // setLstSanPham(res.data)
-                    RenderKhoSanPham(res.data)
+                    //Thêm tất cả sp vào store
+                    dispatch({ type: AllSanPham, dataSanPham: res.data })
                 }
             })
             .catch((e) => {
                 alert('Có Lỗi Ở Kho Hàng! ')
                 handleClose()
+                console.log(e)
             })
     }
 
@@ -306,8 +313,8 @@ function KhoHang() {
     }
 
     useEffect(() => {
-        Refresh()
-    }, [])
+        RenderKhoSanPham(TatCaSanPham)
+    }, [TatCaSanPham])
 
     return (
         <section className="khohang-container">
@@ -338,7 +345,7 @@ function KhoHang() {
                                 const regex = new RegExp(textSearch)
                                 var stt = 0
                                 setLstResult(
-                                    arr_KhoHang.map((e) => {
+                                    TatCaSanPham.map((e) => {
                                         if (
                                             regex.exec(e.name.toLowerCase()) ||
                                             regex.exec(e.NhaCC.toLowerCase())

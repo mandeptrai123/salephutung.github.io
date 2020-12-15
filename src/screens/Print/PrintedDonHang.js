@@ -25,9 +25,9 @@ class PrintDonHang extends React.Component {
                 </h1>
                 <div className="bill-info-person">
                     <div className="bill-info-person__left">
-                        {/* <h3>TÊN KHÁCH HÀNG: {this.props.item.TenKhach}</h3>
+                        <h3>TÊN KHÁCH HÀNG: {this.props.item.TenKhach}</h3>
                         <h3>ĐỊA CHỈ: {this.props.item.DiaChiKhach}</h3>
-                        <h3>ĐIỆN THOẠI: {this.props.item.SDTNV}</h3> */}
+                        <h3>ĐIỆN THOẠI: {this.props.item.SDTKhach}</h3>
                     </div>
                     <div className="bill-info-person__right">
                         <h3>
@@ -37,7 +37,7 @@ class PrintDonHang extends React.Component {
                                     borderBottom: '2px solid black',
                                 }}
                             >
-                                {/* {this.props.item.Date} */}
+                                {this.props.item.Date}
                             </span>
                         </h3>
                         <h3>SỐ PHIẾU: 1</h3>
@@ -73,7 +73,7 @@ class PrintDonHang extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* {this.props.item.lstSanPham.map((e) => {
+                        {this.props.item.lstSanPham.map((e) => {
                             index++
                             return (
                                 <tr>
@@ -83,10 +83,10 @@ class PrintDonHang extends React.Component {
                                     <td>{e.soluongBan}</td>
                                     <td>{e.price}</td>
                                     <td>{e.pricesum}</td>
-                                    <td></td>
+                                    <td>{e.Ghichu}</td>
                                 </tr>
                             )
-                        })} */}
+                        })}
                         <tr>
                             <td colSpan="5">
                                 <h4 className="bill-table__text">TỔNG:</h4>
