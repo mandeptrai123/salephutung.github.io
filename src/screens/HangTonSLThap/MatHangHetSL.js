@@ -175,7 +175,7 @@ function MatHangHetSL() {
             headers: { 'Content-Type': 'application/json' },
         }
 
-        let _URL = 'https://phutungserver.herokuapp.com/quanli/MatHangHetSL'
+        let _URL = 'https://phutungserver.herokuapp.com/sanpham/SanPhamSLThap'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
