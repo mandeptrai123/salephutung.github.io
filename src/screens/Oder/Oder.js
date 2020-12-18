@@ -23,7 +23,7 @@ import MuiAlert from '@material-ui/lab/Alert'
 import { useSelector, useDispatch } from 'react-redux'
 
 //Action
-import { AllSanPham } from '../../Redux/ActionType'
+import { AllSanPham, AllKhachHang } from '../../Redux/ActionType'
 
 //import component in bill
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
@@ -36,7 +36,6 @@ let arr_Cart = []
 var _tienkhachno = 0
 var _tongtien = 0
 var _thanhtien = 0
-var arr_KhachHang = []
 
 function TienVietNam(input) {
     var x = parseInt(input)
@@ -48,7 +47,12 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 function Oder() {
+    //redux hook
+    const dispatch = useDispatch()
     const HoTenNV = useSelector((state) => state.HoTen)
+    const arrAllSP = useSelector((state) => state.AllSanPham)
+
+    const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
     //Modal Loading
     const [show, setShow] = useState(false)
     const [txtButtonNegative, settxtButtonNegative] = useState('OK')
@@ -100,14 +104,10 @@ function Oder() {
     //Lưu obj sản phẩm khi nhấn chọn
     const [objSanPham, setObjSanPham] = useState()
 
-    const [lstSuggest, setlstSuggest] = useState([])
-
     const [_responseSanPham, set_responseSanPham] = useState([])
 
     //state chứa toàn bộ component ItemSanPham
     const [UIAllSanPham, setUIAllSanPham] = useState()
-    //Lưu arr all sp đc trả về
-    const [dataArrAllSP, setDataArrAllSP] = useState()
 
     //Su li in bill
     const componentRef = useRef(null)
@@ -124,8 +124,6 @@ function Oder() {
     const [khoanThu, setKhoanThu] = useState(0)
     const [khoanChi, setKhoanChi] = useState(0)
     const [loiNhuan, setLoiNhuan] = useState(0)
-
-    const dispatch = useDispatch()
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
@@ -144,7 +142,7 @@ function Oder() {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
                             )
-                            arr_Cart[_index].soluongBan = e.target.value
+                            arr_Cart[_index].soluongBan = +e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         value={props.soluongBan}
@@ -158,7 +156,6 @@ function Oder() {
                                 (i) => i._id === props._id
                             )
                             arr_Cart[_index].price = e.target.value
-
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         onBlur={(e) => {}}
@@ -228,16 +225,18 @@ function Oder() {
         }
         const _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
         NetWorking(_URL, requestOptions)
-            .then((result) => {
+            .then(async (result) => {
                 setShow(false)
 
                 //fetch đc api get all sp thành công
                 if (result.success) {
                     //Thêm tất cả sp vào store
-                    dispatch({ type: AllSanPham, dataSanPham: result.data })
+                    await dispatch({
+                        type: AllSanPham,
+                        dataSanPham: result.data,
+                    })
 
                     RenderUIToanBoSanPham(result.data)
-                    setDataArrAllSP(result.data)
                 }
             })
             .catch((error) => {
@@ -303,9 +302,9 @@ function Oder() {
     function Handle_AddToCart(_id) {
         //Tìm sản phẩm có id vừa đc nhấn chọn
         var _item
-        dataArrAllSP.forEach((e) => {
+        arrAllSP.forEach((e) => {
             if (e._id == _id) {
-                _item = e
+                _item = { ...e }
                 return
             }
         })
@@ -324,12 +323,9 @@ function Oder() {
             setShow(true)
             return false
         } else {
-            _item.soluongBan = 1
-            _item.pricesum = parseInt(_item.price)
             arr_Cart.push(_item)
         }
         TinhToanThanhTien()
-
         RenderKetQuaGioHang(arr_Cart)
         handleHideHieuChinh()
     }
@@ -339,10 +335,11 @@ function Oder() {
         var _sum = 0
 
         arr_Cart.map((e) => {
-            _sum += e.price * e.soluongBan //Tính tổng tiền trên mỗi item giỏ hàng
-
+            _sum += e.price * e.soluongBan //Tính tổng tiền tất cả sản phẩm
+            e.pricesum = e.price * e.soluongBan // tính tổng tiền trên mỗi sản phẩm
             return _sum
         })
+
         _tongtien = _sum
 
         _thanhtien = _tongtien - _tienkhachno
@@ -477,7 +474,6 @@ function Oder() {
                         SDTKhach: sodienthoai,
                         lstSanPham: arr_Cart,
                     }
-                    console.log(objBill)
                     handleClickPrint(objBill)
 
                     setResultCart([])
@@ -532,11 +528,15 @@ function Oder() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
-                    arr_KhachHang = res.data
-                    setlstSuggest(res.data)
+                    dispatch({
+                        type: AllKhachHang,
+                        dataKhachHang: res.data,
+                    })
                 }
             })
-            .catch((e) => {})
+            .catch((e) => {
+                console.log(e)
+            })
     }
 
     useEffect(() => {
@@ -691,15 +691,11 @@ function Oder() {
                 return
             }
             var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
-            arr_Cart[_index].soluongBan = soLuongSanPhamDaChon
-
+            arr_Cart[_index].soluongBan = +soLuongSanPhamDaChon
+            setsoluongBan(arr_Cart[_index].soluongBan)
             RenderKetQuaGioHang(arr_Cart)
         }
     }
-
-    var soLuongTenKhachRender = 0
-    var soLuongSDTRender = 0
-    var soLuongDiaChiRender = 0
 
     return (
         <section
@@ -726,7 +722,7 @@ function Oder() {
                         <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
-                            options={lstSuggest.slice(0, 30)}
+                            options={arrAllKhachHang.slice(0, 30)}
                             getOptionLabel={(option) => option.Name}
                             style={{ width: 200 }}
                             inputValue={tenkhach}
@@ -736,19 +732,19 @@ function Oder() {
                                 //     if (newInputValue != null) {
                                 //         for (
                                 //             var i = 0;
-                                //             i < arr_KhachHang.length;
+                                //             i < arrAllKhachHang.length;
                                 //             i++
                                 //         ) {
                                 //             if (
-                                //                 arr_KhachHang[i].Name ==
+                                //                 arrAllKhachHang[i].Name ==
                                 //                 newInputValue
                                 //             ) {
-                                //                 setSoDienThoai(arr_KhachHang[i].SDT)
-                                //                 setValueSDT(arr_KhachHang[i].SDT)
+                                //                 setSoDienThoai(arrAllKhachHang[i].SDT)
+                                //                 setValueSDT(arrAllKhachHang[i].SDT)
 
-                                //                 setDiaChi(arr_KhachHang[i].DiaChi)
+                                //                 setDiaChi(arrAllKhachHang[i].DiaChi)
                                 //                 setValueDiaChi(
-                                //                     arr_KhachHang[i].DiaChi
+                                //                     arrAllKhachHang[i].DiaChi
                                 //                 )
                                 //                 break
                                 //             }
@@ -764,7 +760,7 @@ function Oder() {
                                         setTenKhach(e.target.value)
                                         // if (ValueName != null) {
                                         //     var obj = _.find(
-                                        //         arr_KhachHang,
+                                        //         arrAllKhachHang,
                                         //         function (e) {
                                         //             return e.Name == ValueName
                                         //         }
@@ -788,7 +784,7 @@ function Oder() {
                         {/* <Autocomplete
                             freeSolo={true}
                             id="combo-box-sdt"
-                            // lstSuggest.slice(0, 20)  
+                            // arrAllKhachHang.slice(0, 20)  
                             options={[1, 2, 3]}
                             inputValue={ValueSDT}
                             // getOptionLabel={(option) => option.SDT}
@@ -825,7 +821,7 @@ function Oder() {
                             //     setDiaChi(newInputValue)
                             // }}
                             inputValue={ValueDiaChi}
-                            // options={lstSuggest.slice(0, 20)}
+                            // options={arrAllKhachHang.slice(0, 20)}
                             options={[1, 2, 3, 4]}
                             // getOptionLabel={(option) => option.DiaChi}
                             style={{ width: 200, marginLeft: 50 }}
@@ -917,7 +913,7 @@ function Oder() {
 
                         var max20SanPhamSearch = 0
                         setUIAllSanPham(
-                            dataArrAllSP.map((e) => {
+                            arrAllSP.map((e) => {
                                 if (reg.test(e.name.toLowerCase())) {
                                     //Do dữ liệu nhiều nên render 20 sản phẩm khi search
                                     max20SanPhamSearch++

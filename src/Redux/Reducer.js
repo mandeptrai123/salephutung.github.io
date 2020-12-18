@@ -1,4 +1,4 @@
-import { LoginAction, AllSanPham } from './ActionType'
+import { LoginAction, AllSanPham, AllKhachHang } from './ActionType'
 import { useState } from 'react'
 // File Xu Li Logic ( Quan Li State)
 
@@ -8,6 +8,7 @@ const defineState = {
     HoTen: 'Chưa Có',
     isQuanLi: false,
     AllSanPham: [],
+    AllKhachHang: [],
 }
 
 const Reducer = (state = defineState, action) => {
@@ -27,6 +28,13 @@ const Reducer = (state = defineState, action) => {
             const arrSP = [...action.dataSanPham]
             state.AllSanPham = arrSP
             return state
+            break
+
+        case AllKhachHang:
+            const arrKH = [...action.dataKhachHang]
+            state.AllKhachHang = arrKH
+            return state
+            break
 
         default:
             return state

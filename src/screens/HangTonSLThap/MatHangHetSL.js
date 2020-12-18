@@ -19,7 +19,7 @@ import NetWorking from '../../networking/fetchWithTimeout'
 import { Button } from 'react-bootstrap'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import _ from 'lodash'
+import _, { indexOf } from 'lodash'
 import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -34,20 +34,22 @@ function MatHangHetSL() {
     )
 
     //Tạo list lưu ghi chú mỗi sản phẩm
-    const [listGhiChu, setListGhiChu] = useState([])
+    const [listGhiChu, setListGhiChu] = useState([{}])
     const [resultLst, setResultLst] = useState()
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
     var stt = -1
+    const [indexListGhiChu, setIndexListGhiChu] = useState(0)
     function ItemNoiDung(props) {
-        var indexItemNoiDung = ++stt
+        stt++
+        setIndexListGhiChu(indexListGhiChu + 1)
         var props = props.data
         const [textToggleDropdown, setTextToggleDropdown] = useState(
             props.DanhSachSP[0].Name
         )
-        const [amount, setAmount] = useState(0)
+        const [amount, setAmount] = useState(props.DanhSachSP[0].amount)
         // console.log(props)
 
         return (
@@ -60,6 +62,7 @@ function MatHangHetSL() {
                         style={{
                             width: '150px',
                         }}
+                        drop="down"
                     >
                         <Dropdown.Toggle
                             variant="success"
@@ -105,8 +108,8 @@ function MatHangHetSL() {
                                 TenNhaCC: props.NhaCC,
                                 NoiDungGhiChu: event.target.value,
                             }
-                            // Lưu ghi chú và tên nhà cc vào arr
-                            listGhiChu[indexItemNoiDung] = objGhiChu
+
+                            listGhiChu[indexListGhiChu] = objGhiChu
                         }}
                     />
                 </TableCell>
@@ -137,6 +140,7 @@ function MatHangHetSL() {
                             </p>
                         )
                     })}
+                    <br />
                     Mong các nhà cung cấp sớm cung cấp cho bên chúng tôi
                 </Modal.Body>
                 <Modal.Footer>
@@ -180,7 +184,6 @@ function MatHangHetSL() {
             .then((res) => {
                 handleClose()
                 if (res.success) {
-                    console.log(res)
                     var arr = []
                     //Gôm các sản phẩm cùng nhà cung cấp
                     _.forEach(res.data, function (e) {
@@ -205,7 +208,6 @@ function MatHangHetSL() {
                             })
                         }
                     })
-
                     UpdateHangThieuSL(arr.reverse())
                 }
             })
@@ -268,7 +270,7 @@ function MatHangHetSL() {
                 </div>
                 <TableContainer
                     style={{
-                        height: '80%',
+                        height: '55vh',
                         width: '100%',
                     }}
                 >

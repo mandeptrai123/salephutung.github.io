@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 
+import { useSelector } from 'react-redux'
+
 import { Modal, Spinner } from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
@@ -34,6 +36,10 @@ function TienVietNam(input) {
 }
 
 function LichSuGiaoDich() {
+    //react redux hook, lấy toàn state all sp và khách hàng từ store
+    const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
+    const arrAllSanPham = useSelector((state) => state.AllSanPham)
+
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
     //const [startDate, setStartDate] = useState(new Date());
@@ -59,53 +65,8 @@ function LichSuGiaoDich() {
         ValueTen,
         ValueSanPham,
     } = state
-    const [lstSuggestSanPham, SetlstSuggestSanPham] = useState([])
-    const [lstSuggestTenKhach, SetlstSuggestTenKhach] = useState([])
 
     const componentRef = useRef(null)
-
-    function FetchToanBoKhachHang() {
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
-
-        let _URL =
-            'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
-        NetWorking(_URL, requestOptions)
-            .then((res) => {
-                if (res.success) {
-                    _arrKhachHang = res.data
-                    SetlstSuggestTenKhach(res.data)
-                }
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Đơn Hàng Trong Ngày (Danh Sach SP)! :' + e)
-            })
-    }
-
-    function OnStart() {
-        FectchToanBoSanPham()
-        FetchToanBoKhachHang()
-    }
-
-    function FectchToanBoSanPham() {
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        }
-
-        let _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
-        NetWorking(_URL, requestOptions)
-            .then((res) => {
-                if (res.success) {
-                    SetlstSuggestSanPham(res.data)
-                }
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Đơn Hàng Trong Ngày (Danh Sach SP)! :' + e)
-            })
-    }
 
     function FindItemBySanPham(nameSP) {
         var _arrResult = []
@@ -147,7 +108,6 @@ function LichSuGiaoDich() {
             (_date.getDate() > 9 ? _date.getDate() : '0' + _date.getDate())
         OnRefresh(_dateDefault)
         setState({ ...state, DateTimKiem: _dateDefault })
-        OnStart()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -280,7 +240,7 @@ function LichSuGiaoDich() {
                 <Autocomplete
                     freeSolo={true}
                     id="box-TenKhach"
-                    options={lstSuggestTenKhach}
+                    options={arrAllKhachHang.slice(0, 30)}
                     getOptionLabel={(option) => option.Name}
                     style={{ width: 200 }}
                     inputValue={ValueTen}
@@ -294,13 +254,6 @@ function LichSuGiaoDich() {
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            value={TenTimKiem}
-                            onChange={(e) => {
-                                setState({
-                                    ...state,
-                                    TenTimKiem: e.target.value,
-                                })
-                            }}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                 }
@@ -321,7 +274,7 @@ function LichSuGiaoDich() {
                 <Autocomplete
                     freeSolo={true}
                     id="box-SanPham"
-                    options={lstSuggestSanPham}
+                    options={arrAllSanPham.slice(0, 30)}
                     getOptionLabel={(option) => option.name}
                     style={{ width: 200 }}
                     inputValue={ValueSanPham}
@@ -335,9 +288,7 @@ function LichSuGiaoDich() {
                         <TextField
                             {...params}
                             // value={ValueSanPham}
-                            // onChange={e=>{
-                            //     setState({...state,SanPhamTimKiem:e.target.value});
-                            // }}
+
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                 }
