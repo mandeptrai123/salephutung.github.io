@@ -23,7 +23,11 @@ import MuiAlert from '@material-ui/lab/Alert'
 import { useSelector, useDispatch } from 'react-redux'
 
 //Action
-import { AllSanPham, AllKhachHang } from '../../Redux/ActionType'
+import {
+    AllSanPham,
+    GetAllKhachHang,
+    AddNewKhachHang,
+} from '../../Redux/ActionType'
 
 //import component in bill
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
@@ -51,7 +55,6 @@ function Oder() {
     const dispatch = useDispatch()
     const HoTenNV = useSelector((state) => state.HoTen)
     const arrAllSP = useSelector((state) => state.AllSanPham)
-
     const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
     //Modal Loading
     const [show, setShow] = useState(false)
@@ -462,9 +465,11 @@ function Oder() {
             body: JSON.stringify(itemRequest),
         }
         let _URL = 'https://phutungserver.herokuapp.com/donhang/ThemDonHang'
+
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
+
                 if (res.success) {
                     // Khi đặt hàng thành công thì thực hiện in bill
                     // Tạo obj bill để in bill
@@ -473,8 +478,26 @@ function Oder() {
                         DiaChiKhach: diachi,
                         SDTKhach: sodienthoai,
                         lstSanPham: arr_Cart,
+                        Date: itemRequest.Date,
                     }
                     handleClickPrint(objBill)
+
+                    // Kiểm tra có p là khách hàng mới không, thêm vào store
+                    const sdtK = sodienthoai
+                    const dcK = diachi
+                    const tenK = tenkhach
+                    if (!arrAllKhachHang.find((e) => e.SDT == sodienthoai)) {
+                        dispatch({
+                            type: AddNewKhachHang,
+                            dataNewKhachHang: {
+                                SDT: sdtK,
+                                DiaChi: dcK,
+                                Name: tenK,
+                                Congno: 0,
+                                LichSuMuaHang: [],
+                            },
+                        })
+                    }
 
                     setResultCart([])
                     setGhiChu('')
@@ -529,7 +552,7 @@ function Oder() {
             .then((res) => {
                 if (res.success) {
                     dispatch({
-                        type: AllKhachHang,
+                        type: 'GetAllKhachHang',
                         dataKhachHang: res.data,
                     })
                 }

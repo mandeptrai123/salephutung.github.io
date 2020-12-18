@@ -4,7 +4,6 @@ import Table from 'react-bootstrap/Table'
 var index = 0
 class PrintDonHang extends React.Component {
     render() {
-        console.log(this.props.item)
         return (
             <div className="bill-container">
                 <div className="bill-header">

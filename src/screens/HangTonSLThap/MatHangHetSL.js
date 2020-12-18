@@ -41,16 +41,15 @@ function MatHangHetSL() {
     const handleShow = () => setShow(true)
 
     var stt = -1
-    const [indexListGhiChu, setIndexListGhiChu] = useState(0)
     function ItemNoiDung(props) {
         stt++
-        setIndexListGhiChu(indexListGhiChu + 1)
+        const indexItemNoiDung = props.indexItem
         var props = props.data
+
         const [textToggleDropdown, setTextToggleDropdown] = useState(
             props.DanhSachSP[0].Name
         )
         const [amount, setAmount] = useState(props.DanhSachSP[0].amount)
-        // console.log(props)
 
         return (
             <TableRow>
@@ -109,7 +108,8 @@ function MatHangHetSL() {
                                 NoiDungGhiChu: event.target.value,
                             }
 
-                            listGhiChu[indexListGhiChu] = objGhiChu
+                            listGhiChu[indexItemNoiDung] = objGhiChu
+                            console.log(listGhiChu)
                         }}
                     />
                 </TableCell>
@@ -218,8 +218,10 @@ function MatHangHetSL() {
     }
 
     function UpdateHangThieuSL(arr) {
+        var index = -1
         const result = arr.map((e) => {
-            return <ItemNoiDung data={e} />
+            index++
+            return <ItemNoiDung data={e} indexItem={index} />
         })
         setResultLst(result)
     }

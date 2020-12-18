@@ -1,5 +1,10 @@
-import { LoginAction, AllSanPham, AllKhachHang } from './ActionType'
-import { useState } from 'react'
+import {
+    LoginAction,
+    AllSanPham,
+    GetAllKhachHang,
+    AddNewKhachHang,
+} from './ActionType'
+
 // File Xu Li Logic ( Quan Li State)
 
 const defineState = {
@@ -30,9 +35,15 @@ const Reducer = (state = defineState, action) => {
             return state
             break
 
-        case AllKhachHang:
+        case GetAllKhachHang:
             const arrKH = [...action.dataKhachHang]
             state.AllKhachHang = arrKH
+            return state
+            break
+
+        case AddNewKhachHang:
+            const objNewKhachHang = { ...action.dataNewKhachHang }
+            state.AllKhachHang.push(objNewKhachHang)
             return state
             break
 
