@@ -373,6 +373,7 @@ function LichSuGiaoDich() {
                 <Modal.Body
                     style={{
                         overflow: 'hidden',
+                        padding: '0',
                     }}
                 >
                     <PrintedDonHang

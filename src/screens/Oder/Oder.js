@@ -121,12 +121,7 @@ function Oder() {
 
     //Thêm thuộc tính cho api đặt hàng
     //Hoàng code
-    const [priceNhap, setPriceNhap] = useState(0)
     const [doanhThu, setDoanhThu] = useState(0)
-    const [giaVon, setGiaVon] = useState(0)
-    const [khoanThu, setKhoanThu] = useState(0)
-    const [khoanChi, setKhoanChi] = useState(0)
-    const [loiNhuan, setLoiNhuan] = useState(0)
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
@@ -370,25 +365,25 @@ function Oder() {
             return false
         }
 
-        if (sodienthoai == '' && ValueSDT == '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                openSnackbar: true,
-                isSuccess: false,
-                messSnackbar: 'Vui Lòng Điền Số Điện Thoại !',
-            })
-            return false
-        }
+        // if (sodienthoai == '' && ValueSDT == '') {
+        //     setStateSnackbar({
+        //         ...stateSnackbar,
+        //         openSnackbar: true,
+        //         isSuccess: false,
+        //         messSnackbar: 'Vui Lòng Điền Số Điện Thoại !',
+        //     })
+        //     return false
+        // }
 
-        if (diachi == '' && ValueDiaChi == '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                openSnackbar: true,
-                isSuccess: false,
-                messSnackbar: 'Vui Lòng Điền Địa Chỉ !',
-            })
-            return false
-        }
+        // if (diachi == '' && ValueDiaChi == '') {
+        //     setStateSnackbar({
+        //         ...stateSnackbar,
+        //         openSnackbar: true,
+        //         isSuccess: false,
+        //         messSnackbar: 'Vui Lòng Điền Địa Chỉ !',
+        //     })
+        //     return false
+        // }
 
         if (dateOrder == null) {
             setStateSnackbar({
@@ -661,6 +656,7 @@ function Oder() {
                 <Modal.Body
                     style={{
                         overflow: 'hidden',
+                        padding: '0',
                     }}
                 >
                     <PrintedDonHang

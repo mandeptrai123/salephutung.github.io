@@ -34,7 +34,7 @@ function MatHangHetSL() {
     )
 
     //Tạo list lưu ghi chú mỗi sản phẩm
-    const [listGhiChu, setListGhiChu] = useState([{}])
+    const [listGhiChu, setListGhiChu] = useState([])
     const [resultLst, setResultLst] = useState()
 
     const handleClose = () => setShow(false)
@@ -43,13 +43,16 @@ function MatHangHetSL() {
     var stt = -1
     function ItemNoiDung(props) {
         stt++
-        const indexItemNoiDung = props.indexItem
+        const item = props.indexItem
         var props = props.data
 
         const [textToggleDropdown, setTextToggleDropdown] = useState(
             props.DanhSachSP[0].Name
         )
         const [amount, setAmount] = useState(props.DanhSachSP[0].amount)
+
+        const [indexInDanhSachSP, setIndexInDanhSachSP] = useState(0)
+        const [contentGhiChu, setContentGhiChu] = useState('')
 
         return (
             <TableRow>
@@ -78,12 +81,14 @@ function MatHangHetSL() {
                             {textToggleDropdown}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            {props.DanhSachSP.map((e) => {
+                            {props.DanhSachSP.map((e, index) => {
                                 return (
                                     <Dropdown.Item
                                         onClick={() => {
                                             setTextToggleDropdown(e.Name)
                                             setAmount(e.amount)
+                                            setIndexInDanhSachSP(index)
+                                            setContentGhiChu(e.Ghichu)
                                         }}
                                     >
                                         {e.Name}
@@ -100,16 +105,19 @@ function MatHangHetSL() {
                         style={{
                             height: '60px',
                         }}
+                        value={contentGhiChu}
                         placeholder="Ghi chú"
                         rowsMax={3}
                         onBlur={(event) => {
-                            const objGhiChu = {
-                                TenNhaCC: props.NhaCC,
-                                NoiDungGhiChu: event.target.value,
-                            }
+                            //Lưu ghi vào mỗi sản phẩm
+                            props.DanhSachSP[indexInDanhSachSP].Ghichu =
+                                event.target.value
 
-                            listGhiChu[indexItemNoiDung] = objGhiChu
-                            console.log(listGhiChu)
+                            //Cập nhật lại list danh sách sản phẩm
+                            listGhiChu[item] = props
+                        }}
+                        onChange={(event) => {
+                            setContentGhiChu(event.target.value)
                         }}
                     />
                 </TableCell>
@@ -136,7 +144,10 @@ function MatHangHetSL() {
                     {listGhiChu.map((e) => {
                         return (
                             <p style={{ marginBottom: '0' }}>
-                                - Nhà cung cấp {e.TenNhaCC}: {e.NoiDungGhiChu}
+                                - Nhà cung cấp {e.NhaCC}:{' '}
+                                {e.DanhSachSP.map((element) => {
+                                    return element.Ghichu
+                                })}
                             </p>
                         )
                     })}
@@ -192,6 +203,7 @@ function MatHangHetSL() {
                                 Name: e.name,
                                 amount: e.amount,
                                 amountAlert: e.amountAlert,
+                                Ghichu: '',
                             },
                         ]
                         var isAlready = _.some(arr, { NhaCC: e.NhaCC })
@@ -202,6 +214,7 @@ function MatHangHetSL() {
                                 return o.NhaCC == e.NhaCC
                             })
                             arr[index].DanhSachSP.push({
+                                Ghichu: '',
                                 Name: e.name,
                                 amount: e.amount,
                                 amountAlert: e.amountAlert,
@@ -261,13 +274,7 @@ function MatHangHetSL() {
                             color: 'red',
                             cursor: 'pointer',
                         }}
-                        onClick={() => {
-                            setShowModalSendEmailGhiChu(true)
-
-                            listGhiChu.forEach((e) => {
-                                console.log(e)
-                            })
-                        }}
+                        onClick={() => setShowModalSendEmailGhiChu(true)}
                     />
                 </div>
                 <TableContainer
