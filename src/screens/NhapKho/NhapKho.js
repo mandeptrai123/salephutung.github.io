@@ -22,7 +22,8 @@ import { TextField } from '@material-ui/core'
 
 import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-
+import { useSelector, useDispatch } from 'react-redux';
+import {AddNewSanPham} from '../../Redux/ActionType';
 import _ from 'lodash'
 
 var arr_NhatKy = []
@@ -40,13 +41,17 @@ function NhapKho() {
     const [soluongbaodong, setSLBaoDong] = useState('')
     const [donvi, setDonVi] = useState('')
     const [dongia, setGiaNhap] = useState('')
+    const [dongiaUI, setGiaNhapUI] = useState('')
     const [giaban, setGiaBan] = useState('')
     const [nhacc, setNhaCC] = useState('')
     const [sdtnhacc, setSDTNhaCC] = useState('')
     const [lstnhaCC, setLstNhaCC] = useState([])
 
-    const handleClose = () => setShowLoading(false)
-    const handleShow = () => setShowLoading(true)
+    const handleClose = () => setShowLoading(false);
+    const handleShow = () => setShowLoading(true);
+
+    const dispatch = useDispatch();
+ 
 
     const [stateSnackbar, setStateSnackbar] = React.useState({
         open: false,
@@ -138,14 +143,14 @@ function NhapKho() {
             return false
         }
 
-        if (_nhacc === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền Tên Nhà Cung Cấp',
-            })
-            return false
-        }
+        // if (_nhacc === '') {
+        //     setStateSnackbar({
+        //         ...stateSnackbar,
+        //         open: true,
+        //         messSnackbar: 'Vui Lòng Điền Tên Nhà Cung Cấp',
+        //     })
+        //     return false
+        // }
 
         if (dongia === '') {
             setStateSnackbar({
@@ -156,14 +161,14 @@ function NhapKho() {
             return false
         }
 
-        if (sdtnhacc === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền SDT Nhà Cung Cấp',
-            })
-            return false
-        }
+        // if (sdtnhacc === '') {
+        //     setStateSnackbar({
+        //         ...stateSnackbar,
+        //         open: true,
+        //         messSnackbar: 'Vui Lòng Điền SDT Nhà Cung Cấp',
+        //     })
+        //     return false
+        // }
 
         return true
     }
@@ -286,6 +291,7 @@ function NhapKho() {
                     setNhaCC('')
                     setSDTNhaCC('')
                     setGiaNhap('')
+                    setGiaNhapUI('');
                     setDonVi('')
                     setSL('')
                     setSLBaoDong('')
@@ -315,7 +321,6 @@ function NhapKho() {
                         open: true,
                     })
                 }
-
                 handleClose()
             })
             .catch((e) => {
@@ -409,6 +414,7 @@ function NhapKho() {
         var _a = parseInt(input)
         if (_a % 1000 !== 0) {
             setGiaNhap('')
+            setGiaNhapUI('');
             setStateSnackbar({
                 ...stateSnackbar,
                 open: true,
@@ -626,14 +632,18 @@ function NhapKho() {
                                     }
                                 }}
                                 onChange={(e) => {
-                                    setGiaNhap(e.target.value)
+                                    setGiaNhap(e.target.value);
                                 }}
                                 value={dongia}
                                 width={300}
                                 placeholder="Giá Nhập"
                             />
                             {soluong && dongia ? (
-                                <p>Giá vốn: {parseInt(dongia / soluong)} đ</p>
+                                <div>
+                                       Giá nhập : {TienVietNam(dongia)} 
+                                    <p>Giá vốn: {TienVietNam(dongia / soluong)} / sản phẩm</p>
+                                </div>
+                                
                             ) : (
                                 <p></p>
                             )}
@@ -641,7 +651,8 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                       
+                            <h6 style={{ color: resources.colorPrimary }}>
                             Giá Bán Lẻ
                         </h6>
                         <div
@@ -680,7 +691,12 @@ function NhapKho() {
                                 width={300}
                                 placeholder="Giá Bán Lẻ"
                             />
+                             {giaban && <p>
+                            Giá Bán Lẻ: {TienVietNam(giaban)} / sản phẩm
+                            </p>}
                         </div>
+                       
+                        
                     </li>
 
                     <li className="item__input">

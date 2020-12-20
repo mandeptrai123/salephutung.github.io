@@ -119,6 +119,9 @@ function Oder() {
         itemSelected: null,
     })
 
+    // Input Nhap So Luong Da Chon
+    const inputSoluongDaChon = useRef()
+
     //Thêm thuộc tính cho api đặt hàng
     //Hoàng code
     const [doanhThu, setDoanhThu] = useState(0)
@@ -279,7 +282,8 @@ function Oder() {
                                 setObjSanPham(props)
 
                                 // Show modal điền số lượng sản phẩm khi nhấn chọn sản phẩm
-                                setShowModalDienSoLuongSP(true)
+                                setShowModalDienSoLuongSP(true);
+                                //inputSoluongDaChon.current.autoFocus = true;
                             } else {
                                 setStateSnackbar({
                                     ...stateSnackbar,
@@ -399,7 +403,7 @@ function Oder() {
     }
 
     function XuLiThongTinKhach() {
-        var d = new Date()
+        var d = new Date();
 
         var _itemRq = {
             SDTNV: '0969025915',
@@ -481,7 +485,7 @@ function Oder() {
                     const sdtK = sodienthoai
                     const dcK = diachi
                     const tenK = tenkhach
-                    if (!arrAllKhachHang.find((e) => e.SDT == sodienthoai)) {
+                    if (arrAllKhachHang.findIndex((e) => e.Name === objBill.TenKhach) < 0) {
                         dispatch({
                             type: AddNewKhachHang,
                             dataNewKhachHang: {
@@ -492,6 +496,9 @@ function Oder() {
                                 LichSuMuaHang: [],
                             },
                         })
+                    }else
+                    {
+
                     }
 
                     setResultCart([])
@@ -614,9 +621,11 @@ function Oder() {
                 </Modal.Header>
                 <Modal.Body>
                     <TextField
+                        
                         id="outlined-basic"
                         label="Số lượng"
                         margin="normal"
+                        autoFocus={true}
                         type="number"
                         variant="outlined"
                         style={{ width: '100%' }}
@@ -659,10 +668,11 @@ function Oder() {
                         padding: '0',
                     }}
                 >
-                    <PrintedDonHang
+                   {false && <PrintedDonHang
+                    
                         ref={componentRef}
                         item={stateModal.itemSelected}
-                    />
+                    />}
                 </Modal.Body>
                 <Modal.Footer>
                     <ReactToPrint
@@ -741,7 +751,7 @@ function Oder() {
                         <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
-                            options={arrAllKhachHang.slice(0, 30)}
+                            options={arrAllKhachHang}
                             getOptionLabel={(option) => option.Name}
                             style={{ width: 200 }}
                             inputValue={tenkhach}
@@ -960,10 +970,10 @@ function Oder() {
 
             <section className="container-content">
                 <div
-                    style={{ height: 800, marginTop: 10 }}
                     className="content-left"
                 >
                     <div className="content-left__find-product">
+
                         <TableContainer
                             style={{
                                 height: '100%',
@@ -1020,7 +1030,7 @@ function Oder() {
 
                 <div style={{ height: 800, width: '60%', margin: 10 }}>
                     <div
-                        style={{ width: '100%' }}
+                        style={{ height:"70%",width: '100%' }}
                         className="content-right__price"
                     >
                         <TableContainer
@@ -1160,11 +1170,6 @@ function Oder() {
                         ></Spinner>
                         {messLoading}
                     </Modal.Title>
-                    <Modal.Footer>
-                        <Button onClick={(e) => handleClose()}>
-                            {txtButtonNegative}
-                        </Button>
-                    </Modal.Footer>
                 </Modal.Body>
             </Modal>
 

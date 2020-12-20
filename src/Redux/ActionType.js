@@ -3,3 +3,5 @@ export const LoginAction = 'SelectPlayer'
 export const AllSanPham = 'AllSanPham'
 export const GetAllKhachHang = 'GetAllKhachHang'
 export const AddNewKhachHang = 'AddNewKhachHang'
+export const AddNewSanPham = 'AddNewSanPham'
+

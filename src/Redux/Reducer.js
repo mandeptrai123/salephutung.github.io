@@ -3,6 +3,7 @@ import {
     AllSanPham,
     GetAllKhachHang,
     AddNewKhachHang,
+    AddNewSanPham
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -45,7 +46,14 @@ const Reducer = (state = defineState, action) => {
             const objNewKhachHang = { ...action.dataNewKhachHang }
             state.AllKhachHang.push(objNewKhachHang)
             return state
-            break
+            break;
+
+        case AddNewSanPham:
+                const objSanPham = { ...action.dataNewSanPham}
+                state.AllSanPham.push(objSanPham);
+                return state
+                break
+    
 
         default:
             return state

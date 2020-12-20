@@ -146,7 +146,8 @@ function MatHangHetSL() {
                             <p style={{ marginBottom: '0' }}>
                                 - Nhà cung cấp {e.NhaCC}:{' '}
                                 {e.DanhSachSP.map((element) => {
-                                    return element.Ghichu
+                                    if(parseInt(element.Ghichu) > 0)
+                                        return element.Ghichu +' '+element.Name+' \n'
                                 })}
                             </p>
                         )

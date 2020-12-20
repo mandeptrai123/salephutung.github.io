@@ -45,10 +45,11 @@ function BaoCaoDoanhThu(props) {
     const URL_GET_DOANHTHU = 'https://phutungserver.herokuapp.com/doanhthu/'
 
     //State để hiện thị ngày thàng năm của doanh thu đang xem trên UI
-    const [viewDoanhThuMonthYear, setViewDoanhThuMonthYear] = useState('')
+    const [viewDoanhThuMonthYear, setViewDoanhThuMonthYear] = useState();
 
     var stt = 0
     function ItemDonHang(props) {
+        console.log(props);
         stt++
         return (
             <TableRow hover>
@@ -231,6 +232,7 @@ function BaoCaoDoanhThu(props) {
     //         .catch((e) => {
     //             setStateSnackbar({
     //                 ...stateSnackbar,
+    
     //                 isSuccess: false,
     //                 messSnackbar: 'Có Lỗi Ở Báo Cáo Doanh Thu! ' + e,
     //                 openSnackbar: true,
@@ -243,8 +245,14 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Date: date,
         }
-
-        setViewDoanhThuMonthYear(date)
+        if(PAYLOAD == 'DoanhThuTheoTuan')
+        {
+            setViewDoanhThuMonthYear("Theo Tuần Gần Nhất");
+        }else
+        {
+            setViewDoanhThuMonthYear("Ngày: "+date);
+        }
+       
 
         const optionsRequest = {
             method: 'POST',
@@ -270,7 +278,7 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Month: month,
         }
-        setViewDoanhThuMonthYear(month)
+        setViewDoanhThuMonthYear("Tháng: "+month+" Trong Năm Nay");
 
         const optionsRequest = {
             method: 'POST',
@@ -296,7 +304,7 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Year: year,
         }
-        setViewDoanhThuMonthYear(year)
+        setViewDoanhThuMonthYear("Năm "+year);
 
         const optionsRequest = {
             method: 'POST',
@@ -321,7 +329,11 @@ function BaoCaoDoanhThu(props) {
     useEffect(() => {
         //Khi vào lịch sử giao dịch thì mặc định cho xem doanh thu hôm nay
         var dateNow = new Date()
-        setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+        setviewModelDropdown('Doanh Thu Ngày Hôm Nay');
+        setDateViewProduct(dateNow.getFullYear()+"-"+
+            (dateNow.getMonth() + 1)
+        +"-"+dateNow.getDate());
+        
         LoadDoanhThuTheoNgayHoacTuan(
             `${dateNow.getFullYear()}-${
                 dateNow.getMonth() + 1
@@ -349,12 +361,15 @@ function BaoCaoDoanhThu(props) {
                         style={{
                             width: '350px',
                         }}
+                        value={dateViewProduct}
                         onChange={(e) => {
-                            var d = new Date(e.target.value)
-                            setDateViewProduct(
-                                `${d.getFullYear()}-${
-                                    d.getMonth + 1
-                                }-${d.getDate()}`
+                            var d = new Date(e.target.value);
+                            var _dateNew =  d.getFullYear()+"-"+(d.getMonth() + 1)+"-"+(d.getDate());
+                            setDateViewProduct(_dateNew);
+                        
+                            LoadDoanhThuTheoNgayHoacTuan(
+                                _dateNew,
+                                'BaoCaoTheoNgay'
                             )
                         }}
                         onKeyPress={(e) => {
@@ -555,8 +570,7 @@ function BaoCaoDoanhThu(props) {
                         textAlign: 'left',
                     }}
                 >
-                    Bạn đang xem doanh thu ngày/tháng/năm{' '}
-                    {viewDoanhThuMonthYear} , Số Đơn Hàng Tăng : 10
+                    Bạn đang xem doanh thu {viewDoanhThuMonthYear}
                 </h4>
                 <TableContainer
                     style={{
@@ -567,7 +581,7 @@ function BaoCaoDoanhThu(props) {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Top</TableCell>
-                                <TableCell>Tên Sản Phẩm</TableCell>
+                                <TableCell>Tên Khách</TableCell>
                                 <TableCell>Số Lượng Bán Được</TableCell>
                                 <TableCell>Chi Phí</TableCell>
                                 <TableCell>Doanh Thu</TableCell>
