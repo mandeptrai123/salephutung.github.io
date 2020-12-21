@@ -323,6 +323,9 @@ function Oder() {
         if (indexAlready > -1) {
             setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
             setShow(true)
+            setTimeout(() => {
+                setShow(false)
+            }, 1500)
             return false
         } else {
             arr_Cart.push(_item)
@@ -491,7 +494,7 @@ function Oder() {
                     setTenKhach('')
                     setDiaChi('')
                     setSoDienThoai('')
-
+                    arr_Cart.splice(0, arr_Cart.length)
                     setValueSDT('')
                     setValueDiaChi('')
                     setValueName('')
@@ -738,9 +741,11 @@ function Oder() {
                             onInputChange={(event, newInputValue) => {
                                 setTenKhach(newInputValue)
 
-                                const reg = new RegExp(newInputValue)
                                 arrAllKhachHang.map((e, index) => {
-                                    if (reg.exec(e.Name)) {
+                                    if (
+                                        newInputValue ===
+                                        arrAllKhachHang[index].Name
+                                    ) {
                                         if (arrAllKhachHang[index].SDT) {
                                             setSoDienThoai(e.SDT)
                                         } else {
