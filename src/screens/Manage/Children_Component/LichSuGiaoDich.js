@@ -367,7 +367,7 @@ function LichSuGiaoDich() {
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
-                size="lg"
+                size="xl"
                 show={stateModal.open}
             >
                 <Modal.Body

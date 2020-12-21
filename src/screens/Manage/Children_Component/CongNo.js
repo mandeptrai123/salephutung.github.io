@@ -16,8 +16,10 @@ import resources from '../../../resource/color/ColorApp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../../networking/fetchWithTimeout'
+import { useSelector, useDispatch } from 'react-redux'
 
-import { useSelector } from 'react-redux'
+//import redux
+import { IsUpdateCongNo } from '../../../Redux/ActionType'
 
 let SDTSelected
 var arr_KhachHang = []
@@ -25,6 +27,8 @@ var arr_KhachHang = []
 function CongNo() {
     const SDTNV = useSelector((state) => state.SDTNV)
     const PassLogin = useSelector((state) => state.Pass)
+    const isUpdateCN = useSelector((state) => state.isUpdateCongNo)
+    const dispatch = useDispatch()
 
     const [lstResult, setResult] = useState()
     const [totalCongNo, setTotalCongNo] = useState(0)
@@ -118,12 +122,6 @@ function CongNo() {
                             setIsDisableUpdate(!isDisableUpdate)
 
                             if (isDisableUpdate) {
-                                //Cho điền các thông tin cần thay đổi trc, sau đó mới hiện popup nhập mật khẩu
-                                setStateModalDieuChinh({
-                                    pass: '',
-                                    openDieuChinh: true,
-                                })
-
                                 //Lấy thời gian hiện tại
                                 var _d = new Date()
                                 var _time =
@@ -137,6 +135,17 @@ function CongNo() {
                                 bodyRequestUpdateCongNo.DiaChi = diaChi
                                 bodyRequestUpdateCongNo.Congno = +congNo
                                 bodyRequestUpdateCongNo.Time = _time
+
+                                //Cho điền các thông tin cần thay đổi trc, sau đó mới hiện popup nhập mật khẩu
+                                //Nhập mật khẩu lần đầu, lần sau ko nhập mật khẩu lại
+                                if (!isUpdateCN) {
+                                    setStateModalDieuChinh({
+                                        Pass: '',
+                                        openDieuChinh: true,
+                                    })
+                                } else {
+                                    CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                                }
                             }
                         }}
                         style={{
@@ -231,7 +240,6 @@ function CongNo() {
             'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
-                console.log(res)
                 handleClose()
                 if (res.success) {
                     arr_KhachHang = res.data
@@ -268,16 +276,24 @@ function CongNo() {
     }
 
     function CapNhatCongNoMoi(itemRequest) {
-        if (PassLogin != Pass) {
-            handleShow()
-            setStateModalDieuChinh({
-                pass: '',
-                openDieuChinh: false,
+        if (!isUpdateCN) {
+            if (PassLogin != Pass) {
+                handleShow()
+                setStateModalDieuChinh({
+                    Pass: '',
+                    openDieuChinh: false,
+                })
+                alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
+                //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
+                OnFresh()
+                return
+            }
+
+            //Cho nhập mật khẩu lần đầu khi cập nhật
+            dispatch({
+                type: IsUpdateCongNo,
+                value: true,
             })
-            alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
-            //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
-            OnFresh()
-            return
         }
 
         handleCloseDieuChinh(false)
@@ -296,7 +312,6 @@ function CongNo() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
-                console.log(res)
                 setMessResponse(res.mess)
                 setStateModalDieuChinh({
                     openDieuChinh: false,
@@ -505,7 +520,7 @@ function CongNo() {
                     <Button
                         onClick={(e) => {
                             setStateModalDieuChinh({
-                                pass: '',
+                                Pass: '',
                                 openDieuChinh: false,
                             })
 

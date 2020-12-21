@@ -23,8 +23,19 @@ import _, { indexOf } from 'lodash'
 import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
+import TextField from '@material-ui/core/TextField'
+
+//import redux
+import {
+    SaveListSPThieuSL,
+    UpdateGhiChuNewSpThieuSl,
+} from '../../Redux/ActionType'
+import { useDispatch, useSelector } from 'react-redux'
 
 function MatHangHetSL() {
+    const dispatch = useDispatch()
+    const listSPThieuSL = useSelector((state) => state.ListSPThieuSL)
+
     const [show, setShow] = useState(false)
     const [messLoading, setMessLoading] = useState('')
 
@@ -34,90 +45,42 @@ function MatHangHetSL() {
     )
 
     //Tạo list lưu ghi chú mỗi sản phẩm
-    const [listGhiChu, setListGhiChu] = useState([])
     const [resultLst, setResultLst] = useState()
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
-    var stt = -1
     function ItemNoiDung(props) {
-        stt++
-        const item = props.indexItem
-        var props = props.data
-
-        const [textToggleDropdown, setTextToggleDropdown] = useState(
-            props.DanhSachSP[0].Name
-        )
-        const [amount, setAmount] = useState(props.DanhSachSP[0].amount)
-
-        const [indexInDanhSachSP, setIndexInDanhSachSP] = useState(0)
-        const [contentGhiChu, setContentGhiChu] = useState('')
+        const objSP = { ...props.data }
+        const [valueGhiChuEachSP, setValueGhiChuEachSP] = useState(objSP.Ghichu)
 
         return (
             <TableRow>
-                <TableCell>{stt}</TableCell>
-                <TableCell>{props.NhaCC}</TableCell>
-                <TableCell>{props.SDTNhaCC}</TableCell>
-                <TableCell>
-                    <Dropdown
-                        style={{
-                            width: '150px',
-                        }}
-                        drop="down"
-                    >
-                        <Dropdown.Toggle
-                            variant="success"
-                            id="dropdown-basic"
-                            style={{
-                                width: '100%',
-                                color: 'black',
-                                backgroundColor: 'transparent',
-                                border: 'none',
-                                outline: 'none',
-                                boxShadow: 'none',
-                            }}
-                        >
-                            {textToggleDropdown}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {props.DanhSachSP.map((e, index) => {
-                                return (
-                                    <Dropdown.Item
-                                        onClick={() => {
-                                            setTextToggleDropdown(e.Name)
-                                            setAmount(e.amount)
-                                            setIndexInDanhSachSP(index)
-                                            setContentGhiChu(e.Ghichu)
-                                        }}
-                                    >
-                                        {e.Name}
-                                    </Dropdown.Item>
-                                )
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </TableCell>
-                <TableCell>{amount}</TableCell>
+                <TableCell>{props.indexItem}</TableCell>
+                <TableCell>{objSP.NhaCC}</TableCell>
+                <TableCell>{objSP.SDTNhaCC}</TableCell>
+                <TableCell>{objSP.Name}</TableCell>
+                <TableCell>{objSP.amount}</TableCell>
                 <TableCell>
                     <TextareaAutosize
                         rowsMin={3}
                         style={{
                             height: '60px',
                         }}
-                        value={contentGhiChu}
+                        value={valueGhiChuEachSP}
                         placeholder="Ghi chú"
                         rowsMax={3}
                         onBlur={(event) => {
-                            //Lưu ghi vào mỗi sản phẩm
-                            props.DanhSachSP[indexInDanhSachSP].Ghichu =
-                                event.target.value
-
-                            //Cập nhật lại list danh sách sản phẩm
-                            listGhiChu[item] = props
+                            dispatch({
+                                type: UpdateGhiChuNewSpThieuSl,
+                                value: {
+                                    index: props.indexItem,
+                                    ghiChuNew: event.target.value,
+                                },
+                            })
                         }}
                         onChange={(event) => {
-                            setContentGhiChu(event.target.value)
+                            setValueGhiChuEachSP(event.target.value)
                         }}
                     />
                 </TableCell>
@@ -126,10 +89,23 @@ function MatHangHetSL() {
     }
 
     function ModalSendEmailGhiChu() {
+        const listGhiChu = _.chain(listSPThieuSL)
+            .groupBy('NhaCC')
+            .map((value, key) => {
+                return {
+                    NhaCC: key,
+                    Ghichu: value.map((e) => {
+                        return { ghichu: e.Ghichu, tenSP: e.Name }
+                    }),
+                }
+            })
+            .value()
+
         return (
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
+                size="lg"
                 show={showModalSendEmailGhiChu}
                 onHide={() => {
                     setShowModalSendEmailGhiChu(false)
@@ -138,16 +114,17 @@ function MatHangHetSL() {
                 <Modal.Header closeButton>
                     <h3>Gửi email cho nhà cung cấp</h3>
                 </Modal.Header>
-                <Modal.Body style={{ fontSize: '15px' }}>
+                <Modal.Body style={{ fontSize: '17px' }}>
                     Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số mặt
                     hàng sau:
-                    {listGhiChu.map((e) => {
+                    {listGhiChu.map((item) => {
                         return (
                             <p style={{ marginBottom: '0' }}>
-                                - Nhà cung cấp {e.NhaCC}:{' '}
-                                {e.DanhSachSP.map((element) => {
-                                    if(parseInt(element.Ghichu) > 0)
-                                        return element.Ghichu +' '+element.Name+' \n'
+                                - Nhà cung cấp {item.NhaCC}:{' '}
+                                {item.Ghichu.map((e) => {
+                                    if (e.ghichu) {
+                                        return `${e.ghichu} ${e.tenSP}, `
+                                    }
                                 })}
                             </p>
                         )
@@ -179,7 +156,7 @@ function MatHangHetSL() {
     }
 
     useEffect(() => {
-        setMessLoading('   Đang Làm Mới Kho Hàng!')
+        setMessLoading('Đang Làm Mới Kho Hàng!')
         Refresh()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -222,7 +199,20 @@ function MatHangHetSL() {
                             })
                         }
                     })
-                    UpdateHangThieuSL(arr.reverse())
+
+                    var ds = []
+                    arr.reverse().map((item) => {
+                        item.DanhSachSP.map((element) => {
+                            element.NhaCC = item.NhaCC
+                            element.SDTNhaCC = item.SDTNhaCC
+
+                            ds.push(element)
+                        })
+                    })
+                    //Lưu list sản phẩm thiếu số lượng vào store
+                    dispatch({ type: SaveListSPThieuSL, value: ds })
+
+                    UpdateHangThieuSL(ds)
                 }
             })
             .catch((e) => {
@@ -232,12 +222,11 @@ function MatHangHetSL() {
     }
 
     function UpdateHangThieuSL(arr) {
-        var index = -1
-        const result = arr.map((e) => {
-            index++
-            return <ItemNoiDung data={e} indexItem={index} />
-        })
-        setResultLst(result)
+        setResultLst(
+            arr.map((e, index) => {
+                return <ItemNoiDung data={e} indexItem={index} />
+            })
+        )
     }
 
     return (
@@ -253,6 +242,31 @@ function MatHangHetSL() {
                 >
                     Sản Phẩm Có Số Lượng Thấp
                 </h3>
+                <div>
+                    <TextField
+                        label="Tìm kiếm theo nhà cung cấp"
+                        variant="outlined"
+                        style={{ width: '70%' }}
+                        onChange={(event) => {
+                            const textSearch = event.target.value.toLowerCase()
+                            const reg = new RegExp(textSearch)
+
+                            //Xử lí tìm kiếm
+                            setResultLst(
+                                listSPThieuSL.map((e, index) => {
+                                    if (reg.exec(e.NhaCC.toLowerCase())) {
+                                        return (
+                                            <ItemNoiDung
+                                                data={e}
+                                                indexItem={index}
+                                            />
+                                        )
+                                    }
+                                })
+                            )
+                        }}
+                    />
+                </div>
                 <div
                     style={{
                         width: '100%',
@@ -280,7 +294,7 @@ function MatHangHetSL() {
                 </div>
                 <TableContainer
                     style={{
-                        height: '55vh',
+                        height: '67vh',
                         width: '100%',
                     }}
                 >

@@ -3,7 +3,10 @@ import {
     AllSanPham,
     GetAllKhachHang,
     AddNewKhachHang,
-    AddNewSanPham
+    AddNewSanPham,
+    IsUpdateCongNo,
+    SaveListSPThieuSL,
+    UpdateGhiChuNewSpThieuSl,
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -15,6 +18,17 @@ const defineState = {
     isQuanLi: false,
     AllSanPham: [],
     AllKhachHang: [],
+    isUpdateCongNo: false, //cho nhập mật khẩu lần đầu khi cập nhật công nợ
+    ListSPThieuSL: [
+        {
+            Name: '',
+            amount: '',
+            amountAlert: '',
+            Ghichu: '',
+            NhaCC: '',
+            SDTNhaCC: '',
+        },
+    ],
 }
 
 const Reducer = (state = defineState, action) => {
@@ -28,36 +42,43 @@ const Reducer = (state = defineState, action) => {
                 HoTen: action.HoTen,
                 Pass: action.Pass,
             }
-            break
 
         case AllSanPham:
             const arrSP = [...action.dataSanPham]
             state.AllSanPham = arrSP
             return state
-            break
 
         case GetAllKhachHang:
             const arrKH = [...action.dataKhachHang]
             state.AllKhachHang = arrKH
             return state
-            break
 
         case AddNewKhachHang:
             const objNewKhachHang = { ...action.dataNewKhachHang }
             state.AllKhachHang.push(objNewKhachHang)
             return state
-            break;
 
         case AddNewSanPham:
-                const objSanPham = { ...action.dataNewSanPham}
-                state.AllSanPham.push(objSanPham);
-                return state
-                break
-    
+            const objSanPham = { ...action.dataNewSanPham }
+            state.AllSanPham.push(objSanPham)
+            return state
+
+        case IsUpdateCongNo:
+            state.isUpdateCongNo = true
+            return state
+
+        case SaveListSPThieuSL:
+            const arrClone = [...action.value]
+            state.ListSPThieuSL = arrClone
+            return state
+
+        case UpdateGhiChuNewSpThieuSl:
+            const objClone = { ...action.value }
+            state.ListSPThieuSL[objClone.index].Ghichu = objClone.ghiChuNew
+            return state
 
         default:
             return state
-            break
     }
 }
 

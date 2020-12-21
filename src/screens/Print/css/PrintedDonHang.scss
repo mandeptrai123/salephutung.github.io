@@ -1,6 +1,6 @@
 .bill-container {
     width: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Times New Roman', Times, serif;
     padding-left: 50px;
     padding-right: 50px;
     padding-top: 30px;
@@ -9,14 +9,14 @@
         h1 {
             margin: '5px 0';
             text-align: center;
-            font-size: 60px;
+            font-size: 58px;
         }
 
         h3 {
             margin: '5px 0';
             text-align: center;
             font-style: italic;
-            font-size: 50px;
+            font-size: 48px;
         }
     }
 
@@ -28,13 +28,13 @@
         .bill-info-person__left {
             width: 70%;
             h3 {
-                font-size: 50px;
+                font-size: 48px;
             }
         }
         .bill-info-person__right {
             width: 30%;
             h3 {
-                font-size: 50px;
+                font-size: 48px;
             }
         }
     }
@@ -45,7 +45,7 @@
         flex-direction: column;
 
         span {
-            font-size: 35px;
+            font-size: 32px;
         }
     }
 
@@ -53,7 +53,7 @@
         h4 {
             text-align: center;
             font-style: italic;
-            font-size: 50px;
+            font-size: 48px;
         }
     }
 
@@ -67,7 +67,7 @@
             font-style: italic;
 
             h5 {
-                font-size: 45px;
+                font-size: 43px;
             }
         }
         .nguoiNhanHang {
@@ -77,7 +77,7 @@
             align-items: center;
             font-style: italic;
             h5 {
-                font-size: 45px;
+                font-size: 43px;
             }
         }
     }
@@ -85,9 +85,9 @@
     .bill-table__text {
         text-align: center;
         margin: 0;
-        font-size: 35px;
+        font-size: 33px;
     }
     td {
-        font-size: 30px;
+        font-size: 28px;
     }
 }

@@ -1,6 +1,6 @@
 .bill-container {
   width: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   padding-left: 50px;
   padding-right: 50px;
   padding-top: 30px;
@@ -9,14 +9,14 @@
 .bill-container .bill-header h1 {
   margin: '5px 0';
   text-align: center;
-  font-size: 60px;
+  font-size: 58px;
 }
 
 .bill-container .bill-header h3 {
   margin: '5px 0';
   text-align: center;
   font-style: italic;
-  font-size: 50px;
+  font-size: 48px;
 }
 
 .bill-container .bill-info-person {
@@ -30,7 +30,7 @@
 }
 
 .bill-container .bill-info-person .bill-info-person__left h3 {
-  font-size: 50px;
+  font-size: 48px;
 }
 
 .bill-container .bill-info-person .bill-info-person__right {
@@ -38,7 +38,7 @@
 }
 
 .bill-container .bill-info-person .bill-info-person__right h3 {
-  font-size: 50px;
+  font-size: 48px;
 }
 
 .bill-container .bill-donate {
@@ -48,13 +48,13 @@
 }
 
 .bill-container .bill-donate span {
-  font-size: 35px;
+  font-size: 32px;
 }
 
 .bill-container .bill-numberphone h4 {
   text-align: center;
   font-style: italic;
-  font-size: 50px;
+  font-size: 48px;
 }
 
 .bill-container .bill-doneOder {
@@ -70,7 +70,7 @@
 }
 
 .bill-container .bill-doneOder .nguoiGiaoHang h5 {
-  font-size: 45px;
+  font-size: 43px;
 }
 
 .bill-container .bill-doneOder .nguoiNhanHang {
@@ -82,15 +82,15 @@
 }
 
 .bill-container .bill-doneOder .nguoiNhanHang h5 {
-  font-size: 45px;
+  font-size: 43px;
 }
 
 .bill-container .bill-table__text {
   text-align: center;
   margin: 0;
-  font-size: 35px;
+  font-size: 33px;
 }
 
 .bill-container td {
-  font-size: 30px;
+  font-size: 28px;
 }

@@ -22,8 +22,8 @@ import { TextField } from '@material-ui/core'
 
 import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import { useSelector, useDispatch } from 'react-redux';
-import {AddNewSanPham} from '../../Redux/ActionType';
+import { useSelector, useDispatch } from 'react-redux'
+import { AddNewSanPham } from '../../Redux/ActionType'
 import _ from 'lodash'
 
 var arr_NhatKy = []
@@ -47,11 +47,10 @@ function NhapKho() {
     const [sdtnhacc, setSDTNhaCC] = useState('')
     const [lstnhaCC, setLstNhaCC] = useState([])
 
-    const handleClose = () => setShowLoading(false);
-    const handleShow = () => setShowLoading(true);
+    const handleClose = () => setShowLoading(false)
+    const handleShow = () => setShowLoading(true)
 
-    const dispatch = useDispatch();
- 
+    const dispatch = useDispatch()
 
     const [stateSnackbar, setStateSnackbar] = React.useState({
         open: false,
@@ -83,53 +82,18 @@ function NhapKho() {
 
     //valid emptry Tên Sản Phẩm , Số Lượng , Đơn Vị, Giá nhập Sỉ , Giá Bán Lẻ, sl báo động
     const [validEmptyTenSP, setValidEmptyTenSP] = useState(false)
-    const [validEmptySLSP, setValidEmptySLSP] = useState(false)
     const [validEmptyDonVi, setValidEmptyDonVi] = useState(false)
-    const [validEmptyGiaNS, setValidEmptyGiaNS] = useState(false)
-    const [validEmptyGiaBL, setValidEmptyGiaBL] = useState(false)
-    const [validEmptySLBD, setValidEmptySLBD] = useState(false)
 
     async function isValidInput() {
         // Tránh Rò Rỉ Dữ Liệu Nên Không Gán Trực Tiếp
         var _nameSanPham = nameSanPham
-        var _price = giaban
-        var _amount = soluong
-        var _amountAlert = soluongbaodong
         var _donvi = donvi
-        var _nhacc = nhacc
 
         if (_nameSanPham === '') {
             setStateSnackbar({
                 ...stateSnackbar,
                 open: true,
                 messSnackbar: 'Vui Lòng Điền Tên Sản Phẩm !',
-            })
-            return false
-        }
-
-        if (_price === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền Giá Tiền !',
-            })
-            return false
-        }
-
-        if (_amount === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền Số Lượng !',
-            })
-            return false
-        }
-
-        if (_amountAlert === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền Số Lượng Báo Động !',
             })
             return false
         }
@@ -142,33 +106,6 @@ function NhapKho() {
             })
             return false
         }
-
-        // if (_nhacc === '') {
-        //     setStateSnackbar({
-        //         ...stateSnackbar,
-        //         open: true,
-        //         messSnackbar: 'Vui Lòng Điền Tên Nhà Cung Cấp',
-        //     })
-        //     return false
-        // }
-
-        if (dongia === '') {
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Điền Giá Nhập',
-            })
-            return false
-        }
-
-        // if (sdtnhacc === '') {
-        //     setStateSnackbar({
-        //         ...stateSnackbar,
-        //         open: true,
-        //         messSnackbar: 'Vui Lòng Điền SDT Nhà Cung Cấp',
-        //     })
-        //     return false
-        // }
 
         return true
     }
@@ -291,11 +228,14 @@ function NhapKho() {
                     setNhaCC('')
                     setSDTNhaCC('')
                     setGiaNhap('')
-                    setGiaNhapUI('');
+                    setGiaNhapUI('')
                     setDonVi('')
                     setSL('')
                     setSLBaoDong('')
                     setGiaBan('')
+
+                    setValidEmptyTenSP(false)
+                    setValidEmptyDonVi(false)
 
                     arr_NhatKy = arr_NhatKy.reverse()
                     arr_NhatKy.push({
@@ -395,36 +335,6 @@ function NhapKho() {
             })
     }
 
-    function onBlurGiaBan(input) {
-        var _a = parseInt(input)
-        if (_a % 1000 !== 0) {
-            setGiaBan('')
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Nhập Giá Bán Tối Thiểu Là 1000 !',
-            })
-            return
-        }
-        _giaban = _a
-        // setGiaBan(TienVietNam(input))
-    }
-
-    function onBlurGiaNhap(input) {
-        var _a = parseInt(input)
-        if (_a % 1000 !== 0) {
-            setGiaNhap('')
-            setGiaNhapUI('');
-            setStateSnackbar({
-                ...stateSnackbar,
-                open: true,
-                messSnackbar: 'Vui Lòng Nhập Giá Bán Tối Thiểu Là 1000 !',
-            })
-            return
-        }
-        _giaban = _a
-        // setGiaNhap(TienVietNam(input))
-    }
     return (
         <section
             style={{ marginTop: 40, marginLeft: 20 }}
@@ -484,24 +394,12 @@ function NhapKho() {
                                 width: '250px',
                             }}
                         >
-                            <span style={{ color: 'red' }}>
-                                {validEmptySLSP
-                                    ? ''
-                                    : '* Vui lòng điền vào số lượng'}
-                            </span>
                             <input
                                 style={{ height: 50 }}
                                 variant="outlined"
                                 value={soluong}
                                 onChange={(e) => {
                                     setSL(e.target.value)
-                                }}
-                                onBlur={() => {
-                                    if (soluong) {
-                                        setValidEmptySLSP(true)
-                                    } else {
-                                        setValidEmptySLSP(false)
-                                    }
                                 }}
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -567,11 +465,6 @@ function NhapKho() {
                                 width: '250px',
                             }}
                         >
-                            <span style={{ color: 'red' }}>
-                                {validEmptySLBD
-                                    ? ''
-                                    : '* Vui lòng điền vào số lượng báo động'}
-                            </span>
                             <input
                                 style={{ height: 50, width: '250px' }}
                                 variant="outlined"
@@ -583,13 +476,6 @@ function NhapKho() {
                                 ref={SLBaoDongRef}
                                 onChange={(e) => {
                                     setSLBaoDong(e.target.value)
-                                }}
-                                onBlur={() => {
-                                    if (soluongbaodong) {
-                                        setValidEmptySLBD(true)
-                                    } else {
-                                        setValidEmptySLBD(false)
-                                    }
                                 }}
                                 value={soluongbaodong}
                                 width={300}
@@ -609,11 +495,6 @@ function NhapKho() {
                                 width: '250px',
                             }}
                         >
-                            <span style={{ color: 'red' }}>
-                                {validEmptyGiaNS
-                                    ? ''
-                                    : ' * Vui lòng điền vào giá nhập sỉ'}
-                            </span>
                             <input
                                 style={{ height: 50 }}
                                 variant="outlined"
@@ -623,16 +504,8 @@ function NhapKho() {
                                     }
                                 }}
                                 ref={DonGiaRef}
-                                onBlur={(e) => {
-                                    onBlurGiaNhap(e.target.value)
-                                    if (dongia) {
-                                        setValidEmptyGiaNS(true)
-                                    } else {
-                                        setValidEmptyGiaNS(false)
-                                    }
-                                }}
                                 onChange={(e) => {
-                                    setGiaNhap(e.target.value);
+                                    setGiaNhap(e.target.value)
                                 }}
                                 value={dongia}
                                 width={300}
@@ -640,10 +513,12 @@ function NhapKho() {
                             />
                             {soluong && dongia ? (
                                 <div>
-                                       Giá nhập : {TienVietNam(dongia)} 
-                                    <p>Giá vốn: {TienVietNam(dongia / soluong)} / sản phẩm</p>
+                                    Giá nhập : {TienVietNam(dongia)}
+                                    <p>
+                                        Giá vốn: {TienVietNam(dongia / soluong)}{' '}
+                                        / sản phẩm
+                                    </p>
                                 </div>
-                                
                             ) : (
                                 <p></p>
                             )}
@@ -651,8 +526,7 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                       
-                            <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{ color: resources.colorPrimary }}>
                             Giá Bán Lẻ
                         </h6>
                         <div
@@ -662,11 +536,6 @@ function NhapKho() {
                                 width: '250px',
                             }}
                         >
-                            <span style={{ color: 'red' }}>
-                                {validEmptyGiaBL
-                                    ? ''
-                                    : '* Vui lòng điền vào giá bán lẻ'}
-                            </span>
                             <input
                                 style={{ height: 50 }}
                                 variant="outlined"
@@ -676,14 +545,6 @@ function NhapKho() {
                                     }
                                 }}
                                 ref={GiaBanRef}
-                                onBlur={(e) => {
-                                    onBlurGiaBan(e.target.value)
-                                    if (giaban) {
-                                        setValidEmptyGiaBL(true)
-                                    } else {
-                                        setValidEmptyGiaBL(false)
-                                    }
-                                }}
                                 onChange={(e) => {
                                     setGiaBan(e.target.value)
                                 }}
@@ -691,12 +552,12 @@ function NhapKho() {
                                 width={300}
                                 placeholder="Giá Bán Lẻ"
                             />
-                             {giaban && <p>
-                            Giá Bán Lẻ: {TienVietNam(giaban)} / sản phẩm
-                            </p>}
+                            {giaban && (
+                                <p>
+                                    Giá Bán Lẻ: {TienVietNam(giaban)} / sản phẩm
+                                </p>
+                            )}
                         </div>
-                       
-                        
                     </li>
 
                     <li className="item__input">

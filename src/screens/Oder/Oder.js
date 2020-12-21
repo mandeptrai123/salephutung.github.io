@@ -282,7 +282,7 @@ function Oder() {
                                 setObjSanPham(props)
 
                                 // Show modal điền số lượng sản phẩm khi nhấn chọn sản phẩm
-                                setShowModalDienSoLuongSP(true);
+                                setShowModalDienSoLuongSP(true)
                                 //inputSoluongDaChon.current.autoFocus = true;
                             } else {
                                 setStateSnackbar({
@@ -369,26 +369,6 @@ function Oder() {
             return false
         }
 
-        // if (sodienthoai == '' && ValueSDT == '') {
-        //     setStateSnackbar({
-        //         ...stateSnackbar,
-        //         openSnackbar: true,
-        //         isSuccess: false,
-        //         messSnackbar: 'Vui Lòng Điền Số Điện Thoại !',
-        //     })
-        //     return false
-        // }
-
-        // if (diachi == '' && ValueDiaChi == '') {
-        //     setStateSnackbar({
-        //         ...stateSnackbar,
-        //         openSnackbar: true,
-        //         isSuccess: false,
-        //         messSnackbar: 'Vui Lòng Điền Địa Chỉ !',
-        //     })
-        //     return false
-        // }
-
         if (dateOrder == null) {
             setStateSnackbar({
                 ...stateSnackbar,
@@ -403,7 +383,7 @@ function Oder() {
     }
 
     function XuLiThongTinKhach() {
-        var d = new Date();
+        var d = new Date()
 
         var _itemRq = {
             SDTNV: '0969025915',
@@ -485,7 +465,11 @@ function Oder() {
                     const sdtK = sodienthoai
                     const dcK = diachi
                     const tenK = tenkhach
-                    if (arrAllKhachHang.findIndex((e) => e.Name === objBill.TenKhach) < 0) {
+                    if (
+                        arrAllKhachHang.findIndex(
+                            (e) => e.Name === objBill.TenKhach
+                        ) < 0
+                    ) {
                         dispatch({
                             type: AddNewKhachHang,
                             dataNewKhachHang: {
@@ -496,9 +480,7 @@ function Oder() {
                                 LichSuMuaHang: [],
                             },
                         })
-                    }else
-                    {
-
+                    } else {
                     }
 
                     setResultCart([])
@@ -621,7 +603,6 @@ function Oder() {
                 </Modal.Header>
                 <Modal.Body>
                     <TextField
-                        
                         id="outlined-basic"
                         label="Số lượng"
                         margin="normal"
@@ -659,7 +640,7 @@ function Oder() {
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
-                size="lg"
+                size="xl"
                 show={stateModal.open}
             >
                 <Modal.Body
@@ -668,11 +649,10 @@ function Oder() {
                         padding: '0',
                     }}
                 >
-                   {false && <PrintedDonHang
-                    
+                    <PrintedDonHang
                         ref={componentRef}
                         item={stateModal.itemSelected}
-                    />}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <ReactToPrint
@@ -757,28 +737,23 @@ function Oder() {
                             inputValue={tenkhach}
                             onInputChange={(event, newInputValue) => {
                                 setTenKhach(newInputValue)
-                                //     setValueName(newInputValue)
-                                //     if (newInputValue != null) {
-                                //         for (
-                                //             var i = 0;
-                                //             i < arrAllKhachHang.length;
-                                //             i++
-                                //         ) {
-                                //             if (
-                                //                 arrAllKhachHang[i].Name ==
-                                //                 newInputValue
-                                //             ) {
-                                //                 setSoDienThoai(arrAllKhachHang[i].SDT)
-                                //                 setValueSDT(arrAllKhachHang[i].SDT)
 
-                                //                 setDiaChi(arrAllKhachHang[i].DiaChi)
-                                //                 setValueDiaChi(
-                                //                     arrAllKhachHang[i].DiaChi
-                                //                 )
-                                //                 break
-                                //             }
-                                //         }
-                                //     }
+                                const reg = new RegExp(newInputValue)
+                                arrAllKhachHang.map((e, index) => {
+                                    if (reg.exec(e.Name)) {
+                                        if (arrAllKhachHang[index].SDT) {
+                                            setSoDienThoai(e.SDT)
+                                        } else {
+                                            setSoDienThoai('')
+                                        }
+
+                                        if (arrAllKhachHang[index].DiaChi) {
+                                            setDiaChi(e.DiaChi)
+                                        } else {
+                                            setDiaChi('')
+                                        }
+                                    }
+                                })
                             }}
                             renderInput={(params) => (
                                 <TextField
@@ -787,21 +762,6 @@ function Oder() {
                                     value={tenkhach}
                                     onChange={(e) => {
                                         setTenKhach(e.target.value)
-                                        // if (ValueName != null) {
-                                        //     var obj = _.find(
-                                        //         arrAllKhachHang,
-                                        //         function (e) {
-                                        //             return e.Name == ValueName
-                                        //         }
-                                        //     )
-                                        //     if (obj != null) {
-                                        //         setValueSDT(obj.SDTKhach)
-                                        //         setValueDiaChi(obj.DiaChiKhach)
-                                        //     } else {
-                                        //         setValueSDT('')
-                                        //         setValueDiaChi('')
-                                        //     }
-                                        // }
                                     }}
                                     variant="outlined"
                                 />
@@ -810,27 +770,6 @@ function Oder() {
                     </div>
 
                     <div className="input-content">
-                        {/* <Autocomplete
-                            freeSolo={true}
-                            id="combo-box-sdt"
-                            // arrAllKhachHang.slice(0, 20)  
-                            options={[1, 2, 3]}
-                            inputValue={ValueSDT}
-                            // getOptionLabel={(option) => option.SDT}
-                            style={{ width: 200, marginLeft: 50 }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    style={{ height: 50, marginRight: 30 }}
-                                    onChange={(e) => {
-                                        setValueSDT(e.target.value)
-                                    }}
-                                    label="Số Điện Thoại"
-                                    variant="outlined"
-                                    value={ValueSDT}
-                                />
-                            )}
-                        /> */}
                         <TextField
                             style={{ height: 50, marginRight: 30 }}
                             onChange={(e) => {
@@ -843,30 +782,6 @@ function Oder() {
                     </div>
 
                     <div className="input-content">
-                        {/* <Autocomplete
-                            freeSolo={true}
-                            id="combo-box-diachi"
-                            // onInputChange={(event, newInputValue) => {
-                            //     setDiaChi(newInputValue)
-                            // }}
-                            inputValue={ValueDiaChi}
-                            // options={arrAllKhachHang.slice(0, 20)}
-                            options={[1, 2, 3, 4]}
-                            // getOptionLabel={(option) => option.DiaChi}
-                            style={{ width: 200, marginLeft: 50 }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    style={{ height: 50, marginRight: 30 }}
-                                    onChange={(e) => {
-                                        setValueDiaChi(e.target.value)
-                                    }}
-                                    value={ValueDiaChi}
-                                    variant="outlined"
-                                    label="Địa Chỉ"
-                                />
-                            )}
-                        /> */}
                         <TextField
                             style={{ height: 50, marginRight: 30 }}
                             onChange={(e) => {
@@ -969,11 +884,8 @@ function Oder() {
             </div>
 
             <section className="container-content">
-                <div
-                    className="content-left"
-                >
+                <div className="content-left">
                     <div className="content-left__find-product">
-
                         <TableContainer
                             style={{
                                 height: '100%',
@@ -1030,7 +942,7 @@ function Oder() {
 
                 <div style={{ height: 800, width: '60%', margin: 10 }}>
                     <div
-                        style={{ height:"70%",width: '100%' }}
+                        style={{ height: '70%', width: '100%' }}
                         className="content-right__price"
                     >
                         <TableContainer

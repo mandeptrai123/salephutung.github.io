@@ -48,7 +48,7 @@ class PrintDonHang extends React.Component {
                 <Table
                     bordered
                     style={{
-                        marginTop: '50px',
+                        marginTop: '90px',
                     }}
                 >
                     <thead>
