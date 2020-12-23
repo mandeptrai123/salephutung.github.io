@@ -61,6 +61,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
     const classes = useStyles()
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     const dispatch = useDispatch()
     const history = useHistory()
     const [stateSnackbar, setStateSnackbar] = useState({
@@ -87,14 +89,12 @@ export default function SignIn() {
         setShowLoading(true)
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        let _URL =
-            'https://phutungserver.herokuapp.com/nhanvien/LoginBySDT?SDT=' +
-            SDT +
-            '&Pass=' +
-            Pass
-
+        let _URL = URL_API + '/nhanvien/LoginBySDT?SDT=' + SDT + '&Pass=' + Pass
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 setShowLoading(false)

@@ -44,6 +44,8 @@ function MatHangHetSL() {
         false
     )
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     //Tạo list lưu ghi chú mỗi sản phẩm
     const [resultLst, setResultLst] = useState()
 
@@ -165,10 +167,13 @@ function MatHangHetSL() {
         handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
 
-        let _URL = 'https://phutungserver.herokuapp.com/sanpham/SanPhamSLThap'
+        let _URL = URL_API + '/sanpham/SanPhamSLThap'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()

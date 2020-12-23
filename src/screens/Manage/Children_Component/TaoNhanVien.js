@@ -34,6 +34,8 @@ function TaoNhanVien() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     function handleCloseSnackbar() {
         setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
     }
@@ -51,11 +53,14 @@ function TaoNhanVien() {
         handleShow()
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(itemRequest),
         }
 
-        let _URL = 'https://phutungserver.herokuapp.com/quanli/ThemNhanVien'
+        let _URL = URL_API + '/quanli/ThemNhanVien'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {

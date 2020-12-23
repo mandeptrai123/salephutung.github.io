@@ -45,6 +45,8 @@ function KhoHang() {
     const TatCaSanPham = useSelector((state) => state.AllSanPham)
     const dispatch = useDispatch()
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     function RenderKhoSanPham(arr) {
         var stt = 0
         console.log('render: ')
@@ -64,11 +66,13 @@ function KhoHang() {
         setMessLoading('Đang cập nhật!')
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(bodyRequest),
         }
-        const _URL =
-            'https://phutungserver.herokuapp.com/sanpham/CapNhatSanPham'
+        const _URL = URL_API + '/sanpham/CapNhatSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
                 handleClose()
@@ -237,9 +241,12 @@ function KhoHang() {
         handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        let _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
+        let _URL = URL_API + '/sanpham/ToanBoSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -272,11 +279,13 @@ function KhoHang() {
 
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(_item),
         }
-        let _URL =
-            'https://phutungserver.herokuapp.com/sanpham/CapNhatSLSanPham'
+        let _URL = URL_API + '/sanpham/CapNhatSLSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -296,11 +305,13 @@ function KhoHang() {
 
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(_item),
         }
-        let _URL =
-            'https://phutungserver.herokuapp.com/sanpham/CapNhatGiaBanSanPham'
+        let _URL = URL_API + '/sanpham/CapNhatGiaBanSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()

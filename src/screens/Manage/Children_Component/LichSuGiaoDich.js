@@ -40,6 +40,8 @@ function LichSuGiaoDich() {
     const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
     const arrAllSanPham = useSelector((state) => state.AllSanPham)
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
     //const [startDate, setStartDate] = useState(new Date());
@@ -173,12 +175,13 @@ function LichSuGiaoDich() {
         handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
 
-        let _URL =
-            'https://phutungserver.herokuapp.com/donhang/DonHangTheoNgay?date=' +
-            dateCurrent
+        let _URL = URL_API + '/donhang/DonHangTheoNgay?date=' + dateCurrent
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()

@@ -52,6 +52,8 @@ function NhapKho() {
 
     const dispatch = useDispatch()
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     const [stateSnackbar, setStateSnackbar] = React.useState({
         open: false,
         vertical: 'bottom',
@@ -166,9 +168,12 @@ function NhapKho() {
     function LoadingNhatKy() {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        let _URL = 'https://phutungserver.herokuapp.com/sanpham/NhatKySanPham'
+        let _URL = URL_API + '/sanpham/NhatKySanPham'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -215,10 +220,13 @@ function NhapKho() {
 
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(item),
         }
-        let _URL = 'https://phutungserver.herokuapp.com/sanpham/ThemSanPham'
+        let _URL = URL_API + '/sanpham/ThemSanPham'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -291,9 +299,12 @@ function NhapKho() {
     function FetchToanBoNhaCC() {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        let _URL = 'https://phutungserver.herokuapp.com/cungcap/ToanBoNhaCC'
+        let _URL = URL_API + '/cungcap/ToanBoNhaCC'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -314,11 +325,12 @@ function NhapKho() {
     function HandleTimKiemNhatKy() {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        let _URL =
-            'https://phutungserver.herokuapp.com/sanpham/TimKiemNhatKy?name=' +
-            valueNhatKy
+        let _URL = URL_API + '/sanpham/TimKiemNhatKy?name=' + valueNhatKy
 
         NetWorking(_URL, requestOptions)
             .then((res) => {

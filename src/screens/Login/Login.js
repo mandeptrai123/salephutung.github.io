@@ -27,6 +27,8 @@ function Login() {
     })
     const { openSnackbar, messSnackbar, isSuccess } = stateSnackbar
 
+    const URL_API = '35.197.146.86:5000'
+
     const [SDT, setSDT] = useState('')
     const [Pass, setPass] = useState('')
     const [showLoading, setShowLoading] = useState(false)
@@ -52,11 +54,7 @@ function Login() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         }
-        let _URL =
-            'https://phutungserver.herokuapp.com/nhanvien/LoginBySDT?SDT=' +
-            SDT +
-            '&Pass=' +
-            Pass
+        let _URL = URL_API + '/nhanvien/LoginBySDT?SDT=' + SDT + '&Pass=' + Pass
 
         NetWorking(_URL, requestOptions)
             .then((res) => {

@@ -21,6 +21,8 @@ function HangThieuSL() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     var stt = 0
     const ItemHangThieuSL = (props) => {
         stt++
@@ -47,10 +49,13 @@ function HangThieuSL() {
         handleShow()
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
 
-        let _URL = 'https://phutungserver.herokuapp.com/quanli/MatHangHetSL'
+        let _URL = URL_API + '/quanli/MatHangHetSL'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()

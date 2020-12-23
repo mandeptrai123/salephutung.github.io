@@ -126,6 +126,8 @@ function Oder() {
     //Hoàng code
     const [doanhThu, setDoanhThu] = useState(0)
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
     }
@@ -222,9 +224,12 @@ function Oder() {
 
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        const _URL = 'https://phutungserver.herokuapp.com/sanpham/ToanBoSanPham'
+        const _URL = URL_API + '/sanpham/ToanBoSanPham'
         NetWorking(_URL, requestOptions)
             .then(async (result) => {
                 setShow(false)
@@ -443,10 +448,13 @@ function Oder() {
         itemRequest.Time = hours + ':' + minutes + ':' + milis
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(itemRequest),
         }
-        let _URL = 'https://phutungserver.herokuapp.com/donhang/ThemDonHang'
+        let _URL = URL_API + '/donhang/ThemDonHang'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -529,11 +537,13 @@ function Oder() {
     function GetAllKhachHang() {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
 
-        let _URL =
-            'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
+        let _URL = URL_API + '/khachhang/ToanBoKhachHang'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -568,12 +578,13 @@ function Oder() {
     function TimKhachHang(sdt) {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
 
-        let _URL =
-            'https://phutungserver.herokuapp.com/khachhang/TimKhachHang?SDT=' +
-            sdt
+        let _URL = URL_API + '/khachhang/TimKhachHang?SDT=' + sdt
 
         NetWorking(_URL, requestOptions)
             .then((res) => {

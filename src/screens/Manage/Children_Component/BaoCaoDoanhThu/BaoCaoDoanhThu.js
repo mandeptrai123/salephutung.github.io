@@ -42,14 +42,14 @@ function BaoCaoDoanhThu(props) {
 
     const [dateViewProduct, setDateViewProduct] = useState()
 
-    const URL_GET_DOANHTHU = 'https://phutungserver.herokuapp.com/doanhthu/'
+    const URL_GET_DOANHTHU = 'http://35.197.146.86:5000/doanhthu/'
 
     //State để hiện thị ngày thàng năm của doanh thu đang xem trên UI
-    const [viewDoanhThuMonthYear, setViewDoanhThuMonthYear] = useState();
+    const [viewDoanhThuMonthYear, setViewDoanhThuMonthYear] = useState()
 
     var stt = 0
     function ItemDonHang(props) {
-        console.log(props);
+        console.log(props)
         stt++
         return (
             <TableRow hover>
@@ -124,7 +124,7 @@ function BaoCaoDoanhThu(props) {
     //     handleShow()
     //     const requestOptions = {
     //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json' },
+    //         headers: { 'Content-Type': 'application/json',  Accept: 'application/json', },
     //     }
 
     //     fetch(
@@ -151,7 +151,7 @@ function BaoCaoDoanhThu(props) {
     //     handleShow()
     //     const requestOptions = {
     //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json' },
+    //         headers: { 'Content-Type': 'application/json',  Accept: 'application/json', },
     //     }
 
     //     fetch(
@@ -178,7 +178,7 @@ function BaoCaoDoanhThu(props) {
     //     handleShow()
     //     const requestOptions = {
     //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json' },
+    //         headers: { 'Content-Type': 'application/json',  Accept: 'application/json', },
     //     }
     //     var _d = new Date().getMonth()
     //     _d -= 1
@@ -208,7 +208,7 @@ function BaoCaoDoanhThu(props) {
     //     handleShow()
     //     const requestOptions = {
     //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json' },
+    //         headers: { 'Content-Type': 'application/json',  Accept: 'application/json', },
     //     }
 
     //     fetch(
@@ -232,7 +232,7 @@ function BaoCaoDoanhThu(props) {
     //         .catch((e) => {
     //             setStateSnackbar({
     //                 ...stateSnackbar,
-    
+
     //                 isSuccess: false,
     //                 messSnackbar: 'Có Lỗi Ở Báo Cáo Doanh Thu! ' + e,
     //                 openSnackbar: true,
@@ -245,18 +245,18 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Date: date,
         }
-        if(PAYLOAD == 'DoanhThuTheoTuan')
-        {
-            setViewDoanhThuMonthYear("Theo Tuần Gần Nhất");
-        }else
-        {
-            setViewDoanhThuMonthYear("Ngày: "+date);
+        if (PAYLOAD == 'DoanhThuTheoTuan') {
+            setViewDoanhThuMonthYear('Theo Tuần Gần Nhất')
+        } else {
+            setViewDoanhThuMonthYear('Ngày: ' + date)
         }
-       
 
         const optionsRequest = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
@@ -278,11 +278,14 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Month: month,
         }
-        setViewDoanhThuMonthYear("Tháng: "+month+" Trong Năm Nay");
+        setViewDoanhThuMonthYear('Tháng: ' + month + ' Trong Năm Nay')
 
         const optionsRequest = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
@@ -304,11 +307,14 @@ function BaoCaoDoanhThu(props) {
         const _itemRequest = {
             Year: year,
         }
-        setViewDoanhThuMonthYear("Năm "+year);
+        setViewDoanhThuMonthYear('Năm ' + year)
 
         const optionsRequest = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(_itemRequest),
         }
         handleShow()
@@ -329,11 +335,15 @@ function BaoCaoDoanhThu(props) {
     useEffect(() => {
         //Khi vào lịch sử giao dịch thì mặc định cho xem doanh thu hôm nay
         var dateNow = new Date()
-        setviewModelDropdown('Doanh Thu Ngày Hôm Nay');
-        setDateViewProduct(dateNow.getFullYear()+"-"+
-            (dateNow.getMonth() + 1)
-        +"-"+dateNow.getDate());
-        
+        setviewModelDropdown('Doanh Thu Ngày Hôm Nay')
+        setDateViewProduct(
+            dateNow.getFullYear() +
+                '-' +
+                (dateNow.getMonth() + 1) +
+                '-' +
+                dateNow.getDate()
+        )
+
         LoadDoanhThuTheoNgayHoacTuan(
             `${dateNow.getFullYear()}-${
                 dateNow.getMonth() + 1
@@ -363,10 +373,15 @@ function BaoCaoDoanhThu(props) {
                         }}
                         value={dateViewProduct}
                         onChange={(e) => {
-                            var d = new Date(e.target.value);
-                            var _dateNew =  d.getFullYear()+"-"+(d.getMonth() + 1)+"-"+(d.getDate());
-                            setDateViewProduct(_dateNew);
-                        
+                            var d = new Date(e.target.value)
+                            var _dateNew =
+                                d.getFullYear() +
+                                '-' +
+                                (d.getMonth() + 1) +
+                                '-' +
+                                d.getDate()
+                            setDateViewProduct(_dateNew)
+
                             LoadDoanhThuTheoNgayHoacTuan(
                                 _dateNew,
                                 'BaoCaoTheoNgay'

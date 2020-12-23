@@ -30,6 +30,8 @@ function CongNo() {
     const isUpdateCN = useSelector((state) => state.isUpdateCongNo)
     const dispatch = useDispatch()
 
+    const URL_API = 'http://35.197.146.86:5000'
+
     const [lstResult, setResult] = useState()
     const [totalCongNo, setTotalCongNo] = useState(0)
 
@@ -234,10 +236,12 @@ function CongNo() {
         setMessLoading('Đang làm mới dữ liệu')
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         }
-        const _URL =
-            'https://phutungserver.herokuapp.com/khachhang/ToanBoKhachHang'
+        const _URL = URL_API + '/khachhang/ToanBoKhachHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -302,12 +306,14 @@ function CongNo() {
 
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
             body: JSON.stringify(itemRequest),
         }
 
-        const _URL =
-            'https://phutungserver.herokuapp.com/khachhang/CapNhatCongNo'
+        const _URL = URL_API + '/khachhang/CapNhatCongNo'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
