@@ -9,6 +9,7 @@ import CongNo from './Children_Component/CongNo'
 import BaoCaoDoanhThu from './Children_Component/BaoCaoDoanhThu/BaoCaoDoanhThu'
 import TaoNhanVien from './Children_Component/TaoNhanVien'
 import HangHetSoLuong from './Children_Component/HangHetSoLuong'
+import NhatKyCongNo from './Children_Component/NhatKyCongNo'
 import DangXuat from './Children_Component/DangXuat'
 import { Modal, Button, Spinner } from 'react-bootstrap'
 
@@ -26,6 +27,7 @@ function Manage() {
     const [active4, setActive4] = useState(false)
     const [active5, setActive5] = useState(false)
     const [active6, setActive6] = useState(false)
+    const [active7, setActive7] = useState(false)
 
     const [showBlockQuanLi, setShowBlockQuanLi] = useState(false)
 
@@ -52,6 +54,9 @@ function Manage() {
     function Handle_ToanBoCongNo() {
         setUI(<CongNo></CongNo>)
     }
+    function Handle_NhatKyCongNo() {
+        setUI(<NhatKyCongNo></NhatKyCongNo>)
+    }
 
     function Handle_DangXuat() {
         setUI(<DangXuat></DangXuat>)
@@ -65,6 +70,7 @@ function Manage() {
         setActive4(false)
         setActive5(false)
         setActive6(false)
+        setActive7(false)
     }
 
     return (
@@ -218,6 +224,28 @@ function Manage() {
                         }}
                     >
                         Toàn Bộ Công Nợ
+                    </ListGroup.Item>
+                    <ListGroup.Item
+                        as="li"
+                        active={active7}
+                        variant="primary"
+                        action
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            color: 'white',
+                        }}
+                        onClick={(e) => {
+                            if (isQuanLi) {
+                                DisableActive()
+                                setActive7(true)
+                                Handle_NhatKyCongNo()
+                            } else {
+                                setShowBlockQuanLi(true)
+                            }
+                        }}
+                    >
+                        Nhật Ký Công Nợ
                     </ListGroup.Item>
 
                     <ListGroup.Item

@@ -459,7 +459,6 @@ function Oder() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
-
                 if (res.success) {
                     // Khi đặt hàng thành công thì thực hiện in bill
                     // Tạo obj bill để in bill
@@ -677,6 +676,7 @@ function Oder() {
                         variant="danger"
                         onClick={(e) => {
                             setStateModal({ ...stateModal, open: false })
+                            GetAllSanPham() //làm mới lại bảng sản phẩm khi đặt hàng thành công
                         }}
                     >
                         Hủy Bỏ

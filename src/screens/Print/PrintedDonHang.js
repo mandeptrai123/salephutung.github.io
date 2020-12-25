@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import Table from 'react-bootstrap/Table'
 import './css/PrintedDonHang.css'
-var index = 0
 class PrintDonHang extends React.Component {
     render() {
         return (
@@ -79,8 +78,7 @@ class PrintDonHang extends React.Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.props.item.lstSanPham.map((e) => {
-                            index++
+                        {this.props.item.lstSanPham.map((e, index) => {
                             return (
                                 <tr>
                                     <td>{index}</td>

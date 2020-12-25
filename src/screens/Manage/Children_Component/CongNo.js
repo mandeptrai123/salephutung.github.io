@@ -59,8 +59,6 @@ function CongNo() {
 
     const [congnoMoi, setcongnoMoi] = useState()
 
-    const [showModalXemGiaoDich, setShowModalXemGiaoDich] = useState(false)
-
     const [bodyRequestUpdateCongNo, setBodyRequestUpdateCongNo] = useState({})
 
     // const [disableUpdate, setDisableUpdate] = useState(false)
@@ -71,11 +69,29 @@ function CongNo() {
         //State update công nợ
         const [diaChi, setDiaChi] = useState(props.DiaChi)
         const [congNo, setCongNo] = useState(props.Congno)
+        const [sdt, setSDT] = useState(props.SDT)
+
         return (
             <TableRow>
                 <TableCell>{e.soThuTu}</TableCell>
-                <TableCell>{props.SDT}</TableCell>
                 <TableCell>{props.Name}</TableCell>
+                <TableCell>
+                    <input
+                        value={sdt}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            pointerEvents: isDisableUpdate ? 'auto' : 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: isDisableUpdate
+                                ? '1px solid black'
+                                : 'none',
+                        }}
+                        onChange={(e) => {
+                            setSDT(e.target.value)
+                        }}
+                    />
+                </TableCell>
                 <TableCell>
                     <input
                         value={diaChi}
@@ -97,6 +113,7 @@ function CongNo() {
                     <input
                         value={congNo}
                         style={{
+                            color: congNo > 0 ? '#239B56' : 'red',
                             border: 'none ',
                             outline: 'none',
                             pointerEvents: isDisableUpdate ? 'auto' : 'none',
@@ -127,103 +144,38 @@ function CongNo() {
                                 //Lấy thời gian hiện tại
                                 var _d = new Date()
                                 var _time =
-                                    _d.getHours() + ':' + _d.getMinutes()
+                                    _d.getHours() +
+                                    ':' +
+                                    _d.getMinutes() +
+                                    ':' +
+                                    _d.getSeconds()
 
-                                bodyRequestUpdateCongNo.SDTKhach = props.SDT
-                                bodyRequestUpdateCongNo.SDT = props.SDT
-                                bodyRequestUpdateCongNo.Name = props.Name
+                                bodyRequestUpdateCongNo.SDTKhach = sdt
+                                bodyRequestUpdateCongNo.NameKhach = props.Name
                                 bodyRequestUpdateCongNo.SDTNV = SDTNV
-                                bodyRequestUpdateCongNo.Pass = PassLogin
-                                bodyRequestUpdateCongNo.DiaChi = diaChi
                                 bodyRequestUpdateCongNo.Congno = +congNo
                                 bodyRequestUpdateCongNo.Time = _time
+                                bodyRequestUpdateCongNo.DiaChi = diaChi
+
+                                CapNhatCongNoMoi(bodyRequestUpdateCongNo)
 
                                 //Cho điền các thông tin cần thay đổi trc, sau đó mới hiện popup nhập mật khẩu
                                 //Nhập mật khẩu lần đầu, lần sau ko nhập mật khẩu lại
-                                if (!isUpdateCN) {
-                                    setStateModalDieuChinh({
-                                        Pass: '',
-                                        openDieuChinh: true,
-                                    })
-                                } else {
-                                    CapNhatCongNoMoi(bodyRequestUpdateCongNo)
-                                }
+                                // if (!isUpdateCN) {
+                                //     setStateModalDieuChinh({
+                                //         Pass: '',
+                                //         openDieuChinh: false,
+                                //     })
+                                // } else {
+                                //     CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                                // }
                             }
-                        }}
-                        style={{
-                            width: '120px',
-                            height: '40px',
-                            fontSize: '14px',
-                            marginBottom: '0',
-                            marginRight: '5px',
-                            // backgroundColor: resources.colorPrimary,
                         }}
                     >
                         {isDisableUpdate ? 'Xong' : 'Cập nhật'}
                     </Button>
-                    <Button
-                        style={{
-                            width: '120px',
-                            height: '40px',
-                            fontSize: '14px',
-                        }}
-                        variant="info"
-                        onClick={() => {
-                            setShowModalXemGiaoDich(true)
-                        }}
-                    >
-                        Xem Lịch Sử
-                    </Button>
                 </TableCell>
             </TableRow>
-        )
-    }
-
-    function ModalXemGiaoDich() {
-        return (
-            <Modal
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                show={showModalXemGiaoDich}
-                onHide={() => setShowModalXemGiaoDich(false)}
-            >
-                <Modal.Header closeButton>
-                    <h5>Lịch Sử Giao Dịch</h5>
-                </Modal.Header>
-                <Modal.Body>
-                    <TableContainer
-                        style={{
-                            maxHeight: '500px',
-                            width: '100%',
-                        }}
-                    >
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Ngày</TableCell>
-                                    <TableCell>Thời Gian Trong Ngày</TableCell>
-                                    <TableCell>Tổng Tiền</TableCell>
-                                    <TableCell>Danh Sách Sản Phẩm</TableCell>
-                                    <TableCell>Công Nợ Hoá Đơn </TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody></TableBody>
-                        </Table>
-                    </TableContainer>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={() => {
-                            setShowModalXemGiaoDich(false)
-                        }}
-                    >
-                        Đóng
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         )
     }
 
@@ -280,25 +232,25 @@ function CongNo() {
     }
 
     function CapNhatCongNoMoi(itemRequest) {
-        if (!isUpdateCN) {
-            if (PassLogin != Pass) {
-                handleShow()
-                setStateModalDieuChinh({
-                    Pass: '',
-                    openDieuChinh: false,
-                })
-                alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
-                //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
-                OnFresh()
-                return
-            }
+        // if (!isUpdateCN) {
+        //     if (PassLogin != Pass) {
+        //         handleShow()
+        //         setStateModalDieuChinh({
+        //             Pass: '',
+        //             openDieuChinh: false,
+        //         })
+        //         alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
+        //         //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
+        //         OnFresh()
+        //         return
+        //     }
 
-            //Cho nhập mật khẩu lần đầu khi cập nhật
-            dispatch({
-                type: IsUpdateCongNo,
-                value: true,
-            })
-        }
+        //     // Cho nhập mật khẩu lần đầu khi cập nhật
+        //     dispatch({
+        //         type: IsUpdateCongNo,
+        //         value: true,
+        //     })
+        // }
 
         handleCloseDieuChinh(false)
         setMessLoading('Đang Cập Nhật Công Nợ Mới !')
@@ -314,7 +266,6 @@ function CongNo() {
         }
 
         const _URL = URL_API + '/khachhang/CapNhatCongNo'
-
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -342,7 +293,6 @@ function CongNo() {
                 alignItems: 'center',
             }}
         >
-            <ModalXemGiaoDich />
             <h1
                 style={{
                     textAlign: 'center',
@@ -403,11 +353,11 @@ function CongNo() {
                     <TableHead>
                         <TableRow>
                             <TableCell>STT</TableCell>
-                            <TableCell>Số Điện Thoại</TableCell>
                             <TableCell>Tên Khách</TableCell>
+                            <TableCell>Số Điện Thoại</TableCell>
                             <TableCell>Địa Chỉ</TableCell>
                             <TableCell>Tổng Công Nợ</TableCell>
-                            <TableCell></TableCell>
+                            <TableCell>Điều chỉnh</TableCell>
                         </TableRow>
                     </TableHead>
 
