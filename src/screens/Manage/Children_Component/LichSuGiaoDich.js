@@ -595,9 +595,8 @@ function LichSuGiaoDich() {
                                     lstSanPham: objectBill.lstSanPham,
                                 }
 
-                                // setShowModalUpdateBill(false)
-                                // updateBill(objectBill)
-                                console.log(JSON.stringify(objectBill))
+                                setShowModalUpdateBill(false)
+                                updateBill(objectBill)
                             }}
                         >
                             Cập Nhật
