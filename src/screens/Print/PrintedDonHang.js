@@ -3,21 +3,34 @@ import Table from 'react-bootstrap/Table'
 import './css/PrintedDonHang.css'
 class PrintDonHang extends React.Component {
     render() {
+        const objDate = new Date(this.props.item.Date)
+        const dateFormat = `${objDate.getDate()}/${
+            objDate.getMonth() + 1
+        }/${objDate.getFullYear()}`
+
+        function formatNumber(num) {
+            if (num) {
+                return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+            }
+            return num
+        }
+
         return (
             <div className="bill-container">
                 <div className="bill-header">
                     <h1>NHÀ PHÂN PHỐI PHỤ TÙNG XE GẮN MÁY NAM THÀNH</h1>
-                    <h3>ĐC: ĐỨC HẠNH - ĐỨC LINH - BÌNH THUẬN</h3>
-                    <h3>
+                    <h5>ĐC: ĐỨC HẠNH - ĐỨC LINH - BÌNH THUẬN</h5>
+                    <h5>
                         KẾ TOÁN VÂN - NHƯ: 0982330085 - 0915239702 - 0933212702
                         - 0975801117
-                    </h3>
+                    </h5>
                 </div>
                 <h1
                     style={{
                         textAlign: 'center',
                         margin: '18px 0',
                         fontSize: '60px',
+                        fontWeight: 600,
                     }}
                 >
                     PHIẾU GIAO HÀNG
@@ -34,21 +47,23 @@ class PrintDonHang extends React.Component {
                             <span
                                 style={{
                                     borderBottom: '2px solid black',
-                                    fontSize: '40px',
+                                    fontSize: '39px',
+                                    fontWeight: '600',
                                 }}
                             >
-                                {this.props.item.Date}
+                                {dateFormat}
                             </span>
                         </h3>
-                        <h3>SỐ PHIẾU: 1</h3>
+                        <h3>SỐ PHIẾU: </h3>
                     </div>
                 </div>
 
                 <Table
                     bordered
                     style={{
-                        marginTop: '90px',
+                        marginTop: '15px',
                     }}
+                    className="table-bill"
                 >
                     <thead>
                         <tr>
@@ -85,8 +100,8 @@ class PrintDonHang extends React.Component {
                                     <td>{e.name}</td>
                                     <td>{e.Donvi}</td>
                                     <td>{e.soluongBan}</td>
-                                    <td>{e.price}</td>
-                                    <td>{e.pricesum}</td>
+                                    <td>{formatNumber(e.price)}</td>
+                                    <td>{formatNumber(e.pricesum)}</td>
                                     <td>{e.Ghichu}</td>
                                 </tr>
                             )
@@ -95,7 +110,7 @@ class PrintDonHang extends React.Component {
                             <td colSpan="5">
                                 <h4 className="bill-table__text">TỔNG:</h4>
                             </td>
-                            <td></td>
+                            <td>{formatNumber(this.props.item.ThanhTien)}</td>
                             <td></td>
                         </tr>
                         <tr>
@@ -109,7 +124,9 @@ class PrintDonHang extends React.Component {
                         </tr>
                         <tr>
                             <td colSpan="5">
-                                <h4 className="bill-table__text">TỔNG CỘNG:</h4>
+                                <h4 className="bill-table__text">
+                                    TỔNG CỘNG:{' '}
+                                </h4>
                             </td>
                             <td></td>
                             <td></td>
@@ -118,13 +135,14 @@ class PrintDonHang extends React.Component {
                 </Table>
 
                 <div className="bill-donate">
-                    <span>TẶNG 5 ĐỮA THẮNG W1</span>
-                    <span>TẶNG 2 ÁO THUN SIZE LỚN</span>
                     <div
                         style={{
                             fontSize: '25px',
+                            margin: '25px 0',
                         }}
                     >
+                        ..................................................................................................................................................................................................................................................................................................................................................................................
+                        <br />
                         ..................................................................................................................................................................................................................................................................................................................................................................................
                         <br />
                         ..................................................................................................................................................................................................................................................................................................................................................................................

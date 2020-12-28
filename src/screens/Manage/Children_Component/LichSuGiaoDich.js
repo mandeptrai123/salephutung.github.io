@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+    SaveObjectBill,
+    DeleteItemBill,
+    AddBill,
+    UpdateItemBill,
+    UpdateValueItemBill,
+} from '../../../Redux/ActionType'
 
 import { Modal, Spinner } from 'react-bootstrap'
-
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
+import DeleteIcon from '@material-ui/icons/Delete'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -35,10 +43,19 @@ function TienVietNam(input) {
     return x
 }
 
+function formatNumber(num) {
+    if (num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    }
+    return num
+}
+
 function LichSuGiaoDich() {
     //react redux hook, lấy toàn state all sp và khách hàng từ store
     const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
     const arrAllSanPham = useSelector((state) => state.AllSanPham)
+    const objectBill = useSelector((state) => state.objectBill)
+    const dispatch = useDispatch()
 
     const URL_API = 'http://35.197.146.86:5000'
 
@@ -48,9 +65,12 @@ function LichSuGiaoDich() {
     const [messLoading, setMessLoading] = useState('')
     const [show, setShow] = useState(false)
 
+    //Show/hidden modal cập nhật bill
+    const [showModalUpdateBill, setShowModalUpdateBill] = useState(false)
+    const [resultUpdateBill, setResultUpdateBill] = useState()
+
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-    var stt = 0
 
     const [state, setState] = useState({
         DateTimKiem: '',
@@ -124,21 +144,24 @@ function LichSuGiaoDich() {
 
     const RenderDonHangTrongNgay = (arr) => {
         var _total = 0
-        const _result = arr.map((e) => {
+        const _result = arr.map((e, index) => {
             _total += 1
-            return ItemDonHang(e, handleClickPrint)
+            return ItemDonHang(e, handleClickPrint, index)
         })
         setTotalBill(_total)
         setResult(_result)
     }
 
-    const ItemDonHang = (props, action) => {
-        stt++
+    const ItemDonHang = (props, action, index) => {
+        const formatDate = new Date(props.Date)
         return (
             <TableRow hover>
-                <TableCell>{stt}</TableCell>
+                <TableCell>{index}</TableCell>
                 <TableCell>
-                    {props.Date} {props.TimeOfDay}
+                    {props.TimeOfDay}{' '}
+                    {`${formatDate.getDate()}/${
+                        formatDate.getMonth() + 1
+                    }/${formatDate.getFullYear()}`}
                 </TableCell>
                 <TableCell>{props.TenKhach}</TableCell>
                 <TableCell>{TienVietNam(props.ThanhTien)}</TableCell>
@@ -166,6 +189,19 @@ function LichSuGiaoDich() {
                     >
                         In Đơn Hàng Này
                     </Button>
+                    <Button
+                        variant="contained"
+                        style={{
+                            marginLeft: '4px',
+                        }}
+                        onClick={() => {
+                            //Khi click chỉnh sửa 1 bill nào đó thì lưu obj đó vào store
+                            dispatch({ type: SaveObjectBill, value: props })
+                            setShowModalUpdateBill(true)
+                        }}
+                    >
+                        Chỉnh sửa
+                    </Button>
                 </TableCell>
             </TableRow>
         )
@@ -180,13 +216,11 @@ function LichSuGiaoDich() {
                 Accept: 'application/json',
             },
         }
-
         let _URL = URL_API + '/donhang/DonHangTheoNgay?date=' + dateCurrent
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
-                    console.log(res)
                     _arrDonHang = res.data
                     RenderDonHangTrongNgay(res.data)
                 }
@@ -197,18 +231,430 @@ function LichSuGiaoDich() {
             })
     }
 
+    function RenderUIUpdateBill(listSP) {
+        setResultUpdateBill(
+            listSP.map((e, index) => {
+                return <ItemUpdateBill data={e} index={index} />
+            })
+        )
+    }
+
+    function updateBill(bodyRequest) {
+        handleShow()
+        setMessLoading('Đang cập nhật bill!')
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify(bodyRequest),
+        }
+        let _URL = URL_API + '/donhang/CapNhatDonHang'
+        NetWorking(_URL, requestOptions)
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    // Nếu cập nhật bill mới thành công thì cho refresh lại trang bill
+                    OnRefresh(state.DateTimKiem)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
+                handleClose()
+            })
+    }
+
+    //Cho render lại giao diện bill mỗi khi thêm hay xóa item bill
+    useEffect(() => {
+        RenderUIUpdateBill(objectBill.lstSanPham)
+    }, [objectBill])
+
+    function ItemUpdateBill(props) {
+        const [name, setName] = useState(props.data.name)
+        const [soluongBan, setSoLuongBan] = useState(props.data.soluongBan)
+        const [price, setPrice] = useState(props.data.price)
+        const [priceSum, setPriceSum] = useState(
+            formatNumber(props.data.pricesum)
+        )
+
+        useEffect(() => {
+            setPriceSum(formatNumber(soluongBan * price))
+        }, [soluongBan, price])
+
+        //Xử lí lỗi setName rỗng
+        var boolsetName = false
+
+        return (
+            <TableRow>
+                <TableCell>{props.index}</TableCell>
+                <TableCell>
+                    <Autocomplete
+                        freeSolo={true}
+                        options={arrAllSanPham}
+                        getOptionLabel={(option) => option.name}
+                        inputValue={name}
+                        onInputChange={(event, newInputValue) => {
+                            if (!boolsetName) {
+                                boolsetName = true
+                            } else {
+                                setName(newInputValue)
+                                var _itemNewAddBill
+
+                                //Kiểm tra xem ng dùng có chọn sản phẩm
+                                //trong danh sách sản phẩm hiện có hay ko ?
+                                const lengthAllSanPham = arrAllSanPham.length
+                                for (var i = 0; i < lengthAllSanPham; i++) {
+                                    if (
+                                        newInputValue.toLowerCase() ===
+                                        arrAllSanPham[i].name.toLowerCase()
+                                    ) {
+                                        _itemNewAddBill = arrAllSanPham[i]
+                                        break
+                                    }
+                                }
+
+                                // Nếu ko thì thoát ra ngoài
+                                if (!_itemNewAddBill) {
+                                    return
+                                }
+
+                                // Nếu có thì tiếp tục check xem sản phẩm người
+                                // dùng vừa chọn đã có trong list bill chưa
+                                // Kiểm tra sản phẩm vừa thêm vào bill đã có chưa
+                                var isHave = false
+                                const len = objectBill.lstSanPham.length
+                                for (var i = 0; i < len; i++) {
+                                    if (
+                                        _itemNewAddBill._id ===
+                                        objectBill.lstSanPham[i]._id
+                                    ) {
+                                        isHave = true
+                                        break
+                                    }
+                                }
+
+                                if (isHave) {
+                                    alert(
+                                        'Đã có sản phẩm này trong bill, vui lòng chọn sản phẩm khác!'
+                                    )
+                                    setName('')
+                                    setPrice(0)
+                                    setSoLuongBan(0)
+                                    return
+                                } else {
+                                    setPrice(_itemNewAddBill.price)
+                                    setSoLuongBan(0)
+                                    //Thêm 2 thuộc tính tổng tiền và số lượng bán
+                                    _itemNewAddBill.pricesum = priceSum
+                                    _itemNewAddBill.soluongBan = soluongBan
+                                    dispatch({
+                                        type: UpdateItemBill,
+                                        value: {
+                                            objBillUpdate: _itemNewAddBill,
+                                            indexBill: props.index,
+                                        },
+                                    })
+                                }
+                            }
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                placeholder="Sản Phẩm"
+                                value={name}
+                            />
+                        )}
+                    />
+                </TableCell>
+                <TableCell style={{ width: '100px' }}>
+                    <TextField
+                        placeholder="Số lượng"
+                        value={soluongBan}
+                        onChange={(e) => {
+                            setSoLuongBan(e.target.value)
+                        }}
+                        onBlur={() => {
+                            dispatch({
+                                type: UpdateValueItemBill,
+                                value: {
+                                    soluongBan: soluongBan,
+                                    price: price,
+                                    pricesum: soluongBan * price,
+                                    indexBill: props.index,
+                                },
+                            })
+                        }}
+                    />
+                </TableCell>
+                <TableCell style={{ width: '100px' }}>
+                    <TextField
+                        placeholder="Giá tiền"
+                        value={price}
+                        onChange={(e) => {
+                            setPrice(e.target.value)
+                        }}
+                        onBlur={() => {
+                            dispatch({
+                                type: UpdateValueItemBill,
+                                value: {
+                                    soluongBan: soluongBan,
+                                    price: price,
+                                    pricesum: soluongBan * price,
+                                    indexBill: props.index,
+                                },
+                            })
+                        }}
+                    />
+                </TableCell>
+                <TableCell>{`${priceSum} VNĐ`}</TableCell>
+                <TableCell>
+                    <DeleteIcon
+                        style={{
+                            fontSize: '30px',
+                            color: ' blue',
+                            cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                            // xóa phần tử trong danh sách bill
+                            dispatch({
+                                type: DeleteItemBill,
+                                value: props.index,
+                            })
+                            RenderUIUpdateBill(objectBill.lstSanPham)
+                        }}
+                    />
+                </TableCell>
+            </TableRow>
+        )
+    }
+
+    function ModalUpdateBill() {
+        const tenKhach = objectBill.TenKhach
+        const sdt = objectBill.SDTKhach
+        const diaChiKhach = objectBill.DiaChiKhach
+        const [thanhTien, setThanhTien] = useState(
+            `${formatNumber(objectBill.ThanhTien)} VNĐ`
+        )
+
+        // Tính thành tiền mỗi khi xóa hay thêm 1 bill
+        useEffect(() => {
+            var sum = 0
+            objectBill.lstSanPham.forEach((e) => {
+                sum += e.pricesum
+            })
+            setThanhTien(`${formatNumber(sum)} VNĐ`)
+        }, [objectBill])
+
+        return (
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={showModalUpdateBill}
+                size="xl"
+            >
+                <Modal.Header>
+                    <h4>Chỉnh sửa bill</h4>
+                </Modal.Header>
+                <Modal.Body>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-around',
+                        }}
+                    >
+                        <TextField
+                            label="Tên Khách"
+                            variant="outlined"
+                            value={tenKhach}
+                            style={{
+                                pointerEvents: 'none',
+                            }}
+                        />
+                        <TextField
+                            label="Số Điện Thoại"
+                            variant="outlined"
+                            value={sdt}
+                            style={{
+                                pointerEvents: 'none',
+                            }}
+                        />
+                        <TextField
+                            label="Địa Chỉ"
+                            value={diaChiKhach}
+                            style={{
+                                pointerEvents: 'none',
+                            }}
+                            variant="outlined"
+                        />
+                    </div>
+                    <TableContainer
+                        style={{
+                            maxHeight: '550px',
+                        }}
+                    >
+                        <Table aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>STT</TableCell>
+                                    <TableCell>Sản Phẩm</TableCell>
+                                    <TableCell>Số Lượng</TableCell>
+                                    <TableCell>Giá Tiền</TableCell>
+                                    <TableCell>Tổng Tiền</TableCell>
+                                    <TableCell>Xóa Bill</TableCell>
+                                </TableRow>
+                            </TableHead>
+
+                            <TableBody>{resultUpdateBill}</TableBody>
+                        </Table>
+                    </TableContainer>
+                    <div style={{ display: 'flex', marginTop: '10px' }}>
+                        <h5 style={{ marginBottom: '0' }}>Thành Tiền: </h5>
+
+                        <input
+                            type="text"
+                            style={{
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '20px',
+                                margin: '0 10px',
+                                borderBottom: '1px solid gray',
+                            }}
+                            placeholder="Thành tiền"
+                            value={thanhTien}
+                            onChange={(e) => {
+                                setThanhTien(e.target.value)
+                            }}
+                            onBlur={(e) =>
+                                setThanhTien(
+                                    `${formatNumber(e.target.value)} VNĐ`
+                                )
+                            }
+                            onFocus={(e) => {
+                                setThanhTien(
+                                    e.target.value.slice(
+                                        0,
+                                        e.target.value.length - 4
+                                    )
+                                )
+                            }}
+                        />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer
+                    style={{
+                        borderTop: 'none',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    <AddCircleOutlineIcon
+                        style={{ fontSize: '40px', cursor: 'pointer' }}
+                        onClick={() => {
+                            // khởi tạo 1 object bill mới
+                            // là sản phẩm đầu tiên của danh sách sản phẩm hiện tại
+                            const objectNewBill = {
+                                _id: '',
+                                name: '',
+                                price: 0,
+                                amount: 0,
+                                amountAlert: 0,
+                                Donvi: '',
+                                NhaCC: '',
+                                GiaNhap: 0,
+                                Time: '',
+                                IDSp: 0,
+                                SDTNhaCC: '',
+                                pricesum: 0,
+                                soluongBan: 0,
+                            }
+
+                            dispatch({ type: AddBill, value: objectNewBill })
+                            RenderUIUpdateBill(objectBill.lstSanPham)
+                        }}
+                    />
+
+                    <div>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                //Tính thành tiền trước khi bấm cập nhật
+                                var thanh_tien = 0
+                                objectBill.lstSanPham.map((e) => {
+                                    thanh_tien += e.pricesum
+                                })
+
+                                //Loại bỏ các thuộc tính ko cần thiết
+                                const objectNewBillPOST = {
+                                    _id: objectBill._id,
+                                    TenKhach: objectBill.TenKhach,
+                                    DiaChiKhach: objectBill.DiaChiKhach,
+                                    SDTKhach: objectBill.SDTKhach,
+                                    ThanhTien: thanh_tien,
+                                    lstSanPham: objectBill.lstSanPham,
+                                }
+
+                                // setShowModalUpdateBill(false)
+                                // updateBill(objectBill)
+                                console.log(JSON.stringify(objectBill))
+                            }}
+                        >
+                            Cập Nhật
+                        </Button>
+                        <Button
+                            variant="contained"
+                            style={{
+                                marginLeft: '8px',
+                            }}
+                            onClick={() => {
+                                setShowModalUpdateBill(false)
+                                // reset store
+                                dispatch({
+                                    type: SaveObjectBill,
+                                    value: {
+                                        Congno: 0,
+                                        Date: '',
+                                        DiaChiKhach: '',
+                                        Ghichu: '',
+                                        IDAction: 0,
+                                        NameNV: '',
+                                        SDTKhach: '',
+                                        SDTNV: '',
+                                        TenKhach: '',
+                                        ThanhTien: 0,
+                                        Time: '',
+                                        TimeOfDay: '',
+                                        TongTien: 0,
+                                        TraNo: 0,
+                                        doanhthu: 0,
+                                        lstSanPham: [],
+                                        _id: '',
+                                    },
+                                })
+                                OnRefresh(state.DateTimKiem)
+                            }}
+                        >
+                            Hủy Bỏ
+                        </Button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
     return (
         <div
             style={{
                 width: '100%',
                 height: '100%',
-
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
             }}
         >
+            <ModalUpdateBill />
             <div>
                 <h1
                     style={{
@@ -243,7 +689,7 @@ function LichSuGiaoDich() {
                 <Autocomplete
                     freeSolo={true}
                     id="box-TenKhach"
-                    options={arrAllKhachHang.slice(0, 30)}
+                    options={arrAllKhachHang}
                     getOptionLabel={(option) => option.Name}
                     style={{ width: 200 }}
                     inputValue={ValueTen}
@@ -277,7 +723,7 @@ function LichSuGiaoDich() {
                 <Autocomplete
                     freeSolo={true}
                     id="box-SanPham"
-                    options={arrAllSanPham.slice(0, 30)}
+                    options={arrAllSanPham}
                     getOptionLabel={(option) => option.name}
                     style={{ width: 200 }}
                     inputValue={ValueSanPham}
@@ -329,7 +775,7 @@ function LichSuGiaoDich() {
             <TableContainer
                 style={{
                     marginTop: 20,
-                    maxHeight: '550px',
+                    maxHeight: '450px',
                     width: '93%',
                 }}
             >
@@ -372,6 +818,7 @@ function LichSuGiaoDich() {
                 centered
                 size="xl"
                 show={stateModal.open}
+                onHide={() => setStateModal({ ...stateModal, open: false })}
             >
                 <Modal.Body
                     style={{
@@ -390,9 +837,9 @@ function LichSuGiaoDich() {
                         content={() => componentRef.current}
                     />
                     <Button
-                        onClick={(e) => {
+                        onClick={(e) =>
                             setStateModal({ ...stateModal, open: false })
-                        }}
+                        }
                     >
                         Huỷ Bỏ
                     </Button>

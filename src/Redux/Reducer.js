@@ -7,6 +7,11 @@ import {
     IsUpdateCongNo,
     SaveListSPThieuSL,
     UpdateGhiChuNewSpThieuSl,
+    SaveObjectBill,
+    DeleteItemBill,
+    AddBill,
+    UpdateItemBill,
+    UpdateValueItemBill,
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -29,6 +34,25 @@ const defineState = {
             SDTNhaCC: '',
         },
     ],
+    objectBill: {
+        Congno: 0,
+        Date: '',
+        DiaChiKhach: '',
+        Ghichu: '',
+        IDAction: 0,
+        NameNV: '',
+        SDTKhach: '',
+        SDTNV: '',
+        TenKhach: '',
+        ThanhTien: 0,
+        Time: '',
+        TimeOfDay: '',
+        TongTien: 0,
+        TraNo: 0,
+        doanhthu: 0,
+        lstSanPham: [],
+        _id: '',
+    },
 }
 
 const Reducer = (state = defineState, action) => {
@@ -75,6 +99,43 @@ const Reducer = (state = defineState, action) => {
         case UpdateGhiChuNewSpThieuSl:
             const objClone = { ...action.value }
             state.ListSPThieuSL[objClone.index].Ghichu = objClone.ghiChuNew
+            return state
+
+        case SaveObjectBill:
+            const objBillClone = { ...action.value }
+            state.objectBill = objBillClone
+            return state
+
+        case DeleteItemBill:
+            state.objectBill.lstSanPham.splice(action.value, 1)
+            return state
+
+        case AddBill:
+            const objNewBillClone = { ...action.value }
+            state.objectBill.lstSanPham.push(objNewBillClone)
+            return state
+
+        case UpdateItemBill:
+            const objNewUpdateBillClone = { ...action.value.objBillUpdate }
+            state.objectBill.lstSanPham[
+                action.value.indexBill
+            ] = objNewUpdateBillClone
+            return state
+
+        case UpdateValueItemBill:
+            const objNewValueItemBillClone = { ...action.value }
+            state.objectBill.lstSanPham[
+                objNewValueItemBillClone.indexBill
+            ].soluongBan = objNewValueItemBillClone.soluongBan
+
+            state.objectBill.lstSanPham[
+                objNewValueItemBillClone.indexBill
+            ].price = objNewValueItemBillClone.price
+
+            state.objectBill.lstSanPham[
+                objNewValueItemBillClone.indexBill
+            ].pricesum = objNewValueItemBillClone.pricesum
+
             return state
 
         default:

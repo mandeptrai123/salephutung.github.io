@@ -10,13 +10,15 @@
             margin: '5px 0';
             text-align: center;
             font-size: 58px;
+            font-weight: 600;
         }
 
-        h3 {
+        h5 {
             margin: '5px 0';
             text-align: center;
             font-style: italic;
-            font-size: 48px;
+            font-size: 40px;
+            font-weight: 600;
         }
     }
 
@@ -28,13 +30,15 @@
         .bill-info-person__left {
             width: 70%;
             h3 {
-                font-size: 48px;
+                font-size: 39px;
+                font-weight: 600;
             }
         }
         .bill-info-person__right {
             width: 30%;
             h3 {
-                font-size: 48px;
+                font-size: 39px;
+                font-weight: 600;
             }
         }
     }
@@ -53,7 +57,8 @@
         h4 {
             text-align: center;
             font-style: italic;
-            font-size: 48px;
+            font-size: 40px;
+            font-weight: 600;
         }
     }
 
@@ -67,7 +72,8 @@
             font-style: italic;
 
             h5 {
-                font-size: 43px;
+                font-size: 37px;
+                font-weight: 600;
             }
         }
         .nguoiNhanHang {
@@ -77,7 +83,8 @@
             align-items: center;
             font-style: italic;
             h5 {
-                font-size: 43px;
+                font-size: 37px;
+                font-weight: 600;
             }
         }
     }
@@ -85,9 +92,18 @@
     .bill-table__text {
         text-align: center;
         margin: 0;
-        font-size: 33px;
+        font-size: 38px;
+        font-weight: 600;
     }
     td {
-        font-size: 28px;
+        font-size: 37px;
+        font-weight: 600;
+    }
+
+    .table-bill {
+        td,
+        th {
+            border: 2px solid black !important;
+        }
     }
 }

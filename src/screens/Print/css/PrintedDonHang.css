@@ -10,13 +10,15 @@
   margin: '5px 0';
   text-align: center;
   font-size: 58px;
+  font-weight: 600;
 }
 
-.bill-container .bill-header h3 {
+.bill-container .bill-header h5 {
   margin: '5px 0';
   text-align: center;
   font-style: italic;
-  font-size: 48px;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 .bill-container .bill-info-person {
@@ -30,7 +32,8 @@
 }
 
 .bill-container .bill-info-person .bill-info-person__left h3 {
-  font-size: 48px;
+  font-size: 39px;
+  font-weight: 600;
 }
 
 .bill-container .bill-info-person .bill-info-person__right {
@@ -38,7 +41,8 @@
 }
 
 .bill-container .bill-info-person .bill-info-person__right h3 {
-  font-size: 48px;
+  font-size: 39px;
+  font-weight: 600;
 }
 
 .bill-container .bill-donate {
@@ -54,7 +58,8 @@
 .bill-container .bill-numberphone h4 {
   text-align: center;
   font-style: italic;
-  font-size: 48px;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 .bill-container .bill-doneOder {
@@ -70,7 +75,8 @@
 }
 
 .bill-container .bill-doneOder .nguoiGiaoHang h5 {
-  font-size: 43px;
+  font-size: 37px;
+  font-weight: 600;
 }
 
 .bill-container .bill-doneOder .nguoiNhanHang {
@@ -82,15 +88,23 @@
 }
 
 .bill-container .bill-doneOder .nguoiNhanHang h5 {
-  font-size: 43px;
+  font-size: 37px;
+  font-weight: 600;
 }
 
 .bill-container .bill-table__text {
   text-align: center;
   margin: 0;
-  font-size: 33px;
+  font-size: 38px;
+  font-weight: 600;
 }
 
 .bill-container td {
-  font-size: 28px;
+  font-size: 37px;
+  font-weight: 600;
+}
+
+.bill-container .table-bill td,
+.bill-container .table-bill th {
+  border: 2px solid black !important;
 }

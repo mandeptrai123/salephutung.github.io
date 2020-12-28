@@ -468,6 +468,7 @@ function Oder() {
                         SDTKhach: sodienthoai,
                         lstSanPham: arr_Cart,
                         Date: itemRequest.Date,
+                        ThanhTien: _thanhtien,
                     }
                     handleClickPrint(objBill)
 
@@ -1072,7 +1073,18 @@ function Oder() {
                                 backgroundColor: resources.colorPrimary,
                                 color: 'white',
                             }}
-                            onClick={(e) => DatHang()}
+                            onClick={(e) => {
+                                //Khôg cho đặt hàng khi chưa chọn sản phẩm
+                                if (arr_Cart.length == 0) {
+                                    setMessLoading('Bạn chưa chọn sản phẩm !')
+                                    setShow(true)
+                                    setTimeout(() => {
+                                        setShow(false)
+                                    }, 1000)
+                                    return
+                                }
+                                DatHang()
+                            }}
                             type="button"
                             className="btn-submit"
                         >

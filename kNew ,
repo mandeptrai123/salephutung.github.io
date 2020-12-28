@@ -1,0 +1,251 @@
+[33mcommit cd6bc7bdba76e38fce9e527251e02e986f72c65c[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Fri Dec 25 11:22:56 2020 +0700
+
+    them giao dien nhat ky san pham
+
+[33mcommit 06fbd5ea930d8b41a0e3e6762915dd5c758e9cce[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Wed Dec 23 18:20:09 2020 +0700
+
+    test app
+
+[33mcommit a550f79c199e6afa6ab18f6cac55dd621d2dc841[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Mon Dec 21 23:23:05 2020 +0700
+
+    test app and fix
+
+[33mcommit 3417981ac382cf0c40bef73cabdda6205b06c4c6[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Mon Dec 21 19:10:47 2020 +0700
+
+    hoan thanh yeu cau them
+
+[33mcommit e8059b5c019a724f6af7b0625d284ea6acc49cb7[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sun Dec 20 16:37:28 2020 +0700
+
+    Fix toàn bộ . Doanh thu phần Lơj Nhuận sẽ làm sau.
+
+[33mcommit 469d38f70f96c7adb032fb540fed87a8aaff5790[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sat Dec 19 16:26:57 2020 +0700
+
+    fix send email, font size bill
+
+[33mcommit 58177b6c3dea5bd39f92e0db165c0b0a110efe12[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Fri Dec 18 21:55:21 2020 +0700
+
+    fix bug send email, add new khach hang
+
+[33mcommit 190e5e03018ea49070f78e2f9dcbf122ab81ee06[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Fri Dec 18 07:38:22 2020 +0700
+
+    sua thanh tien trong in bill
+
+[33mcommit 50751da7a815841c8e2ec12f514f6c1d9ae0f077[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Thu Dec 17 20:59:20 2020 +0700
+
+    sửa API trong Mặt Hàng SL Báo Động
+
+[33mcommit b005e6d497fecae28acd562a5a4c112946cd882b[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Tue Dec 15 23:56:54 2020 +0700
+
+    fix in bill
+
+[33mcommit 262c7cd9262445154508fdf08833dff6bc8b6872[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sun Dec 13 20:16:29 2020 +0700
+
+    nothing
+
+[33mcommit 3c4e4646d3b913e2a9fb505eccb0f46626a7ac01[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sun Dec 13 16:40:34 2020 +0700
+
+    fix bug sdt, dc in Oder.js
+
+[33mcommit 8ffd48b0e71402d1281850ffcd024746d17beaca[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sun Dec 13 13:54:49 2020 +0700
+
+    fix bug
+
+[33mcommit 5cc77f501e8947a3fa73751268789eec200822b9[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sat Dec 12 10:04:44 2020 +0700
+
+    .
+
+[33mcommit e8dedf71fc6dbd34e2cbed74c3511cb92ba5a405[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Sat Dec 12 00:57:57 2020 +0700
+
+    set timeout in folder nextworking
+
+[33mcommit b049882bc2013d352669888993a56b3482af0495[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Fri Dec 11 13:33:17 2020 +0700
+
+    update bao cao doanh thu
+
+[33mcommit 1a7be3d87ea1411b5eda83b9d765d61f90b8e6ed[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Fri Dec 11 08:50:16 2020 +0700
+
+    Cap Nhat Oder
+
+[33mcommit da8949af44ed86b7b5c75e41cfa79371595351d8[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Thu Dec 10 21:34:33 2020 +0700
+
+    hoan thanh yeu cau bo sung
+
+[33mcommit 9f55634fdcb0076a0835e86c4bd45848074176e8[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Wed Dec 9 12:27:48 2020 +0700
+
+    hoan thanh yeu cau phu tung
+
+[33mcommit 8bd129c4e35a601d956e08c67f03b282766dda19[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Mon Dec 7 22:48:28 2020 +0700
+
+    update func Oder, KhoHang,...
+
+[33mcommit 3c0c31344f4804c1d9e9ad3bf209e8109a5e1b7e[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sun Dec 6 22:19:56 2020 +0700
+
+    commit new
+
+[33mcommit b541bf79fbee403cffc80f76164efec2460ba02a[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Thu Dec 3 11:45:30 2020 +0700
+
+    commit new
+
+[33mcommit 1c0641d031abf5c53a6a4f55326b49a48078fab3[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Mon Nov 23 14:14:52 2020 +0700
+
+    required test
+
+[33mcommit 2315313a102170cfba27e17422f4e88aa720f050[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Tue Nov 3 18:30:39 2020 +0700
+
+    Fix Eslints
+
+[33mcommit 77b66aecaa139c85bec84a484cf9043c7bc981ac[m
+Merge: 000746f fc8786c
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sun Nov 1 23:02:50 2020 +0700
+
+    Merge branch 'master' of https://github.com/mandeptrai123/salephutung
+
+[33mcommit 000746fb85605c8eec9b9e1c31f3cccbe6e47aea[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sun Nov 1 23:02:43 2020 +0700
+
+    .
+
+[33mcommit fc8786caea4415e24f3c093cd2f4dddf9fe40b71[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Mon Oct 26 21:16:23 2020 +0700
+
+    edit to build more easy
+
+[33mcommit aeb7888d818f7c841461525bd854d0ae4fd3c67e[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Mon Oct 26 16:38:48 2020 +0700
+
+    100% UI
+
+[33mcommit 95a44b97ac9cd3be9baa39e288b5f46e2f28c283[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sat Oct 24 02:11:07 2020 +0700
+
+    API 90%
+
+[33mcommit ddb59e3aa5b9f69db2d6f9761a6e03b8f94b7500[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Thu Oct 22 16:08:42 2020 +0700
+
+    create UI ThemNhanVien, HangThieuSL, update UI
+
+[33mcommit 77745b417de9fe6cf69652f0c795bbbaa536d5d8[m
+Author: vanminhhoang <56862278+vanminhhoang@users.noreply.github.com>
+Date:   Thu Oct 22 01:33:26 2020 +0700
+
+    update UI BaoCaoDoanhThu, DonHangTrongNgay
+
+[33mcommit 1d3c5dcff3192a4e34cdd7871bc62249d2d4e5b0[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Wed Oct 21 16:58:50 2020 +0700
+
+    UX
+
+[33mcommit 18b9659662e88dd748ea5f680ab2d4b49da98b64[m
+Author: minh hoang <vanminhhoang1991999@gmail.com>
+Date:   Mon Oct 19 19:51:52 2020 +0700
+
+    install react-bootstrap, create screens BaoCaoDoanhThu, CongNo, KhoHang
+
+[33mcommit 9b9a17cbcb2a6d28ce9f9a4b2642b5dbe087e4ff[m
+Merge: 29a8644 bf823ad
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Mon Oct 19 14:08:48 2020 +0700
+
+    Merge pull request #1 from mandeptrai123/VanMinhHoang
+    
+    Van minh hoang
+
+[33mcommit bf823ad1c9a8887175414f7d976a34b7a8f7fae2[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Mon Oct 19 13:57:14 2020 +0700
+
+    Revert "."
+    
+    This reverts commit 52350426d3668105413828d18c46747e43a258a2.
+
+[33mcommit 52350426d3668105413828d18c46747e43a258a2[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Sat Oct 17 19:23:44 2020 +0700
+
+    .
+
+[33mcommit d4e76baf37f9387c6c28c1c0ed450352cd8f067a[m
+Author: minh hoang <vanminhhoang1991999@gmail.com>
+Date:   Sat Oct 17 11:14:11 2020 +0700
+
+    create sreens NhapKho, HangLuongTonKhoThap
+
+[33mcommit dd145b82a4fe13f6799619182fc08577f93acea6[m
+Author: minh hoang <vanminhhoang1991999@gmail.com>
+Date:   Sat Oct 17 10:23:11 2020 +0700
+
+    create screens
+
+[33mcommit 29a86440239646f862bdcc27c87ff5328190d4b6[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Fri Oct 16 11:51:45 2020 +0700
+
+    update hướng dẫn vào readme
+
+[33mcommit bf54c51ae62505967094eb10f24a10fb8de5b022[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Fri Oct 16 11:50:29 2020 +0700
+
+    setting react + electron
+
+[33mcommit 49bdd1d9e5202944af3d9827662afbea1e41975a[m
+Author: mandeveloper2k <53419763+mandeptrai123@users.noreply.github.com>
+Date:   Fri Oct 16 01:30:40 2020 +0700
+
+    Initialize project using Create React App
