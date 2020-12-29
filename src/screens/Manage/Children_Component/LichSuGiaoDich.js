@@ -153,6 +153,7 @@ function LichSuGiaoDich() {
     }
 
     const ItemDonHang = (props, action, index) => {
+        console.log(props)
         const formatDate = new Date(props.Date)
         return (
             <TableRow hover>
@@ -252,6 +253,7 @@ function LichSuGiaoDich() {
             body: JSON.stringify(bodyRequest),
         }
         let _URL = URL_API + '/donhang/CapNhatDonHang'
+
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -584,6 +586,7 @@ function LichSuGiaoDich() {
                                 objectBill.lstSanPham.map((e) => {
                                     thanh_tien += e.pricesum
                                 })
+                                console.log(thanh_tien)
 
                                 //Loại bỏ các thuộc tính ko cần thiết
                                 const objectNewBillPOST = {
@@ -596,7 +599,7 @@ function LichSuGiaoDich() {
                                 }
 
                                 setShowModalUpdateBill(false)
-                                updateBill(objectBill)
+                                updateBill(objectNewBillPOST)
                             }}
                         >
                             Cập Nhật
@@ -784,7 +787,7 @@ function LichSuGiaoDich() {
                             <TableCell>STT</TableCell>
                             <TableCell>Thời Gian Giao Dịch</TableCell>
                             <TableCell>Tên Khách</TableCell>
-                            <TableCell>Tổng Tiền</TableCell>
+                            <TableCell>Thành Tiền</TableCell>
                             <TableCell>Danh Sách Sản Phẩm</TableCell>
                             <TableCell>Điều Chỉnh</TableCell>
                         </TableRow>
