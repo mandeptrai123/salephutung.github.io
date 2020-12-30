@@ -49,7 +49,6 @@ function BaoCaoDoanhThu(props) {
 
     var stt = 0
     function ItemDonHang(props) {
-        console.log(props)
         stt++
         return (
             <TableRow hover>

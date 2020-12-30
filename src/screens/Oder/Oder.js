@@ -119,9 +119,6 @@ function Oder() {
         itemSelected: null,
     })
 
-    // Input Nhap So Luong Da Chon
-    const inputSoluongDaChon = useRef()
-
     //Thêm thuộc tính cho api đặt hàng
     //Hoàng code
     const [doanhThu, setDoanhThu] = useState(0)
@@ -288,7 +285,6 @@ function Oder() {
 
                                 // Show modal điền số lượng sản phẩm khi nhấn chọn sản phẩm
                                 setShowModalDienSoLuongSP(true)
-                                //inputSoluongDaChon.current.autoFocus = true;
                             } else {
                                 setStateSnackbar({
                                     ...stateSnackbar,
