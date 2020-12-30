@@ -135,6 +135,9 @@ const Reducer = (state = defineState, action) => {
             state.objectBill.lstSanPham[
                 objNewValueItemBillClone.indexBill
             ].pricesum = objNewValueItemBillClone.pricesum
+            state.objectBill.lstSanPham[
+                objNewValueItemBillClone.indexBill
+            ].Ghichu = objNewValueItemBillClone.Ghichu
 
             return state
 

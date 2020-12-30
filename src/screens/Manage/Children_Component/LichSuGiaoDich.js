@@ -18,6 +18,7 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 
 import resources from '../../../resource/color/ColorApp'
 import { TextField } from '@material-ui/core'
@@ -145,15 +146,17 @@ function LichSuGiaoDich() {
     const RenderDonHangTrongNgay = (arr) => {
         var _total = 0
         const _result = arr.map((e, index) => {
-            _total += 1
-            return ItemDonHang(e, handleClickPrint, index)
+            // Kiểm tra xem khách hàng này có lịch sử đơn hàng nào ko
+            if (e.lstSanPham.length != 0) {
+                _total += 1
+                return ItemDonHang(e, handleClickPrint, index)
+            }
         })
         setTotalBill(_total)
         setResult(_result)
     }
 
     const ItemDonHang = (props, action, index) => {
-        console.log(props)
         const formatDate = new Date(props.Date)
         return (
             <TableRow hover>
@@ -199,6 +202,7 @@ function LichSuGiaoDich() {
                             //Khi click chỉnh sửa 1 bill nào đó thì lưu obj đó vào store
                             dispatch({ type: SaveObjectBill, value: props })
                             setShowModalUpdateBill(true)
+                            console.log(props)
                         }}
                     >
                         Chỉnh sửa
@@ -280,6 +284,7 @@ function LichSuGiaoDich() {
         const [priceSum, setPriceSum] = useState(
             formatNumber(props.data.pricesum)
         )
+        const [ghiChu, setGhiChu] = useState(props.data.Ghichu)
 
         useEffect(() => {
             setPriceSum(formatNumber(soluongBan * price))
@@ -293,6 +298,7 @@ function LichSuGiaoDich() {
                 <TableCell>{props.index}</TableCell>
                 <TableCell>
                     <Autocomplete
+                        style={{ width: '280px' }}
                         freeSolo={true}
                         options={arrAllSanPham}
                         getOptionLabel={(option) => option.name}
@@ -370,10 +376,11 @@ function LichSuGiaoDich() {
                         )}
                     />
                 </TableCell>
-                <TableCell style={{ width: '100px' }}>
+                <TableCell>
                     <TextField
                         placeholder="Số lượng"
                         value={soluongBan}
+                        style={{ width: '70px' }}
                         onChange={(e) => {
                             setSoLuongBan(e.target.value)
                         }}
@@ -385,17 +392,41 @@ function LichSuGiaoDich() {
                                     price: price,
                                     pricesum: soluongBan * price,
                                     indexBill: props.index,
+                                    Ghichu: ghiChu,
                                 },
                             })
                         }}
                     />
                 </TableCell>
-                <TableCell style={{ width: '100px' }}>
+                <TableCell>
                     <TextField
                         placeholder="Giá tiền"
                         value={price}
+                        style={{ width: '180px' }}
                         onChange={(e) => {
                             setPrice(e.target.value)
+                        }}
+                        onBlur={(e) => {
+                            dispatch({
+                                type: UpdateValueItemBill,
+                                value: {
+                                    soluongBan: soluongBan,
+                                    price: price,
+                                    pricesum: soluongBan * price,
+                                    indexBill: props.index,
+                                    Ghichu: ghiChu,
+                                },
+                            })
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <TextareaAutosize
+                        placeholder="Ghi chú "
+                        rowsMax={3}
+                        rowsMin={3}
+                        onChange={(e) => {
+                            setGhiChu(e.target.value)
                         }}
                         onBlur={() => {
                             dispatch({
@@ -405,12 +436,18 @@ function LichSuGiaoDich() {
                                     price: price,
                                     pricesum: soluongBan * price,
                                     indexBill: props.index,
+                                    Ghichu: ghiChu,
                                 },
                             })
                         }}
+                        value={ghiChu}
                     />
                 </TableCell>
-                <TableCell>{`${priceSum} VNĐ`}</TableCell>
+                <TableCell
+                    style={{
+                        width: '150px',
+                    }}
+                >{`${priceSum} VNĐ`}</TableCell>
                 <TableCell>
                     <DeleteIcon
                         style={{
@@ -503,6 +540,7 @@ function LichSuGiaoDich() {
                                     <TableCell>Sản Phẩm</TableCell>
                                     <TableCell>Số Lượng</TableCell>
                                     <TableCell>Giá Tiền</TableCell>
+                                    <TableCell>Ghi Chú</TableCell>
                                     <TableCell>Tổng Tiền</TableCell>
                                     <TableCell>Xóa Bill</TableCell>
                                 </TableRow>
@@ -513,7 +551,6 @@ function LichSuGiaoDich() {
                     </TableContainer>
                     <div style={{ display: 'flex', marginTop: '10px' }}>
                         <h5 style={{ marginBottom: '0' }}>Thành Tiền: </h5>
-
                         <input
                             type="text"
                             style={{
@@ -535,10 +572,7 @@ function LichSuGiaoDich() {
                             }
                             onFocus={(e) => {
                                 setThanhTien(
-                                    e.target.value.slice(
-                                        0,
-                                        e.target.value.length - 4
-                                    )
+                                    e.target.value.replace(/VNĐ|,| /gi, '')
                                 )
                             }}
                         />
@@ -600,6 +634,7 @@ function LichSuGiaoDich() {
 
                                 setShowModalUpdateBill(false)
                                 updateBill(objectNewBillPOST)
+                                console.log(objectNewBillPOST)
                             }}
                         >
                             Cập Nhật

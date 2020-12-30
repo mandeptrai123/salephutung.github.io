@@ -158,7 +158,6 @@ function Oder() {
                             arr_Cart[_index].price = e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
-                        onBlur={(e) => {}}
                         value={
                             parseInt(props.price) % 1 === 0 ? props.price : ''
                         }
@@ -451,7 +450,6 @@ function Oder() {
             body: JSON.stringify(itemRequest),
         }
         let _URL = URL_API + '/donhang/ThemDonHang'
-
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -712,6 +710,7 @@ function Oder() {
             }
             var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
             arr_Cart[_index].soluongBan = +soLuongSanPhamDaChon
+            arr_Cart[_index].Ghichu = ''
             setsoluongBan(arr_Cart[_index].soluongBan)
             RenderKetQuaGioHang(arr_Cart)
         }

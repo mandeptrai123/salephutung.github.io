@@ -49,7 +49,6 @@ function KhoHang() {
 
     function RenderKhoSanPham(arr) {
         var stt = 0
-        console.log('render: ')
         setLstResult(
             arr.map((e) => {
                 stt++
