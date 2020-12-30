@@ -102,7 +102,15 @@ class PrintDonHang extends React.Component {
                                     <td>{e.soluongBan}</td>
                                     <td>{formatNumber(e.price)}</td>
                                     <td>{formatNumber(e.pricesum)}</td>
-                                    <td>{e.Ghichu}</td>
+                                    <td>
+                                        <div
+                                            style={{
+                                                maxWidth: '380px',
+                                            }}
+                                        >
+                                            {e.Ghichu}
+                                        </div>
+                                    </td>
                                 </tr>
                             )
                         })}
