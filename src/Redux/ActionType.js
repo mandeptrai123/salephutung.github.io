@@ -14,3 +14,6 @@ export const DeleteItemBill = 'DeleteItemBill'
 export const AddBill = 'AddBill'
 export const UpdateItemBill = 'UpdateItemBill'
 export const UpdateValueItemBill = 'UpdateValueItemBill'
+
+//Xử lí ở trang kho hàng
+export const DeleteSanPham = 'DeleteSanPham'

@@ -12,11 +12,17 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+import Dropdown from 'react-bootstrap/Dropdown'
+
 import resources from '../../../resource/color/ColorApp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../../networking/fetchWithTimeout'
 import { useSelector, useDispatch } from 'react-redux'
+
+//icon
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
 
 //import redux
 import { IsUpdateCongNo } from '../../../Redux/ActionType'
@@ -33,6 +39,9 @@ function CongNo() {
     const URL_API = 'http://35.197.146.86:5000'
 
     const [lstResult, setResult] = useState()
+
+    // Lưu lại ui ban đầu
+    const [lstUI, setLstUI] = useState()
     const [totalCongNo, setTotalCongNo] = useState(0)
 
     const [messLoading, setMessLoading] = useState(
@@ -42,6 +51,11 @@ function CongNo() {
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
+
+    const [nameFilterSearch, setNameFilterSearch] = useState(
+        'Tìm tên khách hàng'
+    )
+    const [valueSearch, setValueSearch] = useState('')
 
     const [showDieuChinh, setShowDieuChinh] = useState(false)
 
@@ -211,17 +225,16 @@ function CongNo() {
 
     function RenderCongNo(arr) {
         var _congno = 0
-        var stt = 0
-        setResult(
-            arr.map((e) => {
-                _congno += parseInt(e.Congno)
-                stt++
-                //Lấy 20 sản phẩm để render UI công nợ
-                if (stt < 21) {
-                    return <ItemCongNo data={e} soThuTu={stt} />
-                }
-            })
-        )
+
+        const result = arr.map((e, index) => {
+            _congno += parseInt(e.Congno)
+
+            return <ItemCongNo data={e} soThuTu={index} />
+        })
+
+        setResult(result)
+        setLstUI(result)
+
         setTotalCongNo(TienVietNam(_congno))
     }
 
@@ -282,6 +295,66 @@ function CongNo() {
             })
     }
 
+    function handleSearch(value, nameFilter) {
+        // Nếu chuỗi tìm kiếm rỗng thì cho render toàn bộ
+        if (!value) {
+            setResult(lstUI)
+            return
+        }
+
+        const textSearch = value.toLowerCase()
+        const regex = new RegExp(textSearch)
+        var maxItemSearch = 0
+        const len = arr_KhachHang.length
+        var arrUI = []
+        switch (nameFilter) {
+            case 'Tìm tên khách hàng':
+                //render 20 kết quả tìm đc
+                for (var i = 0; i < len; ++i) {
+                    if (regex.exec(arr_KhachHang[i].Name.toLowerCase())) {
+                        maxItemSearch++
+                        if (maxItemSearch < 21) {
+                            arrUI.push(
+                                <ItemCongNo
+                                    data={arr_KhachHang[i]}
+                                    soThuTu={maxItemSearch}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+
+                setResult(arrUI)
+
+                break
+            case 'Tìm địa chỉ':
+                //render 20 kết quả tìm đc
+                for (var i = 0; i < len; ++i) {
+                    if (regex.exec(arr_KhachHang[i].DiaChi.toLowerCase())) {
+                        maxItemSearch++
+                        if (maxItemSearch < 21) {
+                            arrUI.push(
+                                <ItemCongNo
+                                    data={arr_KhachHang[i]}
+                                    soThuTu={maxItemSearch}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+
+                setResult(arrUI)
+
+                break
+            default:
+                break
+        }
+    }
+
     return (
         <div
             style={{
@@ -316,31 +389,72 @@ function CongNo() {
                 size="3x"
                 icon={faSyncAlt}
             />
-            <TextField
-                style={{
-                    width: '100%',
-                    margin: '10px 0',
-                }}
-                id="outlined-basic"
-                label="Tìm kiếm theo tên khách hàng"
-                variant="outlined"
-                onChange={(event) => {
-                    const textSearch = event.target.value.toLowerCase()
-                    const regex = new RegExp(textSearch)
+            <div
+                style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+            >
+                <TextField
+                    style={{
+                        width: 450,
+                        marginRight: 35,
+                    }}
+                    id="outlined-basic"
+                    placeholder={nameFilterSearch}
+                    variant="outlined"
+                    onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                            handleSearch(event.target.value, nameFilterSearch)
+                        }
+                    }}
+                    value={valueSearch}
+                    onChange={(e) => {
+                        setValueSearch(e.target.value)
+                    }}
+                    InputProps={{
+                        endAdornment: (
+                            <CloseIcon
+                                onClick={(e) => {
+                                    setValueSearch('')
+                                    handleSearch('')
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: valueSearch ? 'block' : 'none',
+                                }}
+                            />
+                        ),
+                        startAdornment: (
+                            <SearchIcon
+                                style={{
+                                    marginRight: '11px',
+                                }}
+                            />
+                        ),
+                    }}
+                />
 
-                    var stt = 0
-                    setResult(
-                        arr_KhachHang.map((e) => {
-                            if (regex.exec(e.Name.toLowerCase())) {
-                                stt++
-                                if (stt < 21) {
-                                    return <ItemCongNo data={e} soThuTu={stt} />
-                                }
-                            }
-                        })
-                    )
-                }}
-            />
+                <Dropdown>
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        {nameFilterSearch}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                            onClick={(e) => {
+                                setNameFilterSearch('Tìm tên khách hàng')
+                            }}
+                        >
+                            Tìm tên khách hàng
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={(e) => {
+                                setNameFilterSearch('Tìm địa chỉ')
+                            }}
+                        >
+                            Tìm địa chỉ
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
 
             <TableContainer
                 style={{

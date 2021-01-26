@@ -25,6 +25,10 @@ import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
 import TextField from '@material-ui/core/TextField'
 
+//icon
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
+
 //import redux
 import {
     SaveListSPThieuSL,
@@ -44,10 +48,14 @@ function MatHangHetSL() {
         false
     )
 
+    const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
+    const [valueSearch, setValueSearch] = useState('')
+
     const URL_API = 'http://35.197.146.86:5000'
 
     //Tạo list lưu ghi chú mỗi sản phẩm
     const [resultLst, setResultLst] = useState()
+    const [uiSanPhamHetSL, setUiSanPhamHetSL] = useState()
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
@@ -214,6 +222,7 @@ function MatHangHetSL() {
                             ds.push(element)
                         })
                     })
+
                     //Lưu list sản phẩm thiếu số lượng vào store
                     dispatch({ type: SaveListSPThieuSL, value: ds })
 
@@ -227,11 +236,75 @@ function MatHangHetSL() {
     }
 
     function UpdateHangThieuSL(arr) {
-        setResultLst(
-            arr.map((e, index) => {
-                return <ItemNoiDung data={e} indexItem={index} />
-            })
-        )
+        const result = arr.map((e, index) => {
+            return <ItemNoiDung data={e} indexItem={index} />
+        })
+        setResultLst(result)
+        setUiSanPhamHetSL(result)
+    }
+
+    function handleSearch(value, nameFilterSearch = '') {
+        // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
+        if (!value) {
+            setResultLst(uiSanPhamHetSL)
+            return
+        }
+
+        const textSearch = value.toLowerCase()
+        const reg = new RegExp(textSearch)
+
+        switch (nameFilterSearch) {
+            case 'Tìm tên nhà cung cấp':
+                let arrUI = []
+                const len = listSPThieuSL.length
+                let maxLengthSearch = 0
+
+                //cho render kết quả tìm kiếm tối đa là 20
+                for (let i = 0; i < len; ++i) {
+                    if (reg.exec(listSPThieuSL[i].NhaCC.toLowerCase())) {
+                        maxLengthSearch++
+                        if (maxLengthSearch < 21) {
+                            arrUI.push(
+                                <ItemNoiDung
+                                    data={listSPThieuSL[i]}
+                                    indexItem={maxLengthSearch}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+
+                setResultLst(arrUI)
+                break
+            case 'Tìm tên sản phẩm':
+                let arrUIs = []
+                const length = listSPThieuSL.length
+                let maxLengthSearchs = 0
+
+                //cho render kết quả tìm kiếm tối đa là 20
+                for (let i = 0; i < length; ++i) {
+                    if (reg.exec(listSPThieuSL[i].Name.toLowerCase())) {
+                        maxLengthSearchs++
+                        if (maxLengthSearchs < 21) {
+                            arrUIs.push(
+                                <ItemNoiDung
+                                    data={listSPThieuSL[i]}
+                                    indexItem={maxLengthSearchs}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+
+                setResultLst(arrUIs)
+                break
+            default:
+                break
+        }
     }
 
     return (
@@ -247,30 +320,66 @@ function MatHangHetSL() {
                 >
                     Sản Phẩm Có Số Lượng Thấp
                 </h3>
-                <div>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
                     <TextField
-                        label="Tìm kiếm theo nhà cung cấp"
+                        label={nameFilterSearch}
                         variant="outlined"
                         style={{ width: '70%' }}
-                        onChange={(event) => {
-                            const textSearch = event.target.value.toLowerCase()
-                            const reg = new RegExp(textSearch)
-
-                            //Xử lí tìm kiếm
-                            setResultLst(
-                                listSPThieuSL.map((e, index) => {
-                                    if (reg.exec(e.NhaCC.toLowerCase())) {
-                                        return (
-                                            <ItemNoiDung
-                                                data={e}
-                                                indexItem={index}
-                                            />
-                                        )
-                                    }
-                                })
-                            )
+                        value={valueSearch}
+                        onKeyPress={(event) => {
+                            if (event.key === 'Enter') {
+                                handleSearch(
+                                    event.target.value,
+                                    nameFilterSearch
+                                )
+                            }
+                        }}
+                        onChange={(e) => {
+                            setValueSearch(e.target.value)
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <CloseIcon
+                                    onClick={(e) => {
+                                        setValueSearch('')
+                                        handleSearch('')
+                                    }}
+                                    style={{
+                                        cursor: 'pointer',
+                                        display: valueSearch ? 'block' : 'none',
+                                    }}
+                                />
+                            ),
                         }}
                     />
+                    <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                            {nameFilterSearch}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item
+                                onClick={(e) => {
+                                    setNameFilterSearch('Tìm tên nhà cung cấp')
+                                }}
+                            >
+                                Tìm tên nhà cung cấp
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                onClick={(e) => {
+                                    setNameFilterSearch('Tìm tên sản phẩm')
+                                }}
+                            >
+                                Tìm tên sản phẩm
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </div>
                 <div
                     style={{

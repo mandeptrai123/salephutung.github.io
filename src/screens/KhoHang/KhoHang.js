@@ -7,7 +7,14 @@ import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
+import Dropdown from 'react-bootstrap/Dropdown'
 import TableRow from '@material-ui/core/TableRow'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '@material-ui/lab/Alert'
+
+//icon
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
 
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -22,23 +29,29 @@ import _, { result } from 'lodash'
 import { useSelector, useDispatch } from 'react-redux'
 
 //Action
-import { AllSanPham } from '../../Redux/ActionType'
+import { AllSanPham, DeleteSanPham } from '../../Redux/ActionType'
 
 var ID = 0
 
 function KhoHang() {
     const [lstSanPham, setLstSanPham] = useState([])
-    const [searchContent, setsearchContent] = useState('')
+    const [valueSearch, setValueSearch] = useState('')
+    const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
 
     const [show, setShow] = useState(false)
     const [messLoading, setMessLoading] = useState('')
     const [lstResult, setLstResult] = useState()
-    const [valueSearchContent, setvalueSearchContent] = useState('')
+    const [uiKhoHang, setUIKhoHang] = useState()
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
     const [showDieuChinh, setDieuChinh] = useState(false)
+    const [showModalDel, setShowModalDel] = useState(false)
+    const [showMessage, setShowMessage] = useState(false)
+
+    //id sản phẩm cần xóa
+    const [idSanPhamDel, setIdSanPhamDel] = useState('')
 
     const [GiaTriMoi, setGiaTriMoi] = useState('')
 
@@ -48,16 +61,12 @@ function KhoHang() {
     const URL_API = 'http://35.197.146.86:5000'
 
     function RenderKhoSanPham(arr) {
-        var stt = 0
-        setLstResult(
-            arr.map((e) => {
-                stt++
-                //Do dữ liệu nhiều lấy 20 sản phẩm
-                if (stt < 21) {
-                    return <ItemSanPham data={e} soThuTu={stt} />
-                }
-            })
-        )
+        const result = arr.map((e, index) => {
+            return <ItemSanPham data={e} soThuTu={index} />
+        })
+
+        setLstResult(result)
+        setUIKhoHang(result)
     }
 
     function CapNhatSanPham(bodyRequest) {
@@ -85,6 +94,70 @@ function KhoHang() {
                 alert('Có Lỗi Ở Kho Hàng! ')
                 handleClose()
             })
+    }
+
+    function handleDeleteSanPham(id) {
+        handleShow()
+        setMessLoading('Đang xóa sản phẩm!')
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({ _id: id }),
+        }
+
+        const _URL = URL_API + '/sanpham/XoaSanPham'
+        NetWorking(_URL, requestOptions)
+            .then((response) => {
+                if (response.success) {
+                    dispatch({ type: DeleteSanPham, value: id })
+                }
+                setShowMessage(true)
+                handleClose()
+            })
+            .catch((error) => {
+                console.log(lỗi, error)
+                alert('Có Lỗi Ở Kho Hàng! ')
+                handleClose()
+            })
+    }
+
+    function ModalDeleteSanPham() {
+        return (
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={showModalDel}
+                onHide={() => setShowModalDel(false)}
+            >
+                <Modal.Header closeButton>
+                    Bạn có muốn xóa sản phẩm này ?
+                </Modal.Header>
+                <Modal.Footer>
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            handleDeleteSanPham(idSanPhamDel)
+
+                            setShowModalDel(false)
+                        }}
+                    >
+                        Đồng ý
+                    </Button>
+                    <Button
+                        variant="danger"
+                        onClick={() => {
+                            setShowModalDel(false)
+                        }}
+                    >
+                        Hủy
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        )
     }
 
     function ItemSanPham(props) {
@@ -210,26 +283,42 @@ function KhoHang() {
                     />
                 </TableCell>
                 <TableCell>
-                    <Button
-                        variant={boolUpdateSanPham ? 'success' : 'primary'}
-                        style={{ fontSize: '14px', width: '120px' }}
-                        onClick={(e) => {
-                            /*Code của Mẫn*/
-                            // ID = 2
-                            // setDieuChinh(true)
-
-                            /*Code của Hoàng*/
-                            //Cho phép cập nhật giá trị của các trường
-                            setBoolUpdateSanPham(!boolUpdateSanPham)
-
-                            //Kiểm tra button đang ở trạng thái đang cập nhật ?
-                            if (boolUpdateSanPham) {
-                                CapNhatSanPham(bodyRequestAPIUpdateSP)
-                            }
+                    <div
+                        style={{
+                            display: 'flex',
                         }}
                     >
-                        {boolUpdateSanPham ? 'Xong' : 'Cập nhật'}
-                    </Button>
+                        <Button
+                            variant={boolUpdateSanPham ? 'success' : 'primary'}
+                            style={{ fontSize: '14px', width: '120px' }}
+                            onClick={(e) => {
+                                /*Code của Mẫn*/
+                                // ID = 2
+                                // setDieuChinh(true)
+
+                                /*Code của Hoàng*/
+                                //Cho phép cập nhật giá trị của các trường
+                                setBoolUpdateSanPham(!boolUpdateSanPham)
+
+                                //Kiểm tra button đang ở trạng thái đang cập nhật ?
+                                if (boolUpdateSanPham) {
+                                    CapNhatSanPham(bodyRequestAPIUpdateSP)
+                                }
+                            }}
+                        >
+                            {boolUpdateSanPham ? 'Xong' : 'Cập nhật'}
+                        </Button>
+                        <Button
+                            style={{ fontSize: '14px', marginLeft: '7px' }}
+                            variant="danger"
+                            onClick={() => {
+                                setShowModalDel(true)
+                                setIdSanPhamDel(e._id)
+                            }}
+                        >
+                            Xóa
+                        </Button>
+                    </div>
                 </TableCell>
             </TableRow>
         )
@@ -326,8 +415,90 @@ function KhoHang() {
         RenderKhoSanPham(TatCaSanPham)
     }, [TatCaSanPham])
 
+    function handleSearch(value, nameFilterSearch = '') {
+        // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
+        if (!value) {
+            setLstResult(uiKhoHang)
+            return
+        }
+
+        const textSearch = value.toLowerCase()
+        const regex = new RegExp(textSearch)
+
+        switch (nameFilterSearch) {
+            case 'Tìm tên nhà cung cấp':
+                let arrUI = []
+                const len = TatCaSanPham.length
+                let maxLengthSearch = 0
+
+                //cho render kết quả tìm kiếm tối đa là 20
+                for (let i = 0; i < len; ++i) {
+                    if (regex.exec(TatCaSanPham[i].NhaCC.toLowerCase())) {
+                        maxLengthSearch++
+                        if (maxLengthSearch < 21) {
+                            arrUI.push(
+                                <ItemSanPham
+                                    data={TatCaSanPham[i]}
+                                    soThuTu={maxLengthSearch}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+                setLstResult(arrUI)
+
+                break
+            case 'Tìm tên sản phẩm':
+                let arrUIs = []
+                const length = TatCaSanPham.length
+                let maxLengthSearchs = 0
+
+                //cho render kết quả tìm kiếm tối đa là 20
+                for (let i = 0; i < length; ++i) {
+                    if (regex.exec(TatCaSanPham[i].name.toLowerCase())) {
+                        maxLengthSearchs++
+                        if (maxLengthSearchs < 21) {
+                            arrUIs.push(
+                                <ItemSanPham
+                                    data={TatCaSanPham[i]}
+                                    soThuTu={maxLengthSearchs}
+                                />
+                            )
+                        } else {
+                            break
+                        }
+                    }
+                }
+
+                setLstResult(arrUIs)
+                break
+
+            default:
+                break
+        }
+    }
+
     return (
         <section className="khohang-container">
+            <ModalDeleteSanPham />
+
+            <Snackbar
+                open={showMessage}
+                autoHideDuration={2500}
+                onClose={() => {
+                    setShowMessage(false)
+                }}
+            >
+                <Alert
+                    onClose={() => setShowMessage(false)}
+                    severity={'success'}
+                >
+                    Xóa sản phẩm thành công
+                </Alert>
+            </Snackbar>
+
             <div className="khohang-container__content">
                 <h2
                     style={{ color: resources.colorPrimary }}
@@ -338,61 +509,100 @@ function KhoHang() {
 
                 <div
                     style={{
-                        flexDirection: 'column',
-                        justifyContent: 'center',
+                        display: 'flex',
+                        justifyContent: 'space-between',
                         alignContent: 'center',
                     }}
                 >
-                    <div style={{ display: 'flex', width: '500px' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <TextField
                             style={{
-                                width: '100%',
+                                width: '450px',
+                                marginRight: '30px',
                             }}
                             pattern="[A-Za-z]"
-                            label="Nhập tên sản phẩm hoặc nhà cung cấp cần tìm"
-                            onChange={(event) => {
-                                const textSearch = event.target.value.toLowerCase()
-                                const regex = new RegExp(textSearch)
-                                var stt = 0
-                                setLstResult(
-                                    TatCaSanPham.map((e) => {
-                                        if (
-                                            regex.exec(e.name.toLowerCase()) ||
-                                            regex.exec(e.NhaCC.toLowerCase())
-                                        ) {
-                                            stt++
-                                            //Do dữ liệu nhiều nên render 20 sản phẩm
-                                            if (stt < 21) {
-                                                return (
-                                                    <ItemSanPham
-                                                        data={e}
-                                                        soThuTu={stt}
-                                                    />
-                                                )
-                                            }
-                                        }
-                                    })
-                                )
+                            placeholder={nameFilterSearch}
+                            onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                    handleSearch(
+                                        event.target.value,
+                                        nameFilterSearch
+                                    )
+                                }
                             }}
+                            onChange={(e) => {
+                                setValueSearch(e.target.value)
+                            }}
+                            value={valueSearch}
                             variant="outlined"
+                            InputProps={{
+                                endAdornment: (
+                                    <CloseIcon
+                                        onClick={(e) => {
+                                            setValueSearch('')
+                                            handleSearch('')
+                                        }}
+                                        style={{
+                                            cursor: 'pointer',
+                                            display: valueSearch
+                                                ? 'block'
+                                                : 'none',
+                                        }}
+                                    />
+                                ),
+                                startAdornment: (
+                                    <SearchIcon
+                                        style={{
+                                            marginRight: '11px',
+                                        }}
+                                    />
+                                ),
+                            }}
                         />
 
-                        <FontAwesomeIcon
-                            style={{
-                                marginLeft: 40,
-                                alignContent: 'center',
-                                alignSelf: 'center',
-                                marginTop: 10,
-                                cursor: 'pointer',
-                            }}
-                            onClick={(e) => {
-                                Refresh()
-                            }}
-                            color={resources.colorPrimary}
-                            size="3x"
-                            icon={faSyncAlt}
-                        />
+                        <Dropdown>
+                            <Dropdown.Toggle variant="primary">
+                                {nameFilterSearch}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item
+                                    onClick={() => {
+                                        setNameFilterSearch(
+                                            'Tìm tên nhà cung cấp'
+                                        )
+                                    }}
+                                >
+                                    Tìm tên nhà cung cấp
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => {
+                                        setNameFilterSearch('Tìm tên sản phẩm')
+                                    }}
+                                >
+                                    Tìm tên sản phẩm
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </div>
+
+                    <FontAwesomeIcon
+                        style={{
+                            marginRight: 40,
+                            marginTop: 10,
+                            cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                            Refresh()
+                        }}
+                        color={resources.colorPrimary}
+                        size="3x"
+                        icon={faSyncAlt}
+                    />
                 </div>
 
                 <div>

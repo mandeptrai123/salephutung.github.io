@@ -19,11 +19,14 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 import resources from '../../../resource/color/ColorApp'
 import { TextField } from '@material-ui/core'
 import NetWorking from '../../../networking/fetchWithTimeout'
 import Button from '@material-ui/core/Button'
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
 
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -35,7 +38,6 @@ import { Autocomplete } from '@material-ui/lab'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 
-var _arrKhachHang = []
 var _arrDonHang = []
 
 function TienVietNam(input) {
@@ -73,6 +75,9 @@ function LichSuGiaoDich() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
+    const [valueSearch, setValueSearch] = useState('')
+
     const [state, setState] = useState({
         DateTimKiem: '',
         TenTimKiem: '',
@@ -90,32 +95,6 @@ function LichSuGiaoDich() {
     } = state
 
     const componentRef = useRef(null)
-
-    function FindItemBySanPham(nameSP) {
-        var _arrResult = []
-        for (var j = 0; j < _arrDonHang.length; j++) {
-            if (_arrDonHang[j].lstSanPham == undefined) return
-
-            for (var i = 0; i < _arrDonHang[j].lstSanPham.length; i++) {
-                if (nameSP == _arrDonHang[j].lstSanPham[i].name) {
-                    _arrResult.push(_arrDonHang[j])
-                    break
-                }
-            }
-        }
-        return _arrResult
-    }
-
-    function FindItemByTenKhach(nameTenKhach) {
-        var _arrResult = []
-        for (var j = 0; j < _arrDonHang.length; j++) {
-            if (_arrDonHang[j].TenKhach == undefined) return
-
-            if (nameTenKhach == _arrDonHang[j].TenKhach)
-                _arrResult.push(_arrDonHang[j])
-        }
-        return _arrResult
-    }
 
     //const [date,setDateChoosee] = useState(new Date().getDay()+"-"+new Date().getMonth+"-"+new Date().getFullYear());
     useEffect(() => {
@@ -680,6 +659,51 @@ function LichSuGiaoDich() {
         )
     }
 
+    function handleSearch(valueSearch, nameFilter) {
+        // Nếu chuỗi tìm kiếm rỗng thì trả về toàn bộ ds
+        if (!valueSearch) {
+            RenderDonHangTrongNgay(_arrDonHang)
+            return
+        }
+
+        const len = _arrDonHang.length
+        var arrUI = []
+
+        //Chuỗi text cần tìm
+        const reg = new RegExp(valueSearch.toLowerCase())
+
+        switch (nameFilter) {
+            case 'Tìm tên khách hàng':
+                for (var i = 0; i < len; ++i) {
+                    if (reg.exec(_arrDonHang[i].TenKhach.toLowerCase())) {
+                        arrUI.push(_arrDonHang[i])
+                    }
+                }
+
+                RenderDonHangTrongNgay(arrUI)
+                break
+            case 'Tìm tên sản phẩm':
+                for (var i = 0; i < len; ++i) {
+                    const lenLstSanPham = _arrDonHang[i].lstSanPham.length
+                    for (var j = 0; j < lenLstSanPham; ++j) {
+                        if (
+                            reg.exec(
+                                _arrDonHang[i].lstSanPham[j].name.toLowerCase()
+                            )
+                        ) {
+                            arrUI.push(_arrDonHang[i])
+                            break
+                        }
+                    }
+                }
+
+                RenderDonHangTrongNgay(arrUI)
+                break
+            default:
+                break
+        }
+    }
+
     return (
         <div
             style={{
@@ -703,7 +727,10 @@ function LichSuGiaoDich() {
                     Lịch Sử Giao Dịch
                 </h1>
             </div>
-            <div style={{ display: 'flex', width: '100%' }}>
+
+            <div
+                style={{ display: 'flex', width: '100%', alignItems: 'center' }}
+            >
                 <TextField
                     variant="outlined"
                     id="date"
@@ -723,79 +750,69 @@ function LichSuGiaoDich() {
                     value={DateTimKiem}
                 />
 
-                <Autocomplete
-                    freeSolo={true}
-                    id="box-TenKhach"
-                    options={arrAllKhachHang}
-                    getOptionLabel={(option) => option.Name}
-                    style={{ width: 200 }}
-                    inputValue={ValueTen}
-                    onInputChange={(event, newInputValue) => {
-                        setState({ ...state, ValueTen: newInputValue })
-                        if (newInputValue !== null) {
-                            var arr = FindItemByTenKhach(newInputValue)
-                            RenderDonHangTrongNgay(arr)
+                <TextField
+                    onChange={(e) => {
+                        setValueSearch(e.target.value)
+                    }}
+                    value={valueSearch}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(e.target.value, nameFilterSearch)
                         }
                     }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                }
-                            }}
-                            style={{
-                                height: 50,
-                                width: 200,
-                                marginLeft: 20,
-                                fontSize: 14,
-                                paddingLeft: 5,
-                            }}
-                            placeholder="Tên Khách"
-                            variant="outlined"
-                        />
-                    )}
-                />
-
-                <Autocomplete
-                    freeSolo={true}
-                    id="box-SanPham"
-                    options={arrAllSanPham}
-                    getOptionLabel={(option) => option.name}
-                    style={{ width: 200 }}
-                    inputValue={ValueSanPham}
-                    onInputChange={(e, newValue) => {
-                        setState({ ...state, ValueSanPham: newValue })
-                        if (newValue != null)
-                            var arr = FindItemBySanPham(newValue)
-                        RenderDonHangTrongNgay(arr)
+                    style={{
+                        height: 50,
+                        marginLeft: '30px',
+                        marginRight: '30px',
+                        width: 350,
                     }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            // value={ValueSanPham}
-
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                }
-                            }}
-                            style={{
-                                height: 50,
-                                width: 200,
-                                marginLeft: 20,
-                                fontSize: 14,
-                                paddingLeft: 5,
-                            }}
-                            placeholder="Tên Sản Phẩm"
-                            variant="outlined"
-                        />
-                    )}
+                    placeholder={nameFilterSearch}
+                    variant="outlined"
+                    InputProps={{
+                        endAdornment: (
+                            <CloseIcon
+                                onClick={(e) => {
+                                    setValueSearch('')
+                                    handleSearch('')
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: valueSearch ? 'block' : 'none',
+                                }}
+                            />
+                        ),
+                        startAdornment: (
+                            <SearchIcon
+                                style={{
+                                    marginRight: '11px',
+                                }}
+                            />
+                        ),
+                    }}
                 />
-                {/* <Button
-                style={{width:150,height:50,backgroundColor:resources.colorPrimary,marginLeft:40}}
-                >
-                    Tìm 
-                </Button> */}
+
+                <Dropdown>
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        {nameFilterSearch}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item
+                            onClick={(e) => {
+                                setNameFilterSearch('Tìm tên khách hàng')
+                            }}
+                        >
+                            Tìm tên khách hàng
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                            onClick={(e) => {
+                                setNameFilterSearch('Tìm tên sản phẩm')
+                            }}
+                        >
+                            Tìm tên sản phẩm
+                        </Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </div>
             <h4
                 style={{

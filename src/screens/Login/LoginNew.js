@@ -150,6 +150,11 @@ export default function SignIn() {
                         onChange={(e) => {
                             setSDT(e.target.value)
                         }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                LoginBySDT(SDT, Pass)
+                            }
+                        }}
                         autoComplete="phone"
                         autoFocus
                     />
@@ -163,6 +168,11 @@ export default function SignIn() {
                         value={Pass}
                         onChange={(e) => {
                             setPass(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                LoginBySDT(SDT, Pass)
+                            }
                         }}
                         type="password"
                         id="password"

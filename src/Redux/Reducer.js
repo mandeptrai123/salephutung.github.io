@@ -12,6 +12,7 @@ import {
     AddBill,
     UpdateItemBill,
     UpdateValueItemBill,
+    DeleteSanPham,
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -70,6 +71,18 @@ const Reducer = (state = defineState, action) => {
         case AllSanPham:
             const arrSP = [...action.dataSanPham]
             state.AllSanPham = arrSP
+            return state
+
+        case DeleteSanPham:
+            const len = state.AllSanPham.length
+
+            for (var i = 0; i < len; ++i) {
+                if (state.AllSanPham[i]._id == action.value) {
+                    state.AllSanPham.splice(i, 1)
+                    break
+                }
+            }
+            state = JSON.parse(JSON.stringify(state))
             return state
 
         case GetAllKhachHang:

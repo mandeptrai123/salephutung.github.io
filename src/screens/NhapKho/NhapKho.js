@@ -18,6 +18,10 @@ import resources from '../../resource/color/ColorApp'
 import NetWorking from '../../networking/fetchWithTimeout'
 import { Autocomplete } from '@material-ui/lab'
 
+//icon
+import CloseIcon from '@material-ui/icons/Close'
+import SearchIcon from '@material-ui/icons/Search'
+
 import { TextField } from '@material-ui/core'
 
 import { Snackbar } from '@material-ui/core'
@@ -34,6 +38,7 @@ function NhapKho() {
     const [mess, setMessLoading] = useState(
         'Đang Thêm Sản Phẩm Vào Kho, Đợi Chút Nhé !'
     )
+
     const [resultList, setNhatKy] = useState([])
 
     const [nameSanPham, setNameSanPham] = useState('')
@@ -162,6 +167,7 @@ function NhapKho() {
         const _lst = arr.reverse().map((e) => {
             return ITemNhatKy(e)
         })
+
         setNhatKy(_lst)
     }
     // NetWord
@@ -322,29 +328,58 @@ function NhapKho() {
             })
     }
 
-    function HandleTimKiemNhatKy() {
-        const requestOptions = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
+    // function HandleTimKiemNhatKy(value) {
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             Accept: 'application/json',
+    //         },
+    //     }
+    //     let _URL = URL_API + '/sanpham/TimKiemNhatKy?name=' + value
+
+    //     NetWorking(_URL, requestOptions)
+    //         .then((res) => {
+    //             if (res.success) {
+    //                 UpdateNhatKy(res.data)
+    //             }
+
+    //             handleClose()
+    //         })
+    //         .catch((e) => {
+    //             alert('Có Lỗi Ở Nhập Kho! ')
+
+    //             handleClose()
+    //         })
+    // }
+
+    function handleSearch(value) {
+        const textSearch = value.toLowerCase()
+        const reg = new RegExp(textSearch)
+
+        // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+        if (!textSearch) {
+            UpdateNhatKy(arr_NhatKy)
+            return
         }
-        let _URL = URL_API + '/sanpham/TimKiemNhatKy?name=' + valueNhatKy
 
-        NetWorking(_URL, requestOptions)
-            .then((res) => {
-                if (res.success) {
-                    UpdateNhatKy(res.data)
+        //Do dữ liệu nhiều nên render 20 sản phẩm khi search
+        var max20SanPhamSearch = 0
+        var arrUI = []
+        const len = arr_NhatKy.length
+
+        for (var i = 0; i < len; ++i) {
+            if (reg.exec(arr_NhatKy[i].TenSP.toLowerCase())) {
+                max20SanPhamSearch++
+                if (max20SanPhamSearch < 21) {
+                    arrUI.push(arr_NhatKy[i])
+                } else {
+                    break
                 }
+            }
+        }
 
-                handleClose()
-            })
-            .catch((e) => {
-                alert('Có Lỗi Ở Nhập Kho! ')
-
-                handleClose()
-            })
+        UpdateNhatKy(arrUI)
     }
 
     return (
@@ -684,15 +719,38 @@ function NhapKho() {
                             variant="outlined"
                             style={{ width: '300px' }}
                             value={valueNhatKy}
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    HandleTimKiemNhatKy()
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch(e.target.value)
                                 }
                             }}
                             onChange={(e) => {
                                 setTimKiemNhatKy(e.target.value)
                             }}
-                            placeholder="Tìm Kiếm Nhật Ký"
+                            placeholder="Tìm kiếm theo tên sản phẩm"
+                            InputProps={{
+                                startAdornment: (
+                                    <SearchIcon
+                                        style={{
+                                            marginRight: '11px',
+                                        }}
+                                    />
+                                ),
+                                endAdornment: (
+                                    <CloseIcon
+                                        onClick={(e) => {
+                                            setTimKiemNhatKy('')
+                                            handleSearch('')
+                                        }}
+                                        style={{
+                                            cursor: 'pointer',
+                                            display: valueNhatKy
+                                                ? 'block'
+                                                : 'none',
+                                        }}
+                                    />
+                                ),
+                            }}
                         />
                         <FontAwesomeIcon
                             onClick={(e) => {

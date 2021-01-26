@@ -82,41 +82,9 @@ body {
 
 .find-product {
   margin-top: 5px;
-  margin-bottom: 20px;
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
   width: 100%;
-}
-
-.find-product .input-find {
-  width: 76%;
-  font-size: 22px;
-  font-weight: 600;
-  padding-left: 5px;
-  outline: none;
-  border-radius: 5px;
-  transition: all 0.2s;
-}
-
-.find-product .input-find:focus {
-  box-shadow: 1px 1px 4px;
-}
-
-.find-product .btn-find {
-  outline: none;
-  border: none;
-  color: black;
-  font-size: 18px;
-  font-weight: 600;
-  width: 20%;
-  height: 50px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.find-product .btn-find:hover {
-  box-shadow: 1px 1px 4px;
 }
 
 .list-items-product {

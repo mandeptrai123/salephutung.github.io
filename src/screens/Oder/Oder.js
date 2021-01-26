@@ -19,15 +19,14 @@ import { Autocomplete } from '@material-ui/lab'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
-
 import { useSelector, useDispatch } from 'react-redux'
 
+//icon
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
+
 //Action
-import {
-    AllSanPham,
-    GetAllKhachHang,
-    AddNewKhachHang,
-} from '../../Redux/ActionType'
+import { AllSanPham, AddNewKhachHang } from '../../Redux/ActionType'
 
 //import component in bill
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
@@ -111,6 +110,7 @@ function Oder() {
 
     //state chứa toàn bộ component ItemSanPham
     const [UIAllSanPham, setUIAllSanPham] = useState()
+    const [lspUIAllSP, setLstUIALLSP] = useState() //Dùng cho chức năng search
 
     //Su li in bill
     const componentRef = useRef(null)
@@ -118,6 +118,9 @@ function Oder() {
         open: false,
         itemSelected: null,
     })
+
+    //value text search
+    const [valueSearch, setValueSearch] = useState('')
 
     //Thêm thuộc tính cho api đặt hàng
     //Hoàng code
@@ -249,15 +252,11 @@ function Oder() {
     }
 
     function RenderUIToanBoSanPham(data) {
-        var soLuongSanPhamCanRender = 0
-        setUIAllSanPham(
-            data.map((e) => {
-                soLuongSanPhamCanRender++
-                if (soLuongSanPhamCanRender < 21) {
-                    return ItemSanPham(e)
-                }
-            })
-        )
+        const ui = data.map((e) => {
+            return ItemSanPham(e)
+        })
+        setLstUIALLSP(ui)
+        setUIAllSanPham(ui)
     }
 
     function ItemSanPham(props) {
@@ -716,6 +715,33 @@ function Oder() {
         }
     }
 
+    function handleSearch(value) {
+        var textSearch = value.toLowerCase()
+        const reg = new RegExp(textSearch)
+
+        // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+        if (!textSearch) {
+            setUIAllSanPham(lspUIAllSP)
+            return
+        }
+
+        //Do dữ liệu nhiều nên render 20 sản phẩm khi search
+        var max20SanPhamSearch = 0
+        var arrUI = []
+        const length = arrAllSP.length
+        for (var i = 0; i < length; ++i) {
+            if (reg.test(arrAllSP[i].name.toLowerCase())) {
+                max20SanPhamSearch++
+                if (max20SanPhamSearch < 21) {
+                    arrUI.push(ItemSanPham(arrAllSP[i]))
+                } else {
+                    break
+                }
+            }
+        }
+        setUIAllSanPham(arrUI)
+    }
+
     return (
         <section
             style={{ marginLeft: 20, marginRight: 40 }}
@@ -862,36 +888,45 @@ function Oder() {
             </header>
 
             <div className="find-product">
-                <input
-                    onChange={(e) => {
-                        var textSearch = e.target.value
-                        const reg = new RegExp(textSearch.toLowerCase())
-
-                        var max20SanPhamSearch = 0
-                        setUIAllSanPham(
-                            arrAllSP.map((e) => {
-                                if (reg.test(e.name.toLowerCase())) {
-                                    //Do dữ liệu nhiều nên render 20 sản phẩm khi search
-                                    max20SanPhamSearch++
-                                    if (max20SanPhamSearch < 21) {
-                                        return ItemSanPham(e)
-                                    }
-                                }
-                            })
-                        )
+                <TextField
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(e.target.value)
+                            setValueSearch(e.target.value)
+                        }
                     }}
                     style={{
                         color: resources.colorPrimary,
-                        width: 300,
-                        position: 'absolute',
-                        left: 35,
-                        marginTop: 15,
-                        height: 50,
-                        top: 140,
-                        paddingLeft: 20,
+                        marginLeft: 11,
+                        width: '350px',
                     }}
-                    type="text"
                     placeholder="Nhập sản phẩm cần tìm"
+                    InputProps={{
+                        endAdornment: (
+                            <CloseIcon
+                                onClick={(e) => {
+                                    setValueSearch('')
+                                    handleSearch('')
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: valueSearch ? 'block' : 'none',
+                                }}
+                            />
+                        ),
+                        startAdornment: (
+                            <SearchIcon
+                                style={{
+                                    marginRight: '11px',
+                                }}
+                            />
+                        ),
+                    }}
+                    onChange={(e) => {
+                        setValueSearch(e.target.value)
+                    }}
+                    value={valueSearch}
+                    variant="outlined"
                 />
             </div>
 
