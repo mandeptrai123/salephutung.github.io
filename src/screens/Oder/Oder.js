@@ -19,6 +19,13 @@ import { Autocomplete } from '@material-ui/lab'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
+
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from '@material-ui/core'
 import { useSelector, useDispatch } from 'react-redux'
 
 //icon
@@ -98,7 +105,7 @@ function Oder() {
     )
 
     //state modal điền số lượng sản phầm
-    const [showModalDienSoLuongSP, setShowModalDienSoLuongSP] = useState()
+    const [showModalDienSoLuongSP, setShowModalDienSoLuongSP] = useState(false)
 
     //Lưu _id sản phẩm khi nhấn chọn
     const [idSanPham, setIdSanPham] = useState()
@@ -252,8 +259,13 @@ function Oder() {
     }
 
     function RenderUIToanBoSanPham(data) {
+        //render 100 item
+        let stt = 0
         const ui = data.map((e) => {
-            return ItemSanPham(e)
+            stt++
+            if (stt < 101) {
+                return ItemSanPham(e)
+            }
         })
         setLstUIALLSP(ui)
         setUIAllSanPham(ui)
@@ -600,20 +612,22 @@ function Oder() {
 
     function ModalDienSoLuongSP() {
         const [soLuongSanPhamDaChon, setSoLuongSanPhamDaChon] = useState(1)
+
         return (
-            <Modal
-                show={showModalDienSoLuongSP}
-                onHide={() => setShowModalDienSoLuongSP(false)}
+            <Dialog
+                open={showModalDienSoLuongSP}
+                onClose={() => setShowModalDienSoLuongSP(false)}
+                maxWidth="sm"
+                fullWidth
             >
-                <Modal.Header closeButton>
+                <DialogTitle>
                     <h5>Điền số lượng sản phẩm</h5>
-                </Modal.Header>
-                <Modal.Body>
+                </DialogTitle>
+                <DialogContent>
                     <TextField
                         id="outlined-basic"
                         label="Số lượng"
                         margin="normal"
-                        autoFocus={true}
                         type="number"
                         variant="outlined"
                         style={{ width: '100%' }}
@@ -627,8 +641,8 @@ function Oder() {
                             }
                         }}
                     />
-                </Modal.Body>
-                <Modal.Footer>
+                </DialogContent>
+                <DialogActions>
                     <Button
                         variant="secondary"
                         onClick={() => {
@@ -637,8 +651,8 @@ function Oder() {
                     >
                         Thêm sản phẩm
                     </Button>
-                </Modal.Footer>
-            </Modal>
+                </DialogActions>
+            </Dialog>
         )
     }
 
@@ -725,13 +739,13 @@ function Oder() {
         }
 
         //Do dữ liệu nhiều nên render 20 sản phẩm khi search
-        var max20SanPhamSearch = 0
+        var maxSearchResult = 0
         var arrUI = []
         const length = arrAllSP.length
         for (var i = 0; i < length; ++i) {
             if (reg.test(arrAllSP[i].name.toLowerCase())) {
-                max20SanPhamSearch++
-                if (max20SanPhamSearch < 21) {
+                maxSearchResult++
+                if (maxSearchResult < 50) {
                     arrUI.push(ItemSanPham(arrAllSP[i]))
                 } else {
                     break

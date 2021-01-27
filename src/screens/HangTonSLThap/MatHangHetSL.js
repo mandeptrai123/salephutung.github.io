@@ -24,9 +24,9 @@ import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
 import TextField from '@material-ui/core/TextField'
-
+import { Snackbar } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 //icon
-import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 
@@ -140,7 +140,7 @@ function MatHangHetSL() {
 
                         return (
                             <>
-                                <br />
+                                <hr />
                                 <div
                                     style={{
                                         display: 'flex',
@@ -160,8 +160,12 @@ function MatHangHetSL() {
                                                 alignItems: 'center',
                                             }}
                                         >
-                                            - Nhà cung cấp {item.NhaCC} -{' '}
-                                            {item.SDTNhaCC}:{' '}
+                                            <strong
+                                                style={{ fontSize: '17px' }}
+                                            >
+                                                - Nhà cung cấp {item.NhaCC} -{' '}
+                                                {item.SDTNhaCC}:{' '}
+                                            </strong>
                                         </div>
                                         <div
                                             style={{
@@ -179,6 +183,10 @@ function MatHangHetSL() {
                                                             style={{
                                                                 marginBottom:
                                                                     '10px',
+                                                                fontSize:
+                                                                    '13px',
+                                                                fontWeight:
+                                                                    '600',
                                                             }}
                                                         >
                                                             {e.ghichu} {e.tenSP}
@@ -205,7 +213,6 @@ function MatHangHetSL() {
                             </>
                         )
                     })}
-                    <br />
                     Mong các nhà cung cấp sớm cung cấp cho bên chúng tôi
                 </Modal.Body>
                 <Modal.Footer>
@@ -301,8 +308,12 @@ function MatHangHetSL() {
     }
 
     function UpdateHangThieuSL(arr) {
+        let maxRender = 0
         const result = arr.map((e, index) => {
-            return <ItemNoiDung data={e} indexItem={index} />
+            maxRender++
+            if (maxRender < 101) {
+                return <ItemNoiDung data={e} indexItem={index} />
+            }
         })
         setResultLst(result)
         setUiSanPhamHetSL(result)
@@ -328,7 +339,7 @@ function MatHangHetSL() {
                 for (let i = 0; i < len; ++i) {
                     if (reg.exec(listSPThieuSL[i].NhaCC.toLowerCase())) {
                         maxLengthSearch++
-                        if (maxLengthSearch < 21) {
+                        if (maxLengthSearch < 51) {
                             arrUI.push(
                                 <ItemNoiDung
                                     data={listSPThieuSL[i]}
@@ -352,7 +363,7 @@ function MatHangHetSL() {
                 for (let i = 0; i < length; ++i) {
                     if (reg.exec(listSPThieuSL[i].Name.toLowerCase())) {
                         maxLengthSearchs++
-                        if (maxLengthSearchs < 21) {
+                        if (maxLengthSearchs < 51) {
                             arrUIs.push(
                                 <ItemNoiDung
                                     data={listSPThieuSL[i]}

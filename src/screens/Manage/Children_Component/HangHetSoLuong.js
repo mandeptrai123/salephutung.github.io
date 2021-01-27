@@ -38,8 +38,12 @@ function HangThieuSL() {
     }
 
     const RenderMatHangHetSL = (arr) => {
+        let maxRender = 0
         const _result = arr.map((e) => {
-            return ItemHangThieuSL(e)
+            maxRender++
+            if (maxRender < 101) {
+                return ItemHangThieuSL(e)
+            }
         })
 
         setResult(_result)

@@ -164,8 +164,13 @@ function NhapKho() {
         )
     }
     function UpdateNhatKy(arr) {
+        let maxRender = 0
+
         const _lst = arr.reverse().map((e) => {
-            return ITemNhatKy(e)
+            maxRender++
+            if (maxRender < 101) {
+                return ITemNhatKy(e)
+            }
         })
 
         setNhatKy(_lst)
@@ -328,31 +333,6 @@ function NhapKho() {
             })
     }
 
-    // function HandleTimKiemNhatKy(value) {
-    //     const requestOptions = {
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             Accept: 'application/json',
-    //         },
-    //     }
-    //     let _URL = URL_API + '/sanpham/TimKiemNhatKy?name=' + value
-
-    //     NetWorking(_URL, requestOptions)
-    //         .then((res) => {
-    //             if (res.success) {
-    //                 UpdateNhatKy(res.data)
-    //             }
-
-    //             handleClose()
-    //         })
-    //         .catch((e) => {
-    //             alert('Có Lỗi Ở Nhập Kho! ')
-
-    //             handleClose()
-    //         })
-    // }
-
     function handleSearch(value) {
         const textSearch = value.toLowerCase()
         const reg = new RegExp(textSearch)
@@ -363,15 +343,15 @@ function NhapKho() {
             return
         }
 
-        //Do dữ liệu nhiều nên render 20 sản phẩm khi search
-        var max20SanPhamSearch = 0
+        //Do dữ liệu nhiều nên render 50 sản phẩm khi search
+        var maxSearchResult = 0
         var arrUI = []
         const len = arr_NhatKy.length
 
         for (var i = 0; i < len; ++i) {
             if (reg.exec(arr_NhatKy[i].TenSP.toLowerCase())) {
-                max20SanPhamSearch++
-                if (max20SanPhamSearch < 21) {
+                maxSearchResult++
+                if (maxSearchResult < 51) {
                     arrUI.push(arr_NhatKy[i])
                 } else {
                     break

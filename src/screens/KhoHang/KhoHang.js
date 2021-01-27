@@ -61,8 +61,12 @@ function KhoHang() {
     const URL_API = 'http://35.197.146.86:5000'
 
     function RenderKhoSanPham(arr) {
+        let maxRender = 0
         const result = arr.map((e, index) => {
-            return <ItemSanPham data={e} soThuTu={index} />
+            maxRender++
+            if (maxRender < 101) {
+                return <ItemSanPham data={e} soThuTu={index} />
+            }
         })
 
         setLstResult(result)
@@ -416,7 +420,7 @@ function KhoHang() {
                 for (let i = 0; i < len; ++i) {
                     if (regex.exec(TatCaSanPham[i].NhaCC.toLowerCase())) {
                         maxLengthSearch++
-                        if (maxLengthSearch < 21) {
+                        if (maxLengthSearch < 51) {
                             arrUI.push(
                                 <ItemSanPham
                                     data={TatCaSanPham[i]}

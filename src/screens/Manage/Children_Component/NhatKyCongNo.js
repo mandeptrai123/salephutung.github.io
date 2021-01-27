@@ -55,11 +55,14 @@ export default function NhatKyCongNo() {
     }
 
     function RenderUINhatKy(data) {
-        setResultTableNhatKy(
-            data.map((e, index) => {
+        let maxRender = 0
+        const result = data.map((e, index) => {
+            maxRender++
+            if (maxRender < 101) {
                 return <ItemNhatKy data={e} index={index} />
-            })
-        )
+            }
+        })
+        setResultTableNhatKy(result)
     }
 
     function ItemNhatKy(props) {
@@ -129,13 +132,18 @@ export default function NhatKyCongNo() {
                         const textSearch = e.target.value.toLowerCase()
                         const reg = new RegExp(textSearch)
 
-                        setResultTableNhatKy(
-                            dataNhatKyCongNo.map((e, index) => {
-                                if (reg.exec(e.NameKhach.toLowerCase())) {
+                        let maxRender = 0
+
+                        const result = dataNhatKyCongNo.map((e, index) => {
+                            if (reg.exec(e.NameKhach.toLowerCase())) {
+                                maxRender++
+                                if (maxRender < 101) {
                                     return <ItemNhatKy data={e} index={index} />
                                 }
-                            })
-                        )
+                            }
+                        })
+
+                        setResultTableNhatKy(result)
                     }}
                 />
                 <RefreshIcon

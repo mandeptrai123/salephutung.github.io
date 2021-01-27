@@ -198,11 +198,13 @@ function CongNo() {
 
     function RenderCongNo(arr) {
         var _congno = 0
-
+        let maxRender = 0
         const result = arr.map((e, index) => {
             _congno += parseInt(e.Congno)
-
-            return <ItemCongNo data={e} soThuTu={index} />
+            maxRender++
+            if (maxRender < 101) {
+                return <ItemCongNo data={e} soThuTu={index} />
+            }
         })
 
         setResult(result)
@@ -266,7 +268,7 @@ function CongNo() {
                 for (var i = 0; i < len; ++i) {
                     if (regex.exec(arr_KhachHang[i].Name.toLowerCase())) {
                         maxItemSearch++
-                        if (maxItemSearch < 21) {
+                        if (maxItemSearch < 51) {
                             arrUI.push(
                                 <ItemCongNo
                                     data={arr_KhachHang[i]}
@@ -287,7 +289,7 @@ function CongNo() {
                 for (var i = 0; i < len; ++i) {
                     if (regex.exec(arr_KhachHang[i].DiaChi.toLowerCase())) {
                         maxItemSearch++
-                        if (maxItemSearch < 21) {
+                        if (maxItemSearch < 51) {
                             arrUI.push(
                                 <ItemCongNo
                                     data={arr_KhachHang[i]}
