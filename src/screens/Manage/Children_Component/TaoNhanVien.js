@@ -8,15 +8,22 @@ import '../css/Manage.css'
 import NetWorking from '../../../networking/fetchWithTimeout'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 
 function TaoNhanVien() {
+    //object tạo nhân viên
     const [sodienthoai, setSDT] = useState('')
     const [tenNV, setTenNV] = useState('')
     const [matkhau, setPassword] = useState('')
+    const [phanQuyen, setPhanQuyen] = useState('1')
 
     const [show, setShow] = useState(false)
     const [messLoading, setMessLoading] = useState('')
@@ -39,7 +46,6 @@ function TaoNhanVien() {
     function handleCloseSnackbar() {
         setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
     }
-
     useEffect(() => {
         setMessLoading(' Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!')
     }, [])
@@ -48,7 +54,7 @@ function TaoNhanVien() {
             SDT: sodienthoai,
             Pass: matkhau,
             Name: tenNV,
-            isQuanLi: false,
+            isQuanLi: +phanQuyen,
         }
         handleShow()
         const requestOptions = {
@@ -93,11 +99,8 @@ function TaoNhanVien() {
     return (
         <div
             style={{
-                flex: 1,
-
                 justifyContent: 'center',
                 alignContent: 'center',
-                width: '50%',
                 height: '100%',
             }}
         >
@@ -105,19 +108,24 @@ function TaoNhanVien() {
                 style={{
                     lineHeight: '60px',
                     textAlign: 'center',
-                    paddingRight: 200,
                     color: resources.colorPrimary,
                 }}
             >
                 Thêm Nhân Viên
             </h1>
-            <div style={{ padding: 50 }} className="borderW">
+            <div
+                style={{
+                    padding: 30,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+                className="borderW"
+            >
                 <TextField
                     variant="outlined"
                     style={{
-                        width: 200,
-                        marginBottom: 10,
-                        marginLeft: 200,
+                        width: 300,
                     }}
                     onChange={(e) => {
                         setSDT(e.target.value)
@@ -129,9 +137,9 @@ function TaoNhanVien() {
                 <TextField
                     variant="outlined"
                     style={{
-                        width: 200,
-                        marginTop: 10,
-                        marginLeft: 200,
+                        width: 300,
+                        marginTop: '10px',
+                        marginBottom: '10px',
                     }}
                     onChange={(e) => {
                         setPassword(e.target.value)
@@ -145,9 +153,8 @@ function TaoNhanVien() {
                 <TextField
                     variant="outlined"
                     style={{
-                        width: 200,
-                        marginTop: 10,
-                        marginLeft: 200,
+                        width: 300,
+                        marginBottom: '20px',
                     }}
                     onChange={(e) => {
                         setTenNV(e.target.value)
@@ -157,13 +164,39 @@ function TaoNhanVien() {
                     label="Tên Nhân Viên"
                 />
 
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Phân quyền</FormLabel>
+                    <RadioGroup
+                        aria-label="gender"
+                        name="gender1"
+                        onChange={(e) => {
+                            setPhanQuyen(e.target.value)
+                        }}
+                    >
+                        <FormControlLabel
+                            value="1"
+                            control={<Radio color="primary" />}
+                            label="Nhân viên"
+                        />
+                        <FormControlLabel
+                            value="2"
+                            control={<Radio color="primary" />}
+                            label="Quản Lí"
+                        />
+                        <FormControlLabel
+                            value="3"
+                            control={<Radio color="primary" />}
+                            label="Boss"
+                        />
+                    </RadioGroup>
+                </FormControl>
+
                 <Button
                     onClick={(e) => Handle_ThemNhanVien()}
                     variant="primary"
                     style={{
                         marginTop: 100,
                         width: '200px',
-                        marginLeft: 200,
                         height: '50px',
                     }}
                 >

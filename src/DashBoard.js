@@ -18,6 +18,8 @@ function DashBoard() {
     const history = useHistory()
 
     const HoTenNV = useSelector((state) => state.HoTen)
+    const isQuanLi = useSelector((state) => state.isQuanLi)
+
     useEffect(() => {
         //disableScroll.on();
 
@@ -102,7 +104,15 @@ function DashBoard() {
                                     Mặt Hàng Có Số Lượng Báo Động
                                 </Nav.Link>
                             </Nav.Item>
-                            <Nav.Item>
+
+                            <Nav.Item
+                                style={{
+                                    display:
+                                        isQuanLi == 2 || isQuanLi == 3
+                                            ? 'block'
+                                            : 'none',
+                                }}
+                            >
                                 <Nav.Link
                                     style={{
                                         color: resources.colorBorder,
@@ -114,7 +124,7 @@ function DashBoard() {
                                     }}
                                     eventKey="quanli"
                                 >
-                                    Tài Khoản
+                                    Quản Lí
                                 </Nav.Link>
                             </Nav.Item>
                         </Nav>

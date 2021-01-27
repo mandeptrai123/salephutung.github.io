@@ -28,6 +28,7 @@ import TextField from '@material-ui/core/TextField'
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 
 //import redux
 import {
@@ -104,6 +105,7 @@ function MatHangHetSL() {
             .map((value, key) => {
                 return {
                     NhaCC: key,
+                    SDTNhaCC: value[0].SDTNhaCC,
                     Ghichu: value.map((e) => {
                         return { ghichu: e.Ghichu, tenSP: e.Name }
                     }),
@@ -115,7 +117,7 @@ function MatHangHetSL() {
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
-                size="lg"
+                size="xl"
                 show={showModalSendEmailGhiChu}
                 onHide={() => {
                     setShowModalSendEmailGhiChu(false)
@@ -124,19 +126,83 @@ function MatHangHetSL() {
                 <Modal.Header closeButton>
                     <h3>Gửi email cho nhà cung cấp</h3>
                 </Modal.Header>
-                <Modal.Body style={{ fontSize: '17px' }}>
+                <Modal.Body
+                    style={{
+                        fontSize: '17px',
+                        maxHeight: '640px',
+                        overflowY: 'scroll',
+                    }}
+                >
                     Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số mặt
                     hàng sau:
                     {listGhiChu.map((item) => {
+                        let result = ''
+
                         return (
-                            <p style={{ marginBottom: '0' }}>
-                                - Nhà cung cấp {item.NhaCC}:{' '}
-                                {item.Ghichu.map((e) => {
-                                    if (e.ghichu) {
-                                        return `${e.ghichu} ${e.tenSP}, `
-                                    }
-                                })}
-                            </p>
+                            <>
+                                <br />
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: '70%',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            - Nhà cung cấp {item.NhaCC} -{' '}
+                                            {item.SDTNhaCC}:{' '}
+                                        </div>
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            {item.Ghichu.map((e) => {
+                                                if (e.ghichu) {
+                                                    result += `${e.ghichu} ${e.tenSP} \n`
+
+                                                    return (
+                                                        <p
+                                                            style={{
+                                                                marginBottom:
+                                                                    '10px',
+                                                            }}
+                                                        >
+                                                            {e.ghichu} {e.tenSP}
+                                                        </p>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+
+                                        <FileCopyIcon
+                                            style={{
+                                                margin: 'auto 0',
+                                                cursor: 'pointer',
+                                                color: '#0089ff',
+                                            }}
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(
+                                                    result
+                                                )
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </>
                         )
                     })}
                     <br />
@@ -146,7 +212,6 @@ function MatHangHetSL() {
                     <Button
                         variant="primary"
                         onClick={() => {
-                            console.log('gửi')
                             setShowModalSendEmailGhiChu(false)
                         }}
                     >

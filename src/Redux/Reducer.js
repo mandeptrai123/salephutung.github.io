@@ -21,7 +21,7 @@ const defineState = {
     SDTNV: '',
     Pass: '',
     HoTen: 'Chưa Có',
-    isQuanLi: false,
+    isQuanLi: 1,
     AllSanPham: [],
     AllKhachHang: [],
     isUpdateCongNo: false, //cho nhập mật khẩu lần đầu khi cập nhật công nợ

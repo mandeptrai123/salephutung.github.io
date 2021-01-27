@@ -85,6 +85,18 @@ function CongNo() {
         const [congNo, setCongNo] = useState(props.Congno)
         const [sdt, setSDT] = useState(props.SDT)
 
+        //Lấy thời gian hiện tại
+        var _d = new Date()
+        var _time =
+            _d.getHours() + ':' + _d.getMinutes() + ':' + _d.getSeconds()
+
+        bodyRequestUpdateCongNo.SDTKhach = sdt
+        bodyRequestUpdateCongNo.NameKhach = props.Name
+        bodyRequestUpdateCongNo.SDTNV = SDTNV
+        bodyRequestUpdateCongNo.Congno = +congNo
+        bodyRequestUpdateCongNo.Time = _time
+        bodyRequestUpdateCongNo.DiaChi = diaChi
+
         return (
             <TableRow>
                 <TableCell>{e.soThuTu}</TableCell>
@@ -95,14 +107,17 @@ function CongNo() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: isDisableUpdate ? 'auto' : 'none',
+
                             backgroundColor: 'transparent',
-                            borderBottom: isDisableUpdate
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setSDT(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                            }
                         }}
                     />
                 </TableCell>
@@ -112,14 +127,17 @@ function CongNo() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: isDisableUpdate ? 'auto' : 'none',
+
                             backgroundColor: 'transparent',
-                            borderBottom: isDisableUpdate
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setDiaChi(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                            }
                         }}
                     />
                 </TableCell>
@@ -130,64 +148,19 @@ function CongNo() {
                             color: congNo > 0 ? '#239B56' : 'red',
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: isDisableUpdate ? 'auto' : 'none',
+
                             backgroundColor: 'transparent',
-                            borderBottom: isDisableUpdate
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setCongNo(e.target.value)
                         }}
-                    />
-                </TableCell>
-                <TableCell
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Button
-                        variant={isDisableUpdate ? 'success' : 'primary'}
-                        onClick={(e) => {
-                            //Kiểm tra trạng thái của button cập nhật
-                            setIsDisableUpdate(!isDisableUpdate)
-
-                            if (isDisableUpdate) {
-                                //Lấy thời gian hiện tại
-                                var _d = new Date()
-                                var _time =
-                                    _d.getHours() +
-                                    ':' +
-                                    _d.getMinutes() +
-                                    ':' +
-                                    _d.getSeconds()
-
-                                bodyRequestUpdateCongNo.SDTKhach = sdt
-                                bodyRequestUpdateCongNo.NameKhach = props.Name
-                                bodyRequestUpdateCongNo.SDTNV = SDTNV
-                                bodyRequestUpdateCongNo.Congno = +congNo
-                                bodyRequestUpdateCongNo.Time = _time
-                                bodyRequestUpdateCongNo.DiaChi = diaChi
-
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
                                 CapNhatCongNoMoi(bodyRequestUpdateCongNo)
-
-                                //Cho điền các thông tin cần thay đổi trc, sau đó mới hiện popup nhập mật khẩu
-                                //Nhập mật khẩu lần đầu, lần sau ko nhập mật khẩu lại
-                                // if (!isUpdateCN) {
-                                //     setStateModalDieuChinh({
-                                //         Pass: '',
-                                //         openDieuChinh: false,
-                                //     })
-                                // } else {
-                                //     CapNhatCongNoMoi(bodyRequestUpdateCongNo)
-                                // }
                             }
                         }}
-                    >
-                        {isDisableUpdate ? 'Xong' : 'Cập nhật'}
-                    </Button>
+                    />
                 </TableCell>
             </TableRow>
         )
@@ -245,26 +218,6 @@ function CongNo() {
     }
 
     function CapNhatCongNoMoi(itemRequest) {
-        // if (!isUpdateCN) {
-        //     if (PassLogin != Pass) {
-        //         handleShow()
-        //         setStateModalDieuChinh({
-        //             Pass: '',
-        //             openDieuChinh: false,
-        //         })
-        //         alert('Mật Khẩu Không Chính Xác, Cập Thật Thất Bại !')
-        //         //Cho fresh lại bảng dữ liệu để trở về như củ khi cập nhật thất bại
-        //         OnFresh()
-        //         return
-        //     }
-
-        //     // Cho nhập mật khẩu lần đầu khi cập nhật
-        //     dispatch({
-        //         type: IsUpdateCongNo,
-        //         value: true,
-        //     })
-        // }
-
         handleCloseDieuChinh(false)
         setMessLoading('Đang Cập Nhật Công Nợ Mới !')
         handleShow()
@@ -471,7 +424,6 @@ function CongNo() {
                             <TableCell>Số Điện Thoại</TableCell>
                             <TableCell>Địa Chỉ</TableCell>
                             <TableCell>Tổng Công Nợ</TableCell>
-                            <TableCell>Điều chỉnh</TableCell>
                         </TableRow>
                     </TableHead>
 

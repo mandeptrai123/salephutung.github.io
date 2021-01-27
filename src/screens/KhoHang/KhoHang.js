@@ -163,9 +163,6 @@ function KhoHang() {
     function ItemSanPham(props) {
         const e = props.data
 
-        //State trạng thái của button cập nhật
-        const [boolUpdateSanPham, setBoolUpdateSanPham] = useState(false)
-
         //Các trường dữ liệu cập nhật sản phẩm
         const [nameSanPham, setNameSanPham] = useState(e.name) //Name là key của object này, ko đc thay đổi
         const [priceSanPham, setPriceSanPham] = useState(e.price)
@@ -203,14 +200,16 @@ function KhoHang() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
                             backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setDonviSanPham(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
                         }}
                     />
                 </TableCell>
@@ -220,14 +219,16 @@ function KhoHang() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
                             backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setPriceSanPham(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
                         }}
                     />
                 </TableCell>
@@ -237,14 +238,16 @@ function KhoHang() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
                             backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setAmountSanPham(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
                         }}
                     />
                 </TableCell>
@@ -254,14 +257,16 @@ function KhoHang() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
                             backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setNhaCCSanPham(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
                         }}
                     />
                 </TableCell>
@@ -271,54 +276,30 @@ function KhoHang() {
                         style={{
                             border: 'none ',
                             outline: 'none',
-                            pointerEvents: boolUpdateSanPham ? 'auto' : 'none',
                             backgroundColor: 'transparent',
-                            borderBottom: boolUpdateSanPham
-                                ? '1px solid black'
-                                : 'none',
+                            borderBottom: '1px solid black',
                         }}
                         onChange={(e) => {
                             setAmountAlertSanPham(e.target.value)
                         }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
+                        }}
                     />
                 </TableCell>
                 <TableCell>
-                    <div
-                        style={{
-                            display: 'flex',
+                    <Button
+                        style={{ fontSize: '14px', width: '90px' }}
+                        variant="danger"
+                        onClick={() => {
+                            setShowModalDel(true)
+                            setIdSanPhamDel(e._id)
                         }}
                     >
-                        <Button
-                            variant={boolUpdateSanPham ? 'success' : 'primary'}
-                            style={{ fontSize: '14px', width: '120px' }}
-                            onClick={(e) => {
-                                /*Code của Mẫn*/
-                                // ID = 2
-                                // setDieuChinh(true)
-
-                                /*Code của Hoàng*/
-                                //Cho phép cập nhật giá trị của các trường
-                                setBoolUpdateSanPham(!boolUpdateSanPham)
-
-                                //Kiểm tra button đang ở trạng thái đang cập nhật ?
-                                if (boolUpdateSanPham) {
-                                    CapNhatSanPham(bodyRequestAPIUpdateSP)
-                                }
-                            }}
-                        >
-                            {boolUpdateSanPham ? 'Xong' : 'Cập nhật'}
-                        </Button>
-                        <Button
-                            style={{ fontSize: '14px', marginLeft: '7px' }}
-                            variant="danger"
-                            onClick={() => {
-                                setShowModalDel(true)
-                                setIdSanPhamDel(e._id)
-                            }}
-                        >
-                            Xóa
-                        </Button>
-                    </div>
+                        Xóa
+                    </Button>
                 </TableCell>
             </TableRow>
         )

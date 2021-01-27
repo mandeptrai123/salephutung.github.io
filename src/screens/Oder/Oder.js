@@ -682,7 +682,6 @@ function Oder() {
 
     function handleClickThemSanPham(soLuongSanPhamDaChon) {
         setShowModalDienSoLuongSP(false)
-
         //sau khi điền sl sp thì thêm vào giỏ hàng
         if (idSanPham) {
             //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k

@@ -123,6 +123,7 @@ function Manage() {
                             cursor: 'pointer',
                             fontSize: '18px',
                             color: 'white',
+                            display: isQuanLi == 3 ? 'block' : 'none',
                         }}
                         onClick={(e) => {
                             if (isQuanLi) {
