@@ -13,15 +13,21 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
+// icon
+import SearchIcon from '@material-ui/icons/Search'
+import CloseIcon from '@material-ui/icons/Close'
+
 import NetWorking from '../../../networking/fetchWithTimeout'
 
 import resources from '../../../resource/color/ColorApp'
 
 export default function NhatKyCongNo() {
     const [resultTableNhatKy, setResultTableNhatKy] = useState()
+    const [uiNhatKy, setUiNhatKy] = useState()
     const [messLoading, setMessLoading] = useState('Đang load đợi tí nhé!')
     const [show, setShow] = useState(false)
     const [dataNhatKyCongNo, setDataNhatKyCongNo] = useState()
+    const [valueSearch, setValueSearch] = useState('')
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
@@ -43,6 +49,7 @@ export default function NhatKyCongNo() {
         NetWorking(_url, requestOptions)
             .then((res) => {
                 if (res.success) {
+                    console.log(res.data)
                     setDataNhatKyCongNo(res.data)
                     RenderUINhatKy(res.data)
                 }
@@ -63,6 +70,7 @@ export default function NhatKyCongNo() {
             }
         })
         setResultTableNhatKy(result)
+        setUiNhatKy(result)
     }
 
     function ItemNhatKy(props) {
@@ -70,7 +78,20 @@ export default function NhatKyCongNo() {
             <TableRow>
                 <TableCell>{props.index}</TableCell>
                 <TableCell>{props.data.NameKhach}</TableCell>
-                <TableCell>{props.data.NoiDung}</TableCell>
+                <TableCell>
+                    <p
+                        style={{
+                            color:
+                                props.data.NoiDung == 'Trả Nợ'
+                                    ? 'green'
+                                    : 'red',
+                        }}
+                    >
+                        {props.data.NoiDung}
+                    </p>
+                </TableCell>
+                <TableCell>{props.data.CongnoCu}</TableCell>
+                <TableCell>{props.data.CongnoMoi}</TableCell>
             </TableRow>
         )
     }
@@ -101,6 +122,38 @@ export default function NhatKyCongNo() {
         GetAllNhatKyCongNo()
     }, [])
 
+    function handleSearch(value) {
+        if (!value) {
+            setResultTableNhatKy(uiNhatKy)
+            return
+        }
+
+        const textSearch = value.toLowerCase()
+        const reg = new RegExp(textSearch)
+
+        let maxRender = 0
+        let result = []
+        const len = dataNhatKyCongNo.length
+
+        for (let i = 0; i < len; ++i) {
+            if (reg.exec(dataNhatKyCongNo[i].NameKhach.toLowerCase())) {
+                maxRender++
+                if (maxRender < 50) {
+                    result.push(
+                        <ItemNhatKy
+                            data={dataNhatKyCongNo[i]}
+                            index={maxRender}
+                        />
+                    )
+                } else {
+                    break
+                }
+            }
+        }
+
+        setResultTableNhatKy(result)
+    }
+
     return (
         <div>
             <ModalDialogMessage />
@@ -123,27 +176,38 @@ export default function NhatKyCongNo() {
             >
                 <TextField
                     id="outlined-basic"
-                    label="Tìm kiếm"
+                    placeholder="Tìm kiếm theo tên khách hàng"
                     variant="outlined"
                     style={{
                         width: '80%',
                     }}
-                    onChange={(e) => {
-                        const textSearch = e.target.value.toLowerCase()
-                        const reg = new RegExp(textSearch)
-
-                        let maxRender = 0
-
-                        const result = dataNhatKyCongNo.map((e, index) => {
-                            if (reg.exec(e.NameKhach.toLowerCase())) {
-                                maxRender++
-                                if (maxRender < 101) {
-                                    return <ItemNhatKy data={e} index={index} />
-                                }
-                            }
-                        })
-
-                        setResultTableNhatKy(result)
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(e.target.value)
+                        }
+                    }}
+                    onChange={(e) => setValueSearch(e.target.value)}
+                    value={valueSearch}
+                    InputProps={{
+                        endAdornment: (
+                            <CloseIcon
+                                onClick={(e) => {
+                                    setValueSearch('')
+                                    handleSearch('')
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: valueSearch ? 'block' : 'none',
+                                }}
+                            />
+                        ),
+                        startAdornment: (
+                            <SearchIcon
+                                style={{
+                                    marginRight: '11px',
+                                }}
+                            />
+                        ),
                     }}
                 />
                 <RefreshIcon
@@ -176,6 +240,8 @@ export default function NhatKyCongNo() {
                                 <TableCell>STT</TableCell>
                                 <TableCell>Tên Khách</TableCell>
                                 <TableCell>Nội Dung</TableCell>
+                                <TableCell>Công Nợ Củ</TableCell>
+                                <TableCell>Công Nợ Mới</TableCell>
                             </TableRow>
                         </TableHead>
 
