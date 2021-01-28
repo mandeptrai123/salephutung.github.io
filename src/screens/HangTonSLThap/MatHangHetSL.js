@@ -213,7 +213,6 @@ function MatHangHetSL() {
                             </>
                         )
                     })}
-                    Mong các nhà cung cấp sớm cung cấp cho bên chúng tôi
                 </Modal.Body>
                 <Modal.Footer>
                     <Button

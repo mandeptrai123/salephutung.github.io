@@ -30,6 +30,13 @@ import { IsUpdateCongNo } from '../../../Redux/ActionType'
 let SDTSelected
 var arr_KhachHang = []
 
+function formatNumber(num) {
+    if (num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    }
+    return num
+}
+
 function CongNo() {
     const SDTNV = useSelector((state) => state.SDTNV)
     const PassLogin = useSelector((state) => state.Pass)
@@ -39,6 +46,8 @@ function CongNo() {
     const URL_API = 'http://35.197.146.86:5000'
 
     const [lstResult, setResult] = useState()
+
+    const [lstUIXemLichSuCapNhat, setLstUIXemLichSuCapNhat] = useState()
 
     // Lưu lại ui ban đầu
     const [lstUI, setLstUI] = useState()
@@ -57,10 +66,8 @@ function CongNo() {
     )
     const [valueSearch, setValueSearch] = useState('')
 
-    const [showDieuChinh, setShowDieuChinh] = useState(false)
-
-    const handleCloseDieuChinh = () => setShowDieuChinh(false)
-    //const handleShowDieuChinh = () => setShowDieuChinh(true);
+    //show lịch sử cập nhật công nợ
+    const [showLichSuCapNhat, setShowLichSuCapNhat] = useState(false)
 
     const [messResponse, setMessResponse] = useState('')
     const [showResponse, setShowResponse] = useState(false)
@@ -79,10 +86,13 @@ function CongNo() {
 
     function ItemCongNo(e) {
         var props = e.data
-        const [isDisableUpdate, setIsDisableUpdate] = useState(false)
+
         //State update công nợ
         const [diaChi, setDiaChi] = useState(props.DiaChi)
-        const [congNo, setCongNo] = useState(props.Congno)
+        const congNoCu = props.Congno
+        const [traNo, setTraNo] = useState('')
+        const [themNo, setThemNo] = useState('')
+        const [congNoMoi, setCongNoMoi] = useState(0)
         const [sdt, setSDT] = useState(props.SDT)
 
         //Lấy thời gian hiện tại
@@ -93,9 +103,10 @@ function CongNo() {
         bodyRequestUpdateCongNo.SDTKhach = sdt
         bodyRequestUpdateCongNo.NameKhach = props.Name
         bodyRequestUpdateCongNo.SDTNV = SDTNV
-        bodyRequestUpdateCongNo.Congno = +congNo
         bodyRequestUpdateCongNo.Time = _time
         bodyRequestUpdateCongNo.DiaChi = diaChi
+        bodyRequestUpdateCongNo.CongnoCu = +congNoCu
+        bodyRequestUpdateCongNo.CongnoMoi = +congNoMoi
 
         return (
             <TableRow>
@@ -143,24 +154,72 @@ function CongNo() {
                 </TableCell>
                 <TableCell>
                     <input
-                        value={congNo}
+                        value={`${formatNumber(congNoCu)} VNĐ`}
                         style={{
-                            color: congNo > 0 ? '#239B56' : 'red',
+                            color: 'black',
                             border: 'none ',
                             outline: 'none',
-
                             backgroundColor: 'transparent',
-                            borderBottom: '1px solid black',
-                        }}
-                        onChange={(e) => {
-                            setCongNo(e.target.value)
-                        }}
-                        onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                                CapNhatCongNoMoi(bodyRequestUpdateCongNo)
-                            }
+                            pointerEvents: 'none',
                         }}
                     />
+                </TableCell>
+                <TableCell>
+                    <div>
+                        <input
+                            value={traNo}
+                            style={{
+                                color: 'green',
+                                border: 'none ',
+                                outline: 'none',
+                                borderBottom: '1px solid green',
+                                backgroundColor: 'transparent',
+                            }}
+                            placeholder="Trả nợ"
+                            onChange={(e) => {
+                                setTraNo(e.target.value)
+                                setCongNoMoi(congNoCu - +e.target.value)
+                            }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                                }
+                            }}
+                        />
+                        <input
+                            value={themNo}
+                            placeholder="Nợ Thêm"
+                            style={{
+                                color: 'red',
+                                border: 'none ',
+                                outline: 'none',
+                                borderBottom: '1px solid red',
+                                backgroundColor: 'transparent',
+                                marginTop: '20px',
+                            }}
+                            onChange={(e) => {
+                                setThemNo(e.target.value)
+                                setCongNoMoi(congNoCu + +e.target.value)
+                            }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    CapNhatCongNoMoi(bodyRequestUpdateCongNo)
+                                }
+                            }}
+                        />
+                    </div>
+                </TableCell>
+                <TableCell>
+                    {traNo || themNo ? (
+                        `${formatNumber(congNoMoi)} VNĐ`
+                    ) : (
+                        <Button
+                            style={{ width: '120px' }}
+                            onClick={() => GetLichSuCapNhat(sdt)}
+                        >
+                            Xem Lịch Sử
+                        </Button>
+                    )}
                 </TableCell>
             </TableRow>
         )
@@ -220,7 +279,6 @@ function CongNo() {
     }
 
     function CapNhatCongNoMoi(itemRequest) {
-        handleCloseDieuChinh(false)
         setMessLoading('Đang Cập Nhật Công Nợ Mới !')
         handleShow()
 
@@ -310,6 +368,84 @@ function CongNo() {
         }
     }
 
+    function GetLichSuCapNhat(sdt) {
+        const _URL = URL_API + '/khachhang/NhatKyCongNoBySDT?SDTKhach=' + sdt
+        NetWorking(_URL)
+            .then((res) => {
+                if (res.success) {
+                    RenderUILichSuCapNhat(res.data)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Khi Xem Lịch Sử Cập Nhật! ')
+                handleClose()
+            })
+    }
+
+    function RenderUILichSuCapNhat(data) {
+        const result = data.map((e, index) => {
+            return ItemLichSuCapNhat(e, index)
+        })
+
+        setLstUIXemLichSuCapNhat(result)
+
+        //Sau khi get api lịch sử cập nhật và render ui thì cho hiện thị modal
+        setShowLichSuCapNhat(true)
+    }
+
+    function ItemLichSuCapNhat(props, stt) {
+        return (
+            <TableRow>
+                <TableCell>{stt}</TableCell>
+                <TableCell>{props.NameKhach}</TableCell>
+                <TableCell>{props.SDTKhach}</TableCell>
+                <TableCell>{props.CongnoCu}</TableCell>
+                <TableCell>{props.CongnoMoi}</TableCell>
+                <TableCell>{props.Date}</TableCell>
+                <TableCell>{props.NoiDung}</TableCell>
+            </TableRow>
+        )
+    }
+
+    function XemLichSuCapNhat() {
+        return (
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                size="xl"
+                show={showLichSuCapNhat}
+                onHide={() => setShowLichSuCapNhat(false)}
+            >
+                <Modal.Header closeButton>
+                    <h5>Lịch sử cập nhật công nợ</h5>
+                </Modal.Header>
+                <Modal.Body>
+                    <TableContainer
+                        style={{
+                            maxHeight: '570px',
+                        }}
+                    >
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>STT</TableCell>
+                                    <TableCell>Tên Khách</TableCell>
+                                    <TableCell>Số Điện Thoại</TableCell>
+                                    <TableCell>Công Nợ Củ</TableCell>
+                                    <TableCell>Công Nợ Mới</TableCell>
+                                    <TableCell>Ngày Cập Nhật</TableCell>
+                                    <TableCell>Nội Dung</TableCell>
+                                </TableRow>
+                            </TableHead>
+
+                            <TableBody>{lstUIXemLichSuCapNhat}</TableBody>
+                        </Table>
+                    </TableContainer>
+                </Modal.Body>
+            </Modal>
+        )
+    }
+
     return (
         <div
             style={{
@@ -321,6 +457,7 @@ function CongNo() {
                 alignItems: 'center',
             }}
         >
+            <XemLichSuCapNhat />
             <h1
                 style={{
                     textAlign: 'center',
@@ -351,6 +488,7 @@ function CongNo() {
                     style={{
                         width: 450,
                         marginRight: 35,
+                        marginLeft: 35,
                     }}
                     id="outlined-basic"
                     placeholder={nameFilterSearch}
@@ -415,7 +553,7 @@ function CongNo() {
                 style={{
                     marginTop: 20,
                     maxHeight: '500px',
-                    width: '93%',
+                    width: '97%',
                 }}
             >
                 <Table stickyHeader aria-label="sticky table">
@@ -425,7 +563,9 @@ function CongNo() {
                             <TableCell>Tên Khách</TableCell>
                             <TableCell>Số Điện Thoại</TableCell>
                             <TableCell>Địa Chỉ</TableCell>
-                            <TableCell>Tổng Công Nợ</TableCell>
+                            <TableCell>Công Nợ Hiện Tại</TableCell>
+                            <TableCell>Điều Chỉnh</TableCell>
+                            <TableCell>Kết Quả</TableCell>
                         </TableRow>
                     </TableHead>
 
