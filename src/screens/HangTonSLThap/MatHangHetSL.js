@@ -79,7 +79,7 @@ function MatHangHetSL() {
                             height: '60px',
                         }}
                         value={valueGhiChuEachSP}
-                        placeholder="Ghi chú"
+                        placeholder="Số lượng"
                         rowsMax={3}
                         onBlur={(event) => {
                             dispatch({
@@ -138,8 +138,23 @@ function MatHangHetSL() {
                     {listGhiChu.map((item) => {
                         let result = ''
 
+                        //kiểm tra có nhà cung cấp nào ko có ghi chú hay ko
+                        //nếu ko thì ko hiện thị nhà cung cấp đó
+                        let checkGhiChu = false
+                        const len = item.Ghichu.length
+                        for (let i = 0; i < len; ++i) {
+                            if (item.Ghichu[i].ghichu) {
+                                checkGhiChu = true
+                                break
+                            }
+                        }
+
                         return (
-                            <>
+                            <div
+                                style={{
+                                    display: checkGhiChu ? 'block' : 'none',
+                                }}
+                            >
                                 <hr />
                                 <div
                                     style={{
@@ -210,7 +225,7 @@ function MatHangHetSL() {
                                         />
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         )
                     })}
                 </Modal.Body>

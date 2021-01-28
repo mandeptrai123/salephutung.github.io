@@ -13,6 +13,8 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Dropdown from 'react-bootstrap/Dropdown'
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '@material-ui/lab/Alert'
 
 import resources from '../../../resource/color/ColorApp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -69,8 +71,11 @@ function CongNo() {
     //show lịch sử cập nhật công nợ
     const [showLichSuCapNhat, setShowLichSuCapNhat] = useState(false)
 
-    const [messResponse, setMessResponse] = useState('')
-    const [showResponse, setShowResponse] = useState(false)
+    // message snackbar
+    const [showMessage, setShowMessage] = useState(false)
+
+    //item dependencies call back useEffect
+    const [refresh, setRefresh] = useState(false)
 
     const [stateModalDieuChinh, setStateModalDieuChinh] = useState({
         openDieuChinh: false,
@@ -167,6 +172,7 @@ function CongNo() {
                 <TableCell>
                     <div>
                         <input
+                            type="number"
                             value={traNo}
                             style={{
                                 color: 'green',
@@ -187,6 +193,7 @@ function CongNo() {
                             }}
                         />
                         <input
+                            type="number"
                             value={themNo}
                             placeholder="Nợ Thêm"
                             style={{
@@ -227,7 +234,8 @@ function CongNo() {
 
     useEffect(() => {
         OnFresh()
-    }, [])
+        console.log('useEffect')
+    }, [refresh])
 
     function OnFresh() {
         handleShow()
@@ -295,12 +303,10 @@ function CongNo() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
-                setMessResponse(res.mess)
-                setStateModalDieuChinh({
-                    openDieuChinh: false,
-                    Pass: '',
-                })
-                setShowResponse(true)
+                if (res.success) {
+                    setRefresh(!refresh) //call lại api lấy toàn bộ công nợ khi cập nhật thành công
+                    setShowMessage(true)
+                }
             })
             .catch((e) => {
                 alert('Có Lỗi Khi Cập Nhật Công Nợ! ')
@@ -446,6 +452,25 @@ function CongNo() {
         )
     }
 
+    function MessageUpdateCongNo() {
+        return (
+            <Snackbar
+                open={showMessage}
+                autoHideDuration={2000}
+                onClose={() => {
+                    setShowMessage(false)
+                }}
+            >
+                <Alert
+                    onClose={() => setShowMessage(false)}
+                    severity={'success'}
+                >
+                    Cập nhật thành công
+                </Alert>
+            </Snackbar>
+        )
+    }
+
     return (
         <div
             style={{
@@ -458,6 +483,7 @@ function CongNo() {
             }}
         >
             <XemLichSuCapNhat />
+            <MessageUpdateCongNo />
             <h1
                 style={{
                     textAlign: 'center',
@@ -475,7 +501,7 @@ function CongNo() {
                     cursor: 'pointer',
                 }}
                 onClick={(e) => {
-                    OnFresh()
+                    setRefresh(!refresh)
                 }}
                 color={resources.colorPrimary}
                 size="3x"
@@ -601,27 +627,6 @@ function CongNo() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 backdrop="static"
-                show={showResponse}
-            >
-                <Modal.Body>
-                    <Modal.Title>{messResponse}</Modal.Title>
-                    <Modal.Footer>
-                        <Button
-                            onClick={(e) => {
-                                setShowResponse(false)
-                                OnFresh()
-                            }}
-                        >
-                            OK
-                        </Button>
-                    </Modal.Footer>
-                </Modal.Body>
-            </Modal>
-
-            <Modal
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                backdrop="static"
                 show={openDieuChinh}
             >
                 <Modal.Title
@@ -689,7 +694,7 @@ function CongNo() {
                             })
 
                             //Cho tải lại dữ liệu để trở về như củ khi cập nhật thất bại
-                            OnFresh()
+                            setRefresh(!refresh)
                         }}
                     >
                         Hủy
