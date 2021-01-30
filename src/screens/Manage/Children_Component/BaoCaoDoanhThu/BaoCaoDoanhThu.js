@@ -370,7 +370,7 @@ function BaoCaoDoanhThu(props) {
                         style={{
                             width: '350px',
                         }}
-                        value={dateViewProduct}
+                        // value={dateViewProduct}
                         onChange={(e) => {
                             var d = new Date(e.target.value)
                             var _dateNew =
@@ -380,12 +380,16 @@ function BaoCaoDoanhThu(props) {
                                 '-' +
                                 d.getDate()
                             setDateViewProduct(_dateNew)
-
-                            LoadDoanhThuTheoNgayHoacTuan(
-                                _dateNew,
-                                'BaoCaoTheoNgay'
-                            )
                         }}
+                        // onBlur={() => {
+                        //     if (dateViewProduct) {
+                        //         setviewModelDropdown('Doanh Thu Theo Ngày')
+                        //         LoadDoanhThuTheoNgayHoacTuan(
+                        //             dateViewProduct,
+                        //             'BaoCaoTheoNgay'
+                        //         )
+                        //     }
+                        // }}
                         onKeyPress={(e) => {
                             if (e.key == 'Enter') {
                                 if (dateViewProduct) {

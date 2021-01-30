@@ -121,11 +121,29 @@ const Reducer = (state = defineState, action) => {
 
         case DeleteItemBill:
             state.objectBill.lstSanPham.splice(action.value, 1)
+
+            let thanhTien1 = 0
+            state.objectBill.lstSanPham.map((e) => {
+                thanhTien1 += e.pricesum
+            })
+
+            state.objectBill.ThanhTien = thanhTien1
+
+            state.objectBill = JSON.parse(JSON.stringify(state.objectBill))
             return state
 
         case AddBill:
             const objNewBillClone = { ...action.value }
             state.objectBill.lstSanPham.push(objNewBillClone)
+
+            let thanhTien2 = 0
+            state.objectBill.lstSanPham.map((e) => {
+                thanhTien2 += e.pricesum
+            })
+
+            state.objectBill.ThanhTien = thanhTien2
+
+            state.objectBill = JSON.parse(JSON.stringify(state.objectBill))
             return state
 
         case UpdateItemBill:
@@ -133,6 +151,7 @@ const Reducer = (state = defineState, action) => {
             state.objectBill.lstSanPham[
                 action.value.indexBill
             ] = objNewUpdateBillClone
+
             return state
 
         case UpdateValueItemBill:
@@ -148,9 +167,19 @@ const Reducer = (state = defineState, action) => {
             state.objectBill.lstSanPham[
                 objNewValueItemBillClone.indexBill
             ].pricesum = objNewValueItemBillClone.pricesum
+
             state.objectBill.lstSanPham[
                 objNewValueItemBillClone.indexBill
             ].Ghichu = objNewValueItemBillClone.Ghichu
+
+            let thanhTien = 0
+            state.objectBill.lstSanPham.map((e) => {
+                thanhTien += e.pricesum
+            })
+
+            state.objectBill.ThanhTien = thanhTien
+
+            state = JSON.parse(JSON.stringify(state))
 
             return state
 

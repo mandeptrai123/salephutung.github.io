@@ -32,7 +32,6 @@ import _ from 'lodash'
 
 var arr_NhatKy = []
 var arr_NhaCC = []
-var _giaban = 0
 function NhapKho() {
     const [loading, setShowLoading] = useState(false)
     const [mess, setMessLoading] = useState(
@@ -126,6 +125,7 @@ function NhapKho() {
             var _amount = soluong
             var _amountAlert = soluongbaodong
             var _donvi = donvi
+            var _giaban = giaban
 
             // create object request
             var object_request = {
@@ -606,6 +606,12 @@ function NhapKho() {
                             onInputChange={(event, newInputValue) => {
                                 setSDTNhaCC(newInputValue)
                             }}
+                            onChange={(event, newValue) => {
+                                console.log(newValue)
+                                if (newValue) {
+                                    setNhaCC(newValue.NameNhaCC)
+                                }
+                            }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -614,7 +620,12 @@ function NhapKho() {
                                     onChange={(e) => {
                                         setSDTNhaCC(e.target.value)
                                     }}
-                                    ref={NhaCCRef}
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            SDTNhaCCRef.current.focus()
+                                        }
+                                    }}
+                                    inputRef={NhaCCRef}
                                     variant="outlined"
                                 />
                             )}
@@ -648,6 +659,7 @@ function NhapKho() {
                                     onChange={(e) => {
                                         setNhaCC(e.target.value)
                                     }}
+                                    inputRef={SDTNhaCCRef}
                                     variant="outlined"
                                 />
                             )}

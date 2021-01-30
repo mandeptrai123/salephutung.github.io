@@ -289,6 +289,7 @@ function LichSuGiaoDich() {
                                 boolsetName = true
                             } else {
                                 setName(newInputValue)
+
                                 var _itemNewAddBill
 
                                 //Kiểm tra xem ng dùng có chọn sản phẩm
@@ -352,7 +353,9 @@ function LichSuGiaoDich() {
                             <TextField
                                 {...params}
                                 placeholder="Sản Phẩm"
-                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value)
+                                }}
                             />
                         )}
                     />
@@ -442,7 +445,6 @@ function LichSuGiaoDich() {
                                 type: DeleteItemBill,
                                 value: props.index,
                             })
-                            RenderUIUpdateBill(objectBill.lstSanPham)
                         }}
                     />
                 </TableCell>
@@ -459,25 +461,41 @@ function LichSuGiaoDich() {
         )
 
         // Tính thành tiền mỗi khi xóa hay thêm 1 bill
-        useEffect(() => {
-            var sum = 0
-            objectBill.lstSanPham.forEach((e) => {
-                sum += e.pricesum
-            })
-            setThanhTien(`${formatNumber(sum)} VNĐ`)
-        }, [objectBill])
+        // useEffect(() => {
+        //     console.log(objectBill)
+        //     var sum = 0
+        //     objectBill.lstSanPham.forEach((e) => {
+        //         sum += e.pricesum
+        //     })
+        //     setThanhTien(() => `${formatNumber(objectBill.ThanhTien)} VNĐ`)
+
+        //     console.log(objectBill.ThanhTien)
+        // }, [objectBill])
 
         return (
-            <Modal
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                show={showModalUpdateBill}
-                size="xl"
+            <div
+                style={{
+                    display: showModalUpdateBill ? 'flex' : 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'fixed',
+                    top: '0',
+                    bottom: '0',
+                    right: '0',
+                    left: '0',
+                    backgroundColor: 'rgba(0, 0, 0, .5)',
+                    zIndex: '50',
+                }}
             >
-                <Modal.Header>
+                <div
+                    style={{
+                        width: '1150px',
+                        backgroundColor: 'white',
+                        padding: '10px',
+                        borderRadius: '5px',
+                    }}
+                >
                     <h4>Chỉnh sửa bill</h4>
-                </Modal.Header>
-                <Modal.Body>
                     <div
                         style={{
                             display: 'flex',
@@ -511,7 +529,7 @@ function LichSuGiaoDich() {
                     </div>
                     <TableContainer
                         style={{
-                            maxHeight: '550px',
+                            maxHeight: '500px',
                         }}
                     >
                         <Table aria-label="sticky table">
@@ -558,106 +576,110 @@ function LichSuGiaoDich() {
                             }}
                         />
                     </div>
-                </Modal.Body>
-                <Modal.Footer
-                    style={{
-                        borderTop: 'none',
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <AddCircleOutlineIcon
-                        style={{ fontSize: '40px', cursor: 'pointer' }}
-                        onClick={() => {
-                            // khởi tạo 1 object bill mới
-                            // là sản phẩm đầu tiên của danh sách sản phẩm hiện tại
-                            const objectNewBill = {
-                                _id: '',
-                                name: '',
-                                price: 0,
-                                amount: 0,
-                                amountAlert: 0,
-                                Donvi: '',
-                                NhaCC: '',
-                                GiaNhap: 0,
-                                Time: '',
-                                IDSp: 0,
-                                SDTNhaCC: '',
-                                pricesum: 0,
-                                soluongBan: 0,
-                            }
-
-                            dispatch({ type: AddBill, value: objectNewBill })
-                            RenderUIUpdateBill(objectBill.lstSanPham)
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            paddingTop: '10px',
+                            paddingBottom: '10px',
                         }}
-                    />
-
-                    <div>
-                        <Button
-                            variant="contained"
-                            color="primary"
+                    >
+                        <AddCircleOutlineIcon
+                            style={{ fontSize: '40px', cursor: 'pointer' }}
                             onClick={() => {
-                                //Tính thành tiền trước khi bấm cập nhật
-                                var thanh_tien = 0
-                                objectBill.lstSanPham.map((e) => {
-                                    thanh_tien += e.pricesum
-                                })
-                                console.log(thanh_tien)
-
-                                //Loại bỏ các thuộc tính ko cần thiết
-                                const objectNewBillPOST = {
-                                    _id: objectBill._id,
-                                    TenKhach: objectBill.TenKhach,
-                                    DiaChiKhach: objectBill.DiaChiKhach,
-                                    SDTKhach: objectBill.SDTKhach,
-                                    ThanhTien: thanh_tien,
-                                    lstSanPham: objectBill.lstSanPham,
+                                // khởi tạo 1 object bill mới
+                                // là sản phẩm đầu tiên của danh sách sản phẩm hiện tại
+                                const objectNewBill = {
+                                    _id: '',
+                                    name: '',
+                                    price: 0,
+                                    amount: 0,
+                                    amountAlert: 0,
+                                    Donvi: '',
+                                    NhaCC: '',
+                                    GiaNhap: 0,
+                                    Time: '',
+                                    IDSp: 0,
+                                    SDTNhaCC: '',
+                                    pricesum: 0,
+                                    soluongBan: 0,
                                 }
 
-                                setShowModalUpdateBill(false)
-                                updateBill(objectNewBillPOST)
-                                console.log(objectNewBillPOST)
-                            }}
-                        >
-                            Cập Nhật
-                        </Button>
-                        <Button
-                            variant="contained"
-                            style={{
-                                marginLeft: '8px',
-                            }}
-                            onClick={() => {
-                                setShowModalUpdateBill(false)
-                                // reset store
                                 dispatch({
-                                    type: SaveObjectBill,
-                                    value: {
-                                        Congno: 0,
-                                        Date: '',
-                                        DiaChiKhach: '',
-                                        Ghichu: '',
-                                        IDAction: 0,
-                                        NameNV: '',
-                                        SDTKhach: '',
-                                        SDTNV: '',
-                                        TenKhach: '',
-                                        ThanhTien: 0,
-                                        Time: '',
-                                        TimeOfDay: '',
-                                        TongTien: 0,
-                                        TraNo: 0,
-                                        doanhthu: 0,
-                                        lstSanPham: [],
-                                        _id: '',
-                                    },
+                                    type: AddBill,
+                                    value: objectNewBill,
                                 })
-                                OnRefresh(state.DateTimKiem)
                             }}
-                        >
-                            Hủy Bỏ
-                        </Button>
+                        />
+
+                        <div>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    //Tính thành tiền trước khi bấm cập nhật
+                                    var thanh_tien = 0
+                                    objectBill.lstSanPham.map((e) => {
+                                        thanh_tien += e.pricesum
+                                    })
+                                    console.log(thanh_tien)
+
+                                    //Loại bỏ các thuộc tính ko cần thiết
+                                    const objectNewBillPOST = {
+                                        _id: objectBill._id,
+                                        TenKhach: objectBill.TenKhach,
+                                        DiaChiKhach: objectBill.DiaChiKhach,
+                                        SDTKhach: objectBill.SDTKhach,
+                                        ThanhTien: thanh_tien,
+                                        lstSanPham: objectBill.lstSanPham,
+                                    }
+
+                                    setShowModalUpdateBill(false)
+                                    updateBill(objectNewBillPOST)
+                                    console.log(objectNewBillPOST)
+                                }}
+                            >
+                                Cập Nhật
+                            </Button>
+                            <Button
+                                variant="contained"
+                                style={{
+                                    marginLeft: '8px',
+                                }}
+                                onClick={() => {
+                                    setShowModalUpdateBill(false)
+                                    // reset store
+                                    dispatch({
+                                        type: SaveObjectBill,
+                                        value: {
+                                            Congno: 0,
+                                            Date: '',
+                                            DiaChiKhach: '',
+                                            Ghichu: '',
+                                            IDAction: 0,
+                                            NameNV: '',
+                                            SDTKhach: '',
+                                            SDTNV: '',
+                                            TenKhach: '',
+                                            ThanhTien: 0,
+                                            Time: '',
+                                            TimeOfDay: '',
+                                            TongTien: 0,
+                                            TraNo: 0,
+                                            doanhthu: 0,
+                                            lstSanPham: [],
+                                            _id: '',
+                                        },
+                                    })
+                                    OnRefresh(state.DateTimKiem)
+                                }}
+                            >
+                                Hủy Bỏ
+                            </Button>
+                        </div>
                     </div>
-                </Modal.Footer>
-            </Modal>
+                </div>
+            </div>
         )
     }
 
@@ -747,7 +769,16 @@ function LichSuGiaoDich() {
                     }}
                     onChange={(e) => {
                         setState({ ...state, DateTimKiem: e.target.value })
-                        OnRefresh(e.target.value)
+                    }}
+                    // onBlur={(e) => {
+                    //     setState({ ...state, DateTimKiem: e.target.value })
+                    //     OnRefresh(e.target.value)
+                    // }}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            setState({ ...state, DateTimKiem: e.target.value })
+                            OnRefresh(e.target.value)
+                        }
                     }}
                     value={DateTimKiem}
                 />

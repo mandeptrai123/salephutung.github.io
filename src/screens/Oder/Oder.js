@@ -126,6 +126,11 @@ function Oder() {
         itemSelected: null,
     })
 
+    //ref focus
+    const ngayDatHang = useRef(null)
+    const sdtRef = useRef(null)
+    const diaChiRef = useRef(null)
+
     //value text search
     const [valueSearch, setValueSearch] = useState('')
 
@@ -620,9 +625,22 @@ function Oder() {
                 maxWidth="sm"
                 fullWidth
             >
-                <DialogTitle>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        padding: '12px',
+                    }}
+                >
                     <h5>Điền số lượng sản phẩm</h5>
-                </DialogTitle>
+                    <CloseIcon
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                            setShowModalDienSoLuongSP(false)
+                        }}
+                    />
+                </div>
+
                 <DialogContent>
                     <TextField
                         id="outlined-basic"
@@ -814,6 +832,11 @@ function Oder() {
                                     onChange={(e) => {
                                         setTenKhach(e.target.value)
                                     }}
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            sdtRef.current.focus()
+                                        }
+                                    }}
                                     variant="outlined"
                                 />
                             )}
@@ -826,9 +849,15 @@ function Oder() {
                             onChange={(e) => {
                                 setSoDienThoai(e.target.value)
                             }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    diaChiRef.current.focus()
+                                }
+                            }}
                             label="Số Điện Thoại"
                             variant="outlined"
                             value={sodienthoai}
+                            inputRef={sdtRef}
                         />
                     </div>
 
@@ -838,9 +867,15 @@ function Oder() {
                             onChange={(e) => {
                                 setDiaChi(e.target.value)
                             }}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    ngayDatHang.current.focus()
+                                }
+                            }}
                             value={diachi}
                             variant="outlined"
                             label="Địa Chỉ"
+                            inputRef={diaChiRef}
                         />
                     </div>
 
@@ -869,6 +904,7 @@ function Oder() {
                             shrink: true,
                         }}
                         variant="outlined"
+                        inputRef={ngayDatHang}
                     />
 
                     <div
