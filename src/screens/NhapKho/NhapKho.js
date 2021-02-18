@@ -56,7 +56,7 @@ function NhapKho() {
 
     const dispatch = useDispatch()
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     const [stateSnackbar, setStateSnackbar] = React.useState({
         open: false,
@@ -184,7 +184,7 @@ function NhapKho() {
                 Accept: 'application/json',
             },
         }
-        let _URL = URL_API + '/sanpham/NhatKySanPham'
+        let _URL = URL_API + 'NhatKySanPham'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -237,7 +237,7 @@ function NhapKho() {
             },
             body: JSON.stringify(item),
         }
-        let _URL = URL_API + '/sanpham/ThemSanPham'
+        let _URL = URL_API + 'ThemSanPham'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -315,7 +315,7 @@ function NhapKho() {
                 Accept: 'application/json',
             },
         }
-        let _URL = URL_API + '/cungcap/ToanBoNhaCC'
+        let _URL = URL_API + 'ToanBoNhaCC'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -351,7 +351,7 @@ function NhapKho() {
         for (var i = 0; i < len; ++i) {
             if (reg.exec(arr_NhatKy[i].TenSP.toLowerCase())) {
                 maxSearchResult++
-                if (maxSearchResult < 51) {
+                if (maxSearchResult < 200) {
                     arrUI.push(arr_NhatKy[i])
                 } else {
                     break

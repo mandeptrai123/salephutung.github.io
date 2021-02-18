@@ -130,6 +130,8 @@ function Oder() {
     const ngayDatHang = useRef(null)
     const sdtRef = useRef(null)
     const diaChiRef = useRef(null)
+    const tenKhachRef = useRef(null)
+    const searchRef = useRef(null)
 
     //value text search
     const [valueSearch, setValueSearch] = useState('')
@@ -138,7 +140,7 @@ function Oder() {
     //Hoàng code
     const [doanhThu, setDoanhThu] = useState(0)
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
@@ -178,6 +180,12 @@ function Oder() {
                         }
                     />
                 </TableCell>
+                <TableCell>
+                    <TextField
+                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
+                        value="chiết khấu"
+                    />
+                </TableCell>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
                     {parseInt(
                         TienVietNam(
@@ -206,6 +214,7 @@ function Oder() {
                         }}
                     />
                 </TableCell>
+
                 <TableCell>
                     <FontAwesomeIcon
                         style={{
@@ -240,7 +249,7 @@ function Oder() {
                 Accept: 'application/json',
             },
         }
-        const _URL = URL_API + '/sanpham/ToanBoSanPham'
+        const _URL = URL_API + 'ToanBoSanPham'
         NetWorking(_URL, requestOptions)
             .then(async (result) => {
                 setShow(false)
@@ -465,7 +474,7 @@ function Oder() {
             },
             body: JSON.stringify(itemRequest),
         }
-        let _URL = URL_API + '/donhang/ThemDonHang'
+        let _URL = URL_API + 'ThemDonHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -553,7 +562,7 @@ function Oder() {
             },
         }
 
-        let _URL = URL_API + '/khachhang/ToanBoKhachHang'
+        let _URL = URL_API + 'ToanBoKhachHang'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -584,36 +593,6 @@ function Oder() {
         isSuccess: false,
     })
     //#endregion
-
-    function TimKhachHang(sdt) {
-        const requestOptions = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-        }
-
-        let _URL = URL_API + '/khachhang/TimKhachHang?SDT=' + sdt
-
-        NetWorking(_URL, requestOptions)
-            .then((res) => {
-                if (res.success) {
-                    if (res.data != null) {
-                        setDiaChi(res.data.DiaChi)
-                        setTenKhach(res.data.Name)
-                    } else {
-                        setDiaChi('')
-                        setTenKhach('')
-                    }
-                    handleClose()
-                }
-            })
-            .catch((e) => {
-                alert(e)
-                handleClose()
-            })
-    }
 
     function ModalDienSoLuongSP() {
         const [soLuongSanPhamDaChon, setSoLuongSanPhamDaChon] = useState(1)
@@ -656,6 +635,10 @@ function Oder() {
                         onKeyPress={(event) => {
                             if (event.key === 'Enter') {
                                 handleClickThemSanPham(soLuongSanPhamDaChon)
+
+                                setTimeout(() => {
+                                    searchRef.current.focus()
+                                }, 350)
                             }
                         }}
                     />
@@ -665,6 +648,10 @@ function Oder() {
                         variant="secondary"
                         onClick={() => {
                             handleClickThemSanPham(soLuongSanPhamDaChon)
+
+                            setTimeout(() => {
+                                searchRef.current.focus()
+                            }, 350)
                         }}
                     >
                         Thêm sản phẩm
@@ -715,6 +702,7 @@ function Oder() {
     function handleClickThemSanPham(soLuongSanPhamDaChon) {
         setShowModalDienSoLuongSP(false)
         //sau khi điền sl sp thì thêm vào giỏ hàng
+
         if (idSanPham) {
             //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k
             //Kiểm tra số lượng > 0
@@ -763,7 +751,7 @@ function Oder() {
         for (var i = 0; i < length; ++i) {
             if (reg.test(arrAllSP[i].name.toLowerCase())) {
                 maxSearchResult++
-                if (maxSearchResult < 50) {
+                if (maxSearchResult < 200) {
                     arrUI.push(ItemSanPham(arrAllSP[i]))
                 } else {
                     break
@@ -799,7 +787,9 @@ function Oder() {
                             id="combo-box-khach"
                             freeSolo={true}
                             options={arrAllKhachHang}
-                            getOptionLabel={(option) => option.Name}
+                            getOptionLabel={(option) =>
+                                `${option.Name} (${option.DiaChi})`
+                            }
                             style={{ width: 200 }}
                             inputValue={tenkhach}
                             onInputChange={(event, newInputValue) => {
@@ -807,9 +797,17 @@ function Oder() {
 
                                 arrAllKhachHang.map((e, index) => {
                                     if (
-                                        newInputValue ===
-                                        arrAllKhachHang[index].Name
+                                        newInputValue.replace(
+                                            ` (${e.DiaChi})`,
+                                            ''
+                                        ) === arrAllKhachHang[index].Name
                                     ) {
+                                        setTenKhach(
+                                            newInputValue.replace(
+                                                ` (${e.DiaChi})`,
+                                                ''
+                                            )
+                                        )
                                         if (arrAllKhachHang[index].SDT) {
                                             setSoDienThoai(e.SDT)
                                         } else {
@@ -837,6 +835,13 @@ function Oder() {
                                             sdtRef.current.focus()
                                         }
                                     }}
+                                    onKeyDown={(e) => {
+                                        var x = e.which || e.keyCode
+                                        if (x === 40) {
+                                            sdtRef.current.focus()
+                                        }
+                                    }}
+                                    inputRef={tenKhachRef}
                                     variant="outlined"
                                 />
                             )}
@@ -852,6 +857,15 @@ function Oder() {
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                     diaChiRef.current.focus()
+                                }
+                            }}
+                            onKeyDown={(e) => {
+                                var x = e.which || e.keyCode
+                                if (x === 40) {
+                                    diaChiRef.current.focus()
+                                }
+                                if (x === 38) {
+                                    tenKhachRef.current.focus()
                                 }
                             }}
                             label="Số Điện Thoại"
@@ -870,6 +884,15 @@ function Oder() {
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                     ngayDatHang.current.focus()
+                                }
+                            }}
+                            onKeyDown={(e) => {
+                                var x = e.which || e.keyCode
+                                if (x === 40) {
+                                    ngayDatHang.current.focus()
+                                }
+                                if (x === 38) {
+                                    sdtRef.current.focus()
                                 }
                             }}
                             value={diachi}
@@ -904,6 +927,15 @@ function Oder() {
                             shrink: true,
                         }}
                         variant="outlined"
+                        onKeyDown={(e) => {
+                            var x = e.which || e.keyCode
+                            if (x === 38) {
+                                diaChiRef.current.focus()
+                            }
+                            if (x === 40) {
+                                searchRef.current.focus()
+                            }
+                        }}
                         inputRef={ngayDatHang}
                     />
 
@@ -944,6 +976,15 @@ function Oder() {
                             setValueSearch(e.target.value)
                         }
                     }}
+                    onKeyDown={(e) => {
+                        var x = e.which || e.keyCode
+                        if (x === 38) {
+                            ngayDatHang.current.focus()
+                        }
+                        if (x === 40) {
+                            tenKhachRef.current.focus()
+                        }
+                    }}
                     style={{
                         color: resources.colorPrimary,
                         marginLeft: 11,
@@ -976,6 +1017,7 @@ function Oder() {
                     }}
                     value={valueSearch}
                     variant="outlined"
+                    inputRef={searchRef}
                 />
             </div>
 
@@ -1076,6 +1118,15 @@ function Oder() {
                                             }}
                                         >
                                             Đơn Giá
+                                        </TableCell>
+                                        <TableCell
+                                            style={{
+                                                fontSize: 12,
+                                                maxWidth: '5px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            Chiết Khấu
                                         </TableCell>
                                         <TableCell
                                             style={{

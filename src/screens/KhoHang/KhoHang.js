@@ -58,7 +58,7 @@ function KhoHang() {
     const TatCaSanPham = useSelector((state) => state.AllSanPham)
     const dispatch = useDispatch()
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     function RenderKhoSanPham(arr) {
         let maxRender = 0
@@ -84,7 +84,7 @@ function KhoHang() {
             },
             body: JSON.stringify(bodyRequest),
         }
-        const _URL = URL_API + '/sanpham/CapNhatSanPham'
+        const _URL = URL_API + 'CapNhatSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
                 handleClose()
@@ -113,7 +113,7 @@ function KhoHang() {
             body: JSON.stringify({ _id: id }),
         }
 
-        const _URL = URL_API + '/sanpham/XoaSanPham'
+        const _URL = URL_API + 'XoaSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
                 if (response.success) {
@@ -188,7 +188,7 @@ function KhoHang() {
             amountAlert: +amountAlertSanPham,
             Donvi: donviSanPham,
             NhaCC: nhaCCSanPham,
-            GiaNhap: giaNhapSanPham,
+            GiaNhap: +giaNhapSanPham,
             Time: timeSanPham,
             IDSp: +IDSpSanPham,
             SDTNhaCC: SDTNhaCCSanPham,
@@ -228,6 +228,25 @@ function KhoHang() {
                         }}
                         onChange={(e) => {
                             setPriceSanPham(e.target.value)
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                CapNhatSanPham(bodyRequestAPIUpdateSP)
+                            }
+                        }}
+                    />
+                </TableCell>
+                <TableCell>
+                    <input
+                        value={giaNhapSanPham}
+                        style={{
+                            border: 'none ',
+                            outline: 'none',
+                            backgroundColor: 'transparent',
+                            borderBottom: '1px solid black',
+                        }}
+                        onChange={(e) => {
+                            setGiaNhapSanPham(e.target.value)
                         }}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
@@ -319,7 +338,7 @@ function KhoHang() {
                 Accept: 'application/json',
             },
         }
-        let _URL = URL_API + '/sanpham/ToanBoSanPham'
+        let _URL = URL_API + 'ToanBoSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -358,7 +377,7 @@ function KhoHang() {
             },
             body: JSON.stringify(_item),
         }
-        let _URL = URL_API + '/sanpham/CapNhatSLSanPham'
+        let _URL = URL_API + 'CapNhatSLSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -384,7 +403,7 @@ function KhoHang() {
             },
             body: JSON.stringify(_item),
         }
-        let _URL = URL_API + '/sanpham/CapNhatGiaBanSanPham'
+        let _URL = URL_API + 'CapNhatGiaBanSanPham'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -420,7 +439,7 @@ function KhoHang() {
                 for (let i = 0; i < len; ++i) {
                     if (regex.exec(TatCaSanPham[i].NhaCC.toLowerCase())) {
                         maxLengthSearch++
-                        if (maxLengthSearch < 51) {
+                        if (maxLengthSearch < 200) {
                             arrUI.push(
                                 <ItemSanPham
                                     data={TatCaSanPham[i]}
@@ -444,7 +463,7 @@ function KhoHang() {
                 for (let i = 0; i < length; ++i) {
                     if (regex.exec(TatCaSanPham[i].name.toLowerCase())) {
                         maxLengthSearchs++
-                        if (maxLengthSearchs < 21) {
+                        if (maxLengthSearchs < 200) {
                             arrUIs.push(
                                 <ItemSanPham
                                     data={TatCaSanPham[i]}
@@ -604,6 +623,7 @@ function KhoHang() {
                                     <TableCell>Tên Sản Phẩm</TableCell>
                                     <TableCell>Đơn Vị</TableCell>
                                     <TableCell>Giá Bán Lẻ</TableCell>
+                                    <TableCell>Giá Gốc</TableCell>
                                     <TableCell>Số Lượng Hiện Tại</TableCell>
                                     <TableCell>Nhà Cung Cấp</TableCell>
                                     <TableCell>SL Báo Động</TableCell>

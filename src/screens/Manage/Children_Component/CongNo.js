@@ -45,7 +45,7 @@ function CongNo() {
     const isUpdateCN = useSelector((state) => state.isUpdateCongNo)
     const dispatch = useDispatch()
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     const [lstResult, setResult] = useState()
 
@@ -247,7 +247,7 @@ function CongNo() {
                 Accept: 'application/json',
             },
         }
-        const _URL = URL_API + '/khachhang/ToanBoKhachHang'
+        const _URL = URL_API + 'ToanBoKhachHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -269,9 +269,9 @@ function CongNo() {
         const result = arr.map((e, index) => {
             _congno += parseInt(e.Congno)
             maxRender++
-            if (maxRender < 101) {
-                return <ItemCongNo data={e} soThuTu={index} />
-            }
+            if (maxRender < 101)
+                if (e.Congno != 0)
+                    return <ItemCongNo data={e} soThuTu={index} />
         })
 
         setResult(result)
@@ -299,7 +299,7 @@ function CongNo() {
             body: JSON.stringify(itemRequest),
         }
 
-        const _URL = URL_API + '/khachhang/CapNhatCongNo'
+        const _URL = URL_API + 'CapNhatCongNo'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -332,7 +332,7 @@ function CongNo() {
                 for (var i = 0; i < len; ++i) {
                     if (regex.exec(arr_KhachHang[i].Name.toLowerCase())) {
                         maxItemSearch++
-                        if (maxItemSearch < 51) {
+                        if (maxItemSearch < 200) {
                             arrUI.push(
                                 <ItemCongNo
                                     data={arr_KhachHang[i]}
@@ -353,7 +353,7 @@ function CongNo() {
                 for (var i = 0; i < len; ++i) {
                     if (regex.exec(arr_KhachHang[i].DiaChi.toLowerCase())) {
                         maxItemSearch++
-                        if (maxItemSearch < 51) {
+                        if (maxItemSearch < 200) {
                             arrUI.push(
                                 <ItemCongNo
                                     data={arr_KhachHang[i]}
@@ -375,7 +375,7 @@ function CongNo() {
     }
 
     function GetLichSuCapNhat(sdt) {
-        const _URL = URL_API + '/khachhang/NhatKyCongNoBySDT?SDTKhach=' + sdt
+        const _URL = URL_API + 'NhatKyCongNoBySDT?SDTKhach=' + sdt
         NetWorking(_URL)
             .then((res) => {
                 if (res.success) {

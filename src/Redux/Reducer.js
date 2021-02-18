@@ -12,6 +12,7 @@ import {
     AddBill,
     UpdateItemBill,
     UpdateValueItemBill,
+    UpdateKhachHang,
     DeleteSanPham,
 } from './ActionType'
 
@@ -178,6 +179,22 @@ const Reducer = (state = defineState, action) => {
             })
 
             state.objectBill.ThanhTien = thanhTien
+
+            state = JSON.parse(JSON.stringify(state))
+
+            return state
+
+        case UpdateKhachHang:
+            let o = action.value
+
+            state.AllKhachHang[o.index].Name = o.objectKhachHang.Name
+            state.AllKhachHang[o.index].DiaChi = o.objectKhachHang.DiaChi
+            state.AllKhachHang[o.index].SDT = o.objectKhachHang.SDT
+            state.AllKhachHang[o.index].Congno = o.objectKhachHang.Congno
+            state.AllKhachHang[o.index].LoaiKhach = o.objectKhachHang.LoaiKhach
+            state.AllKhachHang[o.index].SoHangDaMua =
+                o.objectKhachHang.SoHangDaMua
+            state.AllKhachHang[o.index].ThoiQuen = o.objectKhachHang.ThoiQuen
 
             state = JSON.parse(JSON.stringify(state))
 

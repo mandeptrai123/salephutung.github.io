@@ -20,6 +20,8 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Dropdown from 'react-bootstrap/Dropdown'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import resources from '../../../resource/color/ColorApp'
 import { TextField } from '@material-ui/core'
@@ -62,7 +64,7 @@ function LichSuGiaoDich() {
     const objectBill = useSelector((state) => state.objectBill)
     const dispatch = useDispatch()
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
@@ -79,6 +81,9 @@ function LichSuGiaoDich() {
 
     const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
     const [valueSearch, setValueSearch] = useState('')
+
+    //checkbox xem theo ngày
+    const [checkedView, setCheckedView] = useState(false)
 
     const [state, setState] = useState({
         DateTimKiem: '',
@@ -101,18 +106,7 @@ function LichSuGiaoDich() {
     //const [date,setDateChoosee] = useState(new Date().getDay()+"-"+new Date().getMonth+"-"+new Date().getFullYear());
     useEffect(() => {
         setMessLoading(' Đang Tải Thông Tin Đơn Hàng!')
-        var _date = new Date()
-        var _dateDefault =
-            _date.getFullYear() +
-            '-' +
-            (_date.getMonth() + 1 > 9
-                ? _date.getMonth() + 1
-                : '0' + (_date.getMonth() + 1)) +
-            '-' +
-            (_date.getDate() > 9 ? _date.getDate() : '0' + _date.getDate())
-        OnRefresh(_dateDefault)
-        setState({ ...state, DateTimKiem: _dateDefault })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        OnRefresh()
     }, [])
 
     const [stateModal, setStateModal] = useState({
@@ -122,19 +116,6 @@ function LichSuGiaoDich() {
 
     function handleClickPrint(item) {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
-    }
-
-    const RenderDonHangTrongNgay = (arr) => {
-        var _total = 0
-        const _result = arr.map((e, index) => {
-            // Kiểm tra xem khách hàng này có lịch sử đơn hàng nào ko
-            if (e.lstSanPham.length != 0) {
-                _total += 1
-                return ItemDonHang(e, handleClickPrint, index)
-            }
-        })
-        setTotalBill(_total)
-        setResult(_result)
     }
 
     const ItemDonHang = (props, action, index) => {
@@ -183,7 +164,6 @@ function LichSuGiaoDich() {
                             //Khi click chỉnh sửa 1 bill nào đó thì lưu obj đó vào store
                             dispatch({ type: SaveObjectBill, value: props })
                             setShowModalUpdateBill(true)
-                            console.log(props)
                         }}
                     >
                         Chỉnh sửa
@@ -193,7 +173,28 @@ function LichSuGiaoDich() {
         )
     }
 
-    function OnRefresh(dateCurrent) {
+    function RenderDonHangTrongNgay(arr) {
+        let _total = 0
+        var maxRender = 0
+        const lenArr = arr.length
+        let _result = []
+
+        for (var i = 0; i < lenArr; i++) {
+            // Kiểm tra xem khách hàng này có lịch sử đơn hàng nào ko
+            if (arr[i].lstSanPham.length != 0) {
+                _total += 1
+                maxRender++
+                if (maxRender < 101)
+                    _result.push(ItemDonHang(arr[i], handleClickPrint, i))
+                else break
+            }
+        }
+
+        setTotalBill(_total)
+        setResult(_result)
+    }
+
+    function OnRefresh() {
         handleShow()
         const requestOptions = {
             method: 'GET',
@@ -202,7 +203,7 @@ function LichSuGiaoDich() {
                 Accept: 'application/json',
             },
         }
-        let _URL = URL_API + '/donhang/DonHangTheoNgay?date=' + dateCurrent
+        let _URL = URL_API + 'ToanBoDonHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -237,14 +238,14 @@ function LichSuGiaoDich() {
             },
             body: JSON.stringify(bodyRequest),
         }
-        let _URL = URL_API + '/donhang/CapNhatDonHang'
+        let _URL = URL_API + 'CapNhatDonHang'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
                 if (res.success) {
                     // Nếu cập nhật bill mới thành công thì cho refresh lại trang bill
-                    OnRefresh(state.DateTimKiem)
+                    OnRefresh()
                 }
             })
             .catch((e) => {
@@ -671,7 +672,7 @@ function LichSuGiaoDich() {
                                             _id: '',
                                         },
                                     })
-                                    OnRefresh(state.DateTimKiem)
+                                    OnRefresh()
                                 }}
                             >
                                 Hủy Bỏ
@@ -707,25 +708,61 @@ function LichSuGiaoDich() {
                 RenderDonHangTrongNgay(arrUI)
                 break
             case 'Tìm tên sản phẩm':
-                for (var i = 0; i < len; ++i) {
-                    const lenLstSanPham = _arrDonHang[i].lstSanPham.length
-                    for (var j = 0; j < lenLstSanPham; ++j) {
-                        if (
-                            reg.exec(
-                                _arrDonHang[i].lstSanPham[j].name.toLowerCase()
-                            )
-                        ) {
-                            arrUI.push(_arrDonHang[i])
-                            break
-                        }
-                    }
+                handleShow()
+                setMessLoading('Đang tìm kiếm!')
+
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
                 }
 
-                RenderDonHangTrongNgay(arrUI)
+                let _URL = URL_API + 'DonHangTheoTenSP?input=' + valueSearch
+
+                NetWorking(_URL, requestOptions)
+                    .then((res) => {
+                        handleClose()
+                        if (res.success) {
+                            _arrDonHang = res.data
+                            RenderDonHangTrongNgay(res.data)
+                        }
+                    })
+                    .catch((e) => {
+                        alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
+                        handleClose()
+                    })
+
                 break
             default:
                 break
         }
+    }
+
+    function handleFilterDate(date) {
+        handleShow()
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        }
+        let _URL = URL_API + '/DonHangTheoNgay?date=' + date
+        NetWorking(_URL, requestOptions)
+            .then((res) => {
+                handleClose()
+                if (res.success) {
+                    _arrDonHang = res.data
+                    console.log(res.data)
+                    RenderDonHangTrongNgay(res.data)
+                }
+            })
+            .catch((e) => {
+                alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
+                handleClose()
+            })
     }
 
     return (
@@ -755,34 +792,6 @@ function LichSuGiaoDich() {
             <div
                 style={{ display: 'flex', width: '100%', alignItems: 'center' }}
             >
-                <TextField
-                    variant="outlined"
-                    id="date"
-                    label="Ngày Muốn Xem"
-                    type="date"
-                    style={{
-                        width: 200,
-                        marginLeft: 30,
-                        height: 50,
-                        color: resources.colorPrimary,
-                        alignSelf: 'flex-start',
-                    }}
-                    onChange={(e) => {
-                        setState({ ...state, DateTimKiem: e.target.value })
-                    }}
-                    // onBlur={(e) => {
-                    //     setState({ ...state, DateTimKiem: e.target.value })
-                    //     OnRefresh(e.target.value)
-                    // }}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                            setState({ ...state, DateTimKiem: e.target.value })
-                            OnRefresh(e.target.value)
-                        }
-                    }}
-                    value={DateTimKiem}
-                />
-
                 <TextField
                     onChange={(e) => {
                         setValueSearch(e.target.value)
@@ -846,6 +855,48 @@ function LichSuGiaoDich() {
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
+
+                <FormControlLabel
+                    style={{ marginLeft: '10px' }}
+                    control={
+                        <Checkbox
+                            color="primary"
+                            onChange={(e) => {
+                                setCheckedView(e.target.checked)
+                                if (!e.target.checked) OnRefresh()
+                            }}
+                        />
+                    }
+                    label="Xem theo ngày"
+                />
+
+                <TextField
+                    variant="outlined"
+                    id="date"
+                    label="Ngày Muốn Xem"
+                    type="date"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    style={{
+                        width: 200,
+                        marginLeft: 30,
+                        height: 50,
+                        color: resources.colorPrimary,
+                        alignSelf: 'flex-start',
+                        display: checkedView ? 'block' : 'none',
+                    }}
+                    onChange={(e) => {
+                        setState({ ...state, DateTimKiem: e.target.value })
+                    }}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                            setState({ ...state, DateTimKiem: e.target.value })
+                            handleFilterDate(e.target.value)
+                        }
+                    }}
+                    value={DateTimKiem}
+                />
             </div>
             <h4
                 style={{

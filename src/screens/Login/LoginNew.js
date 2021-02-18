@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
     const classes = useStyles()
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     const dispatch = useDispatch()
     const history = useHistory()
@@ -94,7 +94,7 @@ export default function SignIn() {
                 Accept: 'application/json',
             },
         }
-        let _URL = URL_API + '/nhanvien/LoginBySDT?SDT=' + SDT + '&Pass=' + Pass
+        let _URL = URL_API + 'LoginBySDT?SDT=' + SDT + '&Pass=' + Pass
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 setShowLoading(false)

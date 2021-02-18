@@ -79,10 +79,10 @@ class PrintDonHang extends React.Component {
                                 <h4 className="bill-table__text">ĐVT</h4>
                             </th>
                             <th>
-                                <h4 className="bill-table__text">SL</h4>
+                                <h4 className="bill-table__text">ĐƠN GIÁ</h4>
                             </th>
                             <th>
-                                <h4 className="bill-table__text">ĐƠN GIÁ</h4>
+                                <h4 className="bill-table__text">SL</h4>
                             </th>
                             <th>
                                 <h4 className="bill-table__text">THÀNH TIỀN</h4>
@@ -99,8 +99,8 @@ class PrintDonHang extends React.Component {
                                     <td>{index}</td>
                                     <td>{e.name}</td>
                                     <td>{e.Donvi}</td>
-                                    <td>{e.soluongBan}</td>
                                     <td>{formatNumber(e.price)}</td>
+                                    <td>{e.soluongBan}</td>
                                     <td>{formatNumber(e.pricesum)}</td>
                                     <td>
                                         <div

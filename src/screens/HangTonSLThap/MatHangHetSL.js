@@ -52,7 +52,7 @@ function MatHangHetSL() {
     const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
     const [valueSearch, setValueSearch] = useState('')
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     //Tạo list lưu ghi chú mỗi sản phẩm
     const [resultLst, setResultLst] = useState()
@@ -172,19 +172,6 @@ function MatHangHetSL() {
                                         <div
                                             style={{
                                                 display: 'flex',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <strong
-                                                style={{ fontSize: '17px' }}
-                                            >
-                                                - Nhà cung cấp {item.NhaCC} -{' '}
-                                                {item.SDTNhaCC}:{' '}
-                                            </strong>
-                                        </div>
-                                        <div
-                                            style={{
-                                                display: 'flex',
                                                 flexDirection: 'column',
                                                 justifyContent: 'center',
                                             }}
@@ -267,7 +254,7 @@ function MatHangHetSL() {
             },
         }
 
-        let _URL = URL_API + '/sanpham/SanPhamSLThap'
+        let _URL = URL_API + 'SanPhamSLThap'
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
@@ -353,7 +340,7 @@ function MatHangHetSL() {
                 for (let i = 0; i < len; ++i) {
                     if (reg.exec(listSPThieuSL[i].NhaCC.toLowerCase())) {
                         maxLengthSearch++
-                        if (maxLengthSearch < 51) {
+                        if (maxLengthSearch < 200) {
                             arrUI.push(
                                 <ItemNoiDung
                                     data={listSPThieuSL[i]}
@@ -377,7 +364,7 @@ function MatHangHetSL() {
                 for (let i = 0; i < length; ++i) {
                     if (reg.exec(listSPThieuSL[i].Name.toLowerCase())) {
                         maxLengthSearchs++
-                        if (maxLengthSearchs < 51) {
+                        if (maxLengthSearchs < 200) {
                             arrUIs.push(
                                 <ItemNoiDung
                                     data={listSPThieuSL[i]}

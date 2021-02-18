@@ -41,7 +41,7 @@ function TaoNhanVien() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
-    const URL_API = 'http://35.197.146.86:5000'
+    const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     function handleCloseSnackbar() {
         setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
@@ -66,7 +66,7 @@ function TaoNhanVien() {
             body: JSON.stringify(itemRequest),
         }
 
-        let _URL = URL_API + '/quanli/ThemNhanVien'
+        let _URL = URL_API + 'ThemNhanVien'
 
         NetWorking(_URL, requestOptions)
             .then((res) => {

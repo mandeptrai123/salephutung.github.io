@@ -8,8 +8,7 @@ import LichSuGiaoDich from './Children_Component/LichSuGiaoDich'
 import CongNo from './Children_Component/CongNo'
 import BaoCaoDoanhThu from './Children_Component/BaoCaoDoanhThu/BaoCaoDoanhThu'
 import TaoNhanVien from './Children_Component/TaoNhanVien'
-import HangHetSoLuong from './Children_Component/HangHetSoLuong'
-import NhatKyCongNo from './Children_Component/NhatKyCongNo'
+import KhachHang from './Children_Component/KhachHang'
 import DangXuat from './Children_Component/DangXuat'
 import { Modal, Button, Spinner } from 'react-bootstrap'
 
@@ -42,9 +41,7 @@ function Manage() {
     function Handle_ThemNhanVien() {
         setUI(<TaoNhanVien />)
     }
-    function Handle_HangHetSoLuong() {
-        setUI(<HangHetSoLuong />)
-    }
+
     function Handle_DonHangTrongNgay() {
         setUI(<LichSuGiaoDich />)
     }
@@ -52,14 +49,14 @@ function Manage() {
         setUI(<BaoCaoDoanhThu />)
     }
     function Handle_ToanBoCongNo() {
-        setUI(<CongNo></CongNo>)
+        setUI(<CongNo />)
     }
-    function Handle_NhatKyCongNo() {
-        setUI(<NhatKyCongNo></NhatKyCongNo>)
+    function Handle_KhachHang() {
+        setUI(<KhachHang />)
     }
 
     function Handle_DangXuat() {
-        setUI(<DangXuat></DangXuat>)
+        setUI(<DangXuat />)
     }
 
     function DisableActive() {
@@ -140,28 +137,6 @@ function Manage() {
 
                     <ListGroup.Item
                         as="li"
-                        active={active2}
-                        variant="primary"
-                        action
-                        style={{
-                            cursor: 'pointer',
-                            fontSize: '18px',
-                            color: 'white',
-                        }}
-                        onClick={(e) => {
-                            if (isQuanLi) {
-                                DisableActive()
-                                setActive2(true)
-                                Handle_HangHetSoLuong()
-                            } else {
-                                setShowBlockQuanLi(true)
-                            }
-                        }}
-                    >
-                        Hàng Hết Số Lượng
-                    </ListGroup.Item>
-                    <ListGroup.Item
-                        as="li"
                         active={active3}
                         variant="primary"
                         action
@@ -240,13 +215,13 @@ function Manage() {
                             if (isQuanLi) {
                                 DisableActive()
                                 setActive7(true)
-                                Handle_NhatKyCongNo()
+                                Handle_KhachHang()
                             } else {
                                 setShowBlockQuanLi(true)
                             }
                         }}
                     >
-                        Nhật Ký Công Nợ
+                        Khách Hàng
                     </ListGroup.Item>
 
                     <ListGroup.Item
