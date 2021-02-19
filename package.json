@@ -57,7 +57,9 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "ebuild": "electron-builder --dir --win --x64"
+    "winbuild": "electron-builder --dir --win --x64",
+    "macbuild": "electron-builder --dir --mac --x64"
+    
   },
   "eslintConfig": {
     "extends": "react-app"
