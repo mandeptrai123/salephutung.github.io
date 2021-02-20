@@ -30,6 +30,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { AddNewSanPham } from '../../Redux/ActionType'
 import _ from 'lodash'
 
+// xóa dấu
+import removeTones from '../../utils/removeTones'
+
 var arr_NhatKy = []
 var arr_NhaCC = []
 function NhapKho() {
@@ -279,6 +282,10 @@ function NhapKho() {
                         isSuccess: true,
                         open: true,
                     })
+
+                    item._id = res._id
+
+                    dispatch({ type: AddNewSanPham, dataNewSanPham: item })
                 }
                 handleClose()
             })
@@ -334,14 +341,14 @@ function NhapKho() {
     }
 
     function handleSearch(value) {
-        const textSearch = value.toLowerCase()
-        const reg = new RegExp(textSearch)
+        const reg = new RegExp(removeTones(value.toLowerCase()))
 
         // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
-        if (!textSearch) {
+        if (!value) {
             UpdateNhatKy(arr_NhatKy)
             return
         }
+        console.log(arr_NhatKy)
 
         //Do dữ liệu nhiều nên render 50 sản phẩm khi search
         var maxSearchResult = 0
@@ -349,7 +356,7 @@ function NhapKho() {
         const len = arr_NhatKy.length
 
         for (var i = 0; i < len; ++i) {
-            if (reg.exec(arr_NhatKy[i].TenSP.toLowerCase())) {
+            if (reg.exec(removeTones(arr_NhatKy[i].TenSP.toLowerCase()))) {
                 maxSearchResult++
                 if (maxSearchResult < 200) {
                     arrUI.push(arr_NhatKy[i])
@@ -386,7 +393,7 @@ function NhapKho() {
                                     : '* Vui lòng điền vào tên sản phẩm'}
                             </span>
                             <input
-                                style={{ height: 50 }}
+                                style={{ height: 50, paddingLeft: '10px' }}
                                 variant="outlined"
                                 ref={NameRef}
                                 onKeyPress={(event) => {
@@ -422,7 +429,7 @@ function NhapKho() {
                             }}
                         >
                             <input
-                                style={{ height: 50 }}
+                                style={{ height: 50, paddingLeft: '10px' }}
                                 variant="outlined"
                                 value={soluong}
                                 onChange={(e) => {
@@ -457,7 +464,7 @@ function NhapKho() {
                                     : '* Vui lòng điền vào đơn vị'}
                             </span>
                             <input
-                                style={{ height: 50 }}
+                                style={{ height: 50, paddingLeft: '10px' }}
                                 variant="outlined"
                                 ref={DonViRef}
                                 onKeyPress={(event) => {
@@ -493,7 +500,11 @@ function NhapKho() {
                             }}
                         >
                             <input
-                                style={{ height: 50, width: '250px' }}
+                                style={{
+                                    height: 50,
+                                    width: '250px',
+                                    paddingLeft: '10px',
+                                }}
                                 variant="outlined"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -513,7 +524,7 @@ function NhapKho() {
 
                     <li className="item__input">
                         <h6 style={{ color: resources.colorPrimary }}>
-                            Giá Nhập Sỉ
+                            Giá Gốc
                         </h6>
                         <div
                             style={{
@@ -523,7 +534,7 @@ function NhapKho() {
                             }}
                         >
                             <input
-                                style={{ height: 50 }}
+                                style={{ height: 50, paddingLeft: '10px' }}
                                 variant="outlined"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -536,7 +547,7 @@ function NhapKho() {
                                 }}
                                 value={dongia}
                                 width={300}
-                                placeholder="Giá Nhập"
+                                placeholder="Giá Gốc"
                             />
                             {soluong && dongia ? (
                                 <div>
@@ -564,7 +575,7 @@ function NhapKho() {
                             }}
                         >
                             <input
-                                style={{ height: 50 }}
+                                style={{ height: 50, paddingLeft: '10px' }}
                                 variant="outlined"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -607,7 +618,6 @@ function NhapKho() {
                                 setSDTNhaCC(newInputValue)
                             }}
                             onChange={(event, newValue) => {
-                                console.log(newValue)
                                 if (newValue) {
                                     setNhaCC(newValue.NameNhaCC)
                                 }

@@ -15,6 +15,8 @@ import TableRow from '@material-ui/core/TableRow'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import resources from '../../../resource/color/ColorApp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,6 +27,9 @@ import { useSelector, useDispatch } from 'react-redux'
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+
+// xóa dấu
+import removeTones from '../../../utils/removeTones'
 
 //import redux
 import { IsUpdateCongNo } from '../../../Redux/ActionType'
@@ -64,7 +69,7 @@ function CongNo() {
     const handleShow = () => setShow(true)
 
     const [nameFilterSearch, setNameFilterSearch] = useState(
-        'Tìm tên khách hàng'
+        'Theo tên khách hàng'
     )
     const [valueSearch, setValueSearch] = useState('')
 
@@ -82,6 +87,8 @@ function CongNo() {
         Pass: '',
     })
     const { openDieuChinh, CongNoCu, CongNoMoi, Pass } = stateModalDieuChinh
+
+    const [checkboxView, setCheckboxView] = useState(true)
 
     const [congnoMoi, setcongnoMoi] = useState()
 
@@ -234,7 +241,6 @@ function CongNo() {
 
     useEffect(() => {
         OnFresh()
-        console.log('useEffect')
     }, [refresh])
 
     function OnFresh() {
@@ -263,16 +269,22 @@ function CongNo() {
             })
     }
 
-    function RenderCongNo(arr) {
+    function RenderCongNo(arr, checkedView = true) {
         var _congno = 0
         let maxRender = 0
-        const result = arr.map((e, index) => {
-            _congno += parseInt(e.Congno)
+        let result = []
+        const lengthArr = arr.length
+        for (let i = 0; i < lengthArr; ++i) {
+            _congno += parseInt(arr[i].Congno)
+
             maxRender++
-            if (maxRender < 101)
-                if (e.Congno != 0)
-                    return <ItemCongNo data={e} soThuTu={index} />
-        })
+            if (maxRender < 151) {
+                if (checkedView) {
+                    if (arr[i].Congno != 0)
+                        result.push(<ItemCongNo data={arr[i]} soThuTu={i} />)
+                } else result.push(<ItemCongNo data={arr[i]} soThuTu={i} />)
+            } else break
+        }
 
         setResult(result)
         setLstUI(result)
@@ -321,16 +333,19 @@ function CongNo() {
             return
         }
 
-        const textSearch = value.toLowerCase()
-        const regex = new RegExp(textSearch)
+        const regex = new RegExp(removeTones(value.toLowerCase()))
         var maxItemSearch = 0
         const len = arr_KhachHang.length
         var arrUI = []
         switch (nameFilter) {
-            case 'Tìm tên khách hàng':
+            case 'Theo tên khách hàng':
                 //render 20 kết quả tìm đc
                 for (var i = 0; i < len; ++i) {
-                    if (regex.exec(arr_KhachHang[i].Name.toLowerCase())) {
+                    if (
+                        regex.exec(
+                            removeTones(arr_KhachHang[i].Name.toLowerCase())
+                        )
+                    ) {
                         maxItemSearch++
                         if (maxItemSearch < 200) {
                             arrUI.push(
@@ -348,10 +363,14 @@ function CongNo() {
                 setResult(arrUI)
 
                 break
-            case 'Tìm địa chỉ':
+            case 'Theo địa chỉ':
                 //render 20 kết quả tìm đc
                 for (var i = 0; i < len; ++i) {
-                    if (regex.exec(arr_KhachHang[i].DiaChi.toLowerCase())) {
+                    if (
+                        regex.exec(
+                            removeTones(arr_KhachHang[i].DiaChi.toLowerCase())
+                        )
+                    ) {
                         maxItemSearch++
                         if (maxItemSearch < 200) {
                             arrUI.push(
@@ -502,6 +521,7 @@ function CongNo() {
                 }}
                 onClick={(e) => {
                     setRefresh(!refresh)
+                    setCheckboxView(true)
                 }}
                 color={resources.colorPrimary}
                 size="3x"
@@ -559,20 +579,35 @@ function CongNo() {
                     <Dropdown.Menu>
                         <Dropdown.Item
                             onClick={(e) => {
-                                setNameFilterSearch('Tìm tên khách hàng')
+                                setNameFilterSearch('Theo tên khách hàng')
                             }}
                         >
-                            Tìm tên khách hàng
+                            Theo tên khách hàng
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={(e) => {
-                                setNameFilterSearch('Tìm địa chỉ')
+                                setNameFilterSearch('Theo địa chỉ')
                             }}
                         >
-                            Tìm địa chỉ
+                            Theo địa chỉ
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
+
+                <FormControlLabel
+                    style={{ marginLeft: '10px' }}
+                    control={
+                        <Checkbox
+                            color="primary"
+                            checked={checkboxView}
+                            onChange={(e) => {
+                                setCheckboxView(e.target.checked)
+                                RenderCongNo(arr_KhachHang, e.target.checked)
+                            }}
+                        />
+                    }
+                    label="Chỉ hiện thị khách nợ"
+                />
             </div>
 
             <TableContainer

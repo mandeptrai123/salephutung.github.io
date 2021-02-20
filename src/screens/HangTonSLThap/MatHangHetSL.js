@@ -24,11 +24,16 @@ import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
 import TextField from '@material-ui/core/TextField'
-import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
+import Snackbar from '@material-ui/core/Snackbar'
+
 //icon
 import CloseIcon from '@material-ui/icons/Close'
+import SearchIcon from '@material-ui/icons/Search'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
+
+// xóa dấu
+import removeTones from '../../utils/removeTones'
 
 //import redux
 import {
@@ -48,6 +53,11 @@ function MatHangHetSL() {
     const [showModalSendEmailGhiChu, setShowModalSendEmailGhiChu] = useState(
         false
     )
+
+    // kiểm tra có điền số lượng khi nhấn gửi email chưa
+    const [checkDienSL, setCheckDienSL] = useState('')
+
+    const [showMess, setShowMess] = useState(false)
 
     const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
     const [valueSearch, setValueSearch] = useState('')
@@ -113,6 +123,9 @@ function MatHangHetSL() {
             })
             .value()
 
+        //Show mes khi nhấn copy
+        const [showMessage, setShowMessage] = useState(false)
+
         return (
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
@@ -123,6 +136,20 @@ function MatHangHetSL() {
                     setShowModalSendEmailGhiChu(false)
                 }}
             >
+                <Snackbar
+                    open={showMessage}
+                    autoHideDuration={2500}
+                    onClose={() => {
+                        setShowMessage(false)
+                    }}
+                >
+                    <Alert
+                        onClose={() => setShowMessage(false)}
+                        severity={'success'}
+                    >
+                        Copy thành công!
+                    </Alert>
+                </Snackbar>
                 <Modal.Header closeButton>
                     <h3>Gửi email cho nhà cung cấp</h3>
                 </Modal.Header>
@@ -208,6 +235,8 @@ function MatHangHetSL() {
                                                 navigator.clipboard.writeText(
                                                     result
                                                 )
+
+                                                setShowMessage(true)
                                             }}
                                         />
                                     </div>
@@ -223,15 +252,7 @@ function MatHangHetSL() {
                             setShowModalSendEmailGhiChu(false)
                         }}
                     >
-                        Gửi
-                    </Button>
-                    <Button
-                        variant="danger"
-                        onClick={() => {
-                            setShowModalSendEmailGhiChu(false)
-                        }}
-                    >
-                        Hủy
+                        OK
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -243,6 +264,16 @@ function MatHangHetSL() {
         Refresh()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        let length = listSPThieuSL.length
+        for (let i = 0; i < length; ++i) {
+            if (listSPThieuSL[i].Ghichu) {
+                setCheckDienSL(true)
+                break
+            } else setCheckDienSL(false)
+        }
+    }, [listSPThieuSL])
 
     function Refresh() {
         handleShow()
@@ -327,8 +358,7 @@ function MatHangHetSL() {
             return
         }
 
-        const textSearch = value.toLowerCase()
-        const reg = new RegExp(textSearch)
+        const reg = new RegExp(removeTones(value.toLowerCase()))
 
         switch (nameFilterSearch) {
             case 'Tìm tên nhà cung cấp':
@@ -338,7 +368,11 @@ function MatHangHetSL() {
 
                 //cho render kết quả tìm kiếm tối đa là 20
                 for (let i = 0; i < len; ++i) {
-                    if (reg.exec(listSPThieuSL[i].NhaCC.toLowerCase())) {
+                    if (
+                        reg.exec(
+                            removeTones(listSPThieuSL[i].NhaCC.toLowerCase())
+                        )
+                    ) {
                         maxLengthSearch++
                         if (maxLengthSearch < 200) {
                             arrUI.push(
@@ -362,7 +396,11 @@ function MatHangHetSL() {
 
                 //cho render kết quả tìm kiếm tối đa là 20
                 for (let i = 0; i < length; ++i) {
-                    if (reg.exec(listSPThieuSL[i].Name.toLowerCase())) {
+                    if (
+                        reg.exec(
+                            removeTones(listSPThieuSL[i].Name.toLowerCase())
+                        )
+                    ) {
                         maxLengthSearchs++
                         if (maxLengthSearchs < 200) {
                             arrUIs.push(
@@ -387,25 +425,57 @@ function MatHangHetSL() {
     return (
         <section className="hang-container">
             <ModalSendEmailGhiChu />
+
+            <Snackbar
+                open={showMess}
+                autoHideDuration={2500}
+                onClose={() => {
+                    setShowMess(false)
+                }}
+            >
+                <Alert onClose={() => setShowMess(false)} severity={'error'}>
+                    Bạn chưa điền vào số lượng!
+                </Alert>
+            </Snackbar>
+
             <div className="hang-container__content">
-                <h3
-                    style={{
-                        color: resources.colorPrimary,
-                        textAlign: 'center',
-                    }}
-                    className="title"
-                >
-                    Sản Phẩm Có Số Lượng Thấp
-                </h3>
                 <div
                     style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: '15px',
+                    }}
+                >
+                    <h3
+                        style={{
+                            color: resources.colorPrimary,
+                            textAlign: 'center',
+                        }}
+                    >
+                        Sản Phẩm Có Số Lượng Thấp
+                    </h3>
+
+                    <FontAwesomeIcon
+                        style={{ marginLeft: 30, cursor: 'pointer' }}
+                        onClick={(e) => {
+                            Refresh()
+                        }}
+                        color={resources.colorPrimary}
+                        size="3x"
+                        icon={faSyncAlt}
+                    />
+                </div>
+
+                <div
+                    style={{
+                        display: 'flex',
+
                         alignItems: 'center',
                     }}
                 >
                     <TextField
-                        label={nameFilterSearch}
+                        placeholder={nameFilterSearch}
                         variant="outlined"
                         style={{ width: '70%' }}
                         value={valueSearch}
@@ -433,9 +503,16 @@ function MatHangHetSL() {
                                     }}
                                 />
                             ),
+                            startAdornment: (
+                                <SearchIcon
+                                    style={{
+                                        marginRight: '11px',
+                                    }}
+                                />
+                            ),
                         }}
                     />
-                    <Dropdown>
+                    <Dropdown style={{ marginLeft: '20px' }}>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
                             {nameFilterSearch}
                         </Dropdown.Toggle>
@@ -465,22 +542,16 @@ function MatHangHetSL() {
                         justifyContent: 'space-between',
                     }}
                 >
-                    <FontAwesomeIcon
-                        style={{ marginBottom: 10, cursor: 'pointer' }}
-                        onClick={(e) => {
-                            Refresh()
-                        }}
-                        color={resources.colorPrimary}
-                        size="3x"
-                        icon={faSyncAlt}
-                    />
                     <EmailIcon
                         style={{
                             fontSize: '45px',
                             color: 'red',
                             cursor: 'pointer',
                         }}
-                        onClick={() => setShowModalSendEmailGhiChu(true)}
+                        onClick={() => {
+                            if (checkDienSL) setShowModalSendEmailGhiChu(true)
+                            else setShowMess(true)
+                        }}
                     />
                 </div>
                 <TableContainer
@@ -497,7 +568,7 @@ function MatHangHetSL() {
                                 <TableCell>SDT Nhà Cung Cấp</TableCell>
                                 <TableCell>Danh Sách Sản Phẩm Hết</TableCell>
                                 <TableCell>Số Lượng Hiện Tại</TableCell>
-                                <TableCell>Ghi Chú</TableCell>
+                                <TableCell>Số Lượng Đặt Thêm</TableCell>
                             </TableRow>
                         </TableHead>
 

@@ -39,6 +39,9 @@ import { AllSanPham, AddNewKhachHang } from '../../Redux/ActionType'
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
 import PrintedDonHang from '../Print/PrintedDonHang'
 
+// xóa dấu
+import removeTones from '../../utils/removeTones'
+
 import _ from 'lodash'
 
 var itemSelected
@@ -488,6 +491,7 @@ function Oder() {
                         lstSanPham: arr_Cart,
                         Date: itemRequest.Date,
                         ThanhTien: _thanhtien,
+                        Ghichu: itemRequest.Ghichu,
                     }
                     handleClickPrint(objBill)
 
@@ -735,21 +739,20 @@ function Oder() {
     }
 
     function handleSearch(value) {
-        var textSearch = value.toLowerCase()
-        const reg = new RegExp(textSearch)
+        const reg = new RegExp(removeTones(value.toLowerCase()))
 
         // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
-        if (!textSearch) {
+        if (!value) {
             setUIAllSanPham(lspUIAllSP)
             return
         }
 
-        //Do dữ liệu nhiều nên render 20 sản phẩm khi search
+        //Do dữ liệu nhiều nên render 200 sản phẩm khi search
         var maxSearchResult = 0
         var arrUI = []
         const length = arrAllSP.length
         for (var i = 0; i < length; ++i) {
-            if (reg.test(arrAllSP[i].name.toLowerCase())) {
+            if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
                 maxSearchResult++
                 if (maxSearchResult < 200) {
                     arrUI.push(ItemSanPham(arrAllSP[i]))

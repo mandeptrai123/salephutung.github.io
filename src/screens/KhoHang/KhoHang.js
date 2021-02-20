@@ -12,6 +12,9 @@ import TableRow from '@material-ui/core/TableRow'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
 
+// xóa dấu
+import removeTones from '../../utils/removeTones'
+
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
@@ -49,9 +52,11 @@ function KhoHang() {
     const [showDieuChinh, setDieuChinh] = useState(false)
     const [showModalDel, setShowModalDel] = useState(false)
     const [showMessage, setShowMessage] = useState(false)
+    const [textMessage, setTextMessage] = useState('')
 
     //id sản phẩm cần xóa
     const [idSanPhamDel, setIdSanPhamDel] = useState('')
+    const [nameSanPhamDel, setNameSanPhamDel] = useState('')
 
     const [GiaTriMoi, setGiaTriMoi] = useState('')
 
@@ -88,9 +93,9 @@ function KhoHang() {
         NetWorking(_URL, requestOptions)
             .then((response) => {
                 handleClose()
-
                 if (response.success) {
-                    console.log('Cập nhật thành công')
+                    setShowMessage(true)
+                    setTextMessage('Cập nhật thành công!')
                 }
             })
             .catch((error) => {
@@ -100,7 +105,7 @@ function KhoHang() {
             })
     }
 
-    function handleDeleteSanPham(id) {
+    function handleDeleteSanPham(id, name) {
         handleShow()
         setMessLoading('Đang xóa sản phẩm!')
 
@@ -110,16 +115,18 @@ function KhoHang() {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ _id: id }),
+            body: JSON.stringify({ _id: id, name: name }),
         }
 
         const _URL = URL_API + 'XoaSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
+                console.log(response)
                 if (response.success) {
                     dispatch({ type: DeleteSanPham, value: id })
+                    setShowMessage(true)
+                    setTextMessage('Xóa sản phẩm thành công!')
                 }
-                setShowMessage(true)
                 handleClose()
             })
             .catch((error) => {
@@ -144,7 +151,7 @@ function KhoHang() {
                     <Button
                         variant="primary"
                         onClick={() => {
-                            handleDeleteSanPham(idSanPhamDel)
+                            handleDeleteSanPham(idSanPhamDel, nameSanPhamDel)
 
                             setShowModalDel(false)
                         }}
@@ -319,6 +326,7 @@ function KhoHang() {
                         onClick={() => {
                             setShowModalDel(true)
                             setIdSanPhamDel(e._id)
+                            setNameSanPhamDel(e.name)
                         }}
                     >
                         Xóa
@@ -342,7 +350,6 @@ function KhoHang() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 handleClose()
-                console.log(res)
                 if (res.success) {
                     //Thêm tất cả sp vào store
                     dispatch({ type: AllSanPham, dataSanPham: res.data })
@@ -426,8 +433,7 @@ function KhoHang() {
             return
         }
 
-        const textSearch = value.toLowerCase()
-        const regex = new RegExp(textSearch)
+        const regex = new RegExp(removeTones(value.toLowerCase()))
 
         switch (nameFilterSearch) {
             case 'Tìm tên nhà cung cấp':
@@ -437,7 +443,11 @@ function KhoHang() {
 
                 //cho render kết quả tìm kiếm tối đa là 20
                 for (let i = 0; i < len; ++i) {
-                    if (regex.exec(TatCaSanPham[i].NhaCC.toLowerCase())) {
+                    if (
+                        regex.exec(
+                            removeTones(TatCaSanPham[i].NhaCC.toLowerCase())
+                        )
+                    ) {
                         maxLengthSearch++
                         if (maxLengthSearch < 200) {
                             arrUI.push(
@@ -461,7 +471,11 @@ function KhoHang() {
 
                 //cho render kết quả tìm kiếm tối đa là 20
                 for (let i = 0; i < length; ++i) {
-                    if (regex.exec(TatCaSanPham[i].name.toLowerCase())) {
+                    if (
+                        regex.exec(
+                            removeTones(TatCaSanPham[i].name.toLowerCase())
+                        )
+                    ) {
                         maxLengthSearchs++
                         if (maxLengthSearchs < 200) {
                             arrUIs.push(
@@ -499,7 +513,7 @@ function KhoHang() {
                     onClose={() => setShowMessage(false)}
                     severity={'success'}
                 >
-                    Xóa sản phẩm thành công
+                    {textMessage}
                 </Alert>
             </Snackbar>
 

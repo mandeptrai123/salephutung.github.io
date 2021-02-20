@@ -88,7 +88,7 @@ class PrintDonHang extends React.Component {
                                 <h4 className="bill-table__text">THÀNH TIỀN</h4>
                             </th>
                             <th>
-                                <h4 className="bill-table__text">GHI CHÚ</h4>
+                                <h4 className="bill-table__text">GHI CHÚ SP</h4>
                             </th>
                         </tr>
                     </thead>
@@ -141,6 +141,10 @@ class PrintDonHang extends React.Component {
                         </tr>
                     </tbody>
                 </Table>
+
+                <div style={{ fontSize: '40px', fontWeight: '500' }}>
+                    GHI CHÚ: {this.props.item.Ghichu}
+                </div>
 
                 <div className="bill-donate">
                     <div

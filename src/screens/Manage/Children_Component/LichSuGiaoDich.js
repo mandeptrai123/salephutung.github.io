@@ -3,10 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     SaveObjectBill,
-    DeleteItemBill,
-    AddBill,
-    UpdateItemBill,
-    UpdateValueItemBill,
+    UpdateThanhTienDonHang,
 } from '../../../Redux/ActionType'
 
 import { Modal, Spinner } from 'react-bootstrap'
@@ -35,12 +32,20 @@ import CloseIcon from '@material-ui/icons/Close'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 
+import { Alert } from '@material-ui/lab'
+import Snackbar from '@material-ui/core/Snackbar'
+
 import ReactToPrint, { useReactToPrint } from 'react-to-print'
 import PrintedDonHang from '../../Print/PrintedDonHang'
 import { Autocomplete } from '@material-ui/lab'
 
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
+
+// xóa dấu
+import removeTones from '../../../utils/removeTones'
+import { set } from 'lodash'
+import { CallReceived } from '@material-ui/icons'
 
 var _arrDonHang = []
 
@@ -59,15 +64,19 @@ function formatNumber(num) {
 
 function LichSuGiaoDich() {
     //react redux hook, lấy toàn state all sp và khách hàng từ store
-    const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
     const arrAllSanPham = useSelector((state) => state.AllSanPham)
     const objectBill = useSelector((state) => state.objectBill)
+    const thanh_tien = useSelector((state) => state.objectBill.ThanhTien)
     const dispatch = useDispatch()
 
     const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
+    //Cập nhật list SP của mỗi đơn hàng
+    const [indexBill, setIndexBill] = useState(0)
+
     const [lstResult, setResult] = useState()
     const [totalBill, setTotalBill] = useState(30)
+
     //const [startDate, setStartDate] = useState(new Date());
     const [messLoading, setMessLoading] = useState('')
     const [show, setShow] = useState(false)
@@ -79,11 +88,19 @@ function LichSuGiaoDich() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
-    const [nameFilterSearch, setNameFilterSearch] = useState('Tìm tên sản phẩm')
+    const [nameFilterSearch, setNameFilterSearch] = useState(
+        'Theo tên sản phẩm'
+    )
     const [valueSearch, setValueSearch] = useState('')
 
-    //checkbox xem theo ngày
-    const [checkedView, setCheckedView] = useState(false)
+    // show message
+    const [showMessage, setShowMessage] = useState(false)
+    const [textMessage, setTextMessage] = useState('')
+
+    //checkbox xem toàn bộ
+    const [checkedView, setCheckedView] = useState(true)
+
+    //state object update bill
 
     const [state, setState] = useState({
         DateTimKiem: '',
@@ -138,7 +155,7 @@ function LichSuGiaoDich() {
                     >
                         {props.lstSanPham.map((e) => {
                             return (
-                                <ListItem onClick={(e) => {}} button>
+                                <ListItem button>
                                     {e.name} x{e.soluongBan}
                                 </ListItem>
                             )
@@ -161,9 +178,13 @@ function LichSuGiaoDich() {
                             marginLeft: '4px',
                         }}
                         onClick={() => {
-                            //Khi click chỉnh sửa 1 bill nào đó thì lưu obj đó vào store
+                            //Khi click chỉnh sửa 1 bill thì lưu index bill của đơn hàng
+                            setIndexBill(index)
+
                             dispatch({ type: SaveObjectBill, value: props })
                             setShowModalUpdateBill(true)
+
+                            RenderUIUpdateBill(props.lstSanPham)
                         }}
                     >
                         Chỉnh sửa
@@ -173,7 +194,7 @@ function LichSuGiaoDich() {
         )
     }
 
-    function RenderDonHangTrongNgay(arr) {
+    function RenderUIAllDonHang(arr) {
         let _total = 0
         var maxRender = 0
         const lenArr = arr.length
@@ -206,11 +227,11 @@ function LichSuGiaoDich() {
         let _URL = URL_API + 'ToanBoDonHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
-                handleClose()
                 if (res.success) {
                     _arrDonHang = res.data
-                    RenderDonHangTrongNgay(res.data)
+                    RenderUIAllDonHang(res.data)
                 }
+                handleClose()
             })
             .catch((e) => {
                 alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
@@ -219,11 +240,14 @@ function LichSuGiaoDich() {
     }
 
     function RenderUIUpdateBill(listSP) {
+        let _thanhtien = 0
         setResultUpdateBill(
             listSP.map((e, index) => {
+                _thanhtien += e.price * e.soluongBan
                 return <ItemUpdateBill data={e} index={index} />
             })
         )
+        dispatch({ type: UpdateThanhTienDonHang, value: _thanhtien })
     }
 
     function updateBill(bodyRequest) {
@@ -242,34 +266,67 @@ function LichSuGiaoDich() {
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
-                handleClose()
                 if (res.success) {
                     // Nếu cập nhật bill mới thành công thì cho refresh lại trang bill
                     OnRefresh()
+
+                    setShowMessage(true)
+                    setTextMessage('Cập nhật thành công!')
                 }
+                handleClose()
             })
             .catch((e) => {
                 alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
+                setShowMessage(true)
+                setTextMessage('Cập nhật có lỗi!')
                 handleClose()
             })
     }
 
-    //Cho render lại giao diện bill mỗi khi thêm hay xóa item bill
-    useEffect(() => {
-        RenderUIUpdateBill(objectBill.lstSanPham)
-    }, [objectBill])
-
     function ItemUpdateBill(props) {
-        const [name, setName] = useState(props.data.name)
-        const [soluongBan, setSoLuongBan] = useState(props.data.soluongBan)
-        const [price, setPrice] = useState(props.data.price)
-        const [priceSum, setPriceSum] = useState(
-            formatNumber(props.data.pricesum)
+        const [name, setName] = useState(
+            _arrDonHang[indexBill].lstSanPham[props.index]
+                ? _arrDonHang[indexBill].lstSanPham[props.index].name
+                : ''
         )
-        const [ghiChu, setGhiChu] = useState(props.data.Ghichu)
+        const [soluongBan, setSoLuongBan] = useState(
+            _arrDonHang[indexBill].lstSanPham[props.index]
+                ? _arrDonHang[indexBill].lstSanPham[props.index].soluongBan
+                : ''
+        )
+        const [price, setPrice] = useState(
+            _arrDonHang[indexBill].lstSanPham[props.index]
+                ? _arrDonHang[indexBill].lstSanPham[props.index].price
+                : ''
+        )
+        const [priceSum, setPriceSum] = useState(
+            formatNumber(
+                _arrDonHang[indexBill].lstSanPham[props.index]
+                    ? _arrDonHang[indexBill].lstSanPham[props.index].pricesum
+                    : ''
+            )
+        )
+        const [ghiChu, setGhiChu] = useState(
+            _arrDonHang[indexBill].lstSanPham[props.index]
+                ? _arrDonHang[indexBill].lstSanPham[props.index].Ghichu
+                : ''
+        )
+
+        const [thanhTien, setThanhTien] = useState(
+            _arrDonHang[indexBill].lstSanPham[props.index]
+                ? _arrDonHang[indexBill].lstSanPham[props.index].ThanhTien
+                : ''
+        )
 
         useEffect(() => {
             setPriceSum(formatNumber(soluongBan * price))
+            var thanh_tien = 0
+            _arrDonHang[indexBill].lstSanPham.map((e) => {
+                thanh_tien += e.pricesum
+            })
+            _arrDonHang[indexBill].ThanhTien = thanh_tien
+
+            setThanhTien(thanh_tien)
         }, [soluongBan, price])
 
         //Xử lí lỗi setName rỗng
@@ -285,41 +342,18 @@ function LichSuGiaoDich() {
                         options={arrAllSanPham}
                         getOptionLabel={(option) => option.name}
                         inputValue={name}
-                        onInputChange={(event, newInputValue) => {
-                            if (!boolsetName) {
-                                boolsetName = true
-                            } else {
-                                setName(newInputValue)
-
-                                var _itemNewAddBill
-
-                                //Kiểm tra xem ng dùng có chọn sản phẩm
-                                //trong danh sách sản phẩm hiện có hay ko ?
-                                const lengthAllSanPham = arrAllSanPham.length
-                                for (var i = 0; i < lengthAllSanPham; i++) {
-                                    if (
-                                        newInputValue.toLowerCase() ===
-                                        arrAllSanPham[i].name.toLowerCase()
-                                    ) {
-                                        _itemNewAddBill = arrAllSanPham[i]
-                                        break
-                                    }
-                                }
-
-                                // Nếu ko thì thoát ra ngoài
-                                if (!_itemNewAddBill) {
-                                    return
-                                }
-
-                                // Nếu có thì tiếp tục check xem sản phẩm người
-                                // dùng vừa chọn đã có trong list bill chưa
+                        value={name}
+                        onChange={(event, newValue) => {
+                            if (newValue) {
                                 // Kiểm tra sản phẩm vừa thêm vào bill đã có chưa
                                 var isHave = false
-                                const len = objectBill.lstSanPham.length
+                                const len =
+                                    _arrDonHang[indexBill].lstSanPham.length
+
                                 for (var i = 0; i < len; i++) {
                                     if (
-                                        _itemNewAddBill._id ===
-                                        objectBill.lstSanPham[i]._id
+                                        newValue._id ==
+                                        _arrDonHang[indexBill].lstSanPham[i]._id
                                     ) {
                                         isHave = true
                                         break
@@ -327,28 +361,25 @@ function LichSuGiaoDich() {
                                 }
 
                                 if (isHave) {
-                                    alert(
-                                        'Đã có sản phẩm này trong bill, vui lòng chọn sản phẩm khác!'
+                                    setShowMessage(true)
+                                    setTextMessage(
+                                        'Đã có sản phẩm này rồi, vui lòng chọn sản phẩm khác!'
                                     )
-                                    setName('')
-                                    setPrice(0)
-                                    setSoLuongBan(0)
+
                                     return
                                 } else {
-                                    setPrice(_itemNewAddBill.price)
+                                    setName(newValue.name)
+                                    setPrice(newValue.price)
                                     setSoLuongBan(0)
-                                    //Thêm 2 thuộc tính tổng tiền và số lượng bán
-                                    _itemNewAddBill.pricesum = priceSum
-                                    _itemNewAddBill.soluongBan = soluongBan
-                                    dispatch({
-                                        type: UpdateItemBill,
-                                        value: {
-                                            objBillUpdate: _itemNewAddBill,
-                                            indexBill: props.index,
-                                        },
-                                    })
+
+                                    newValue.pricesum = priceSum
+                                    newValue.soluongBan = soluongBan
+
+                                    _arrDonHang[indexBill].lstSanPham[
+                                        props.index
+                                    ] = newValue
                                 }
-                            }
+                            } else setName('')
                         }}
                         renderInput={(params) => (
                             <TextField
@@ -368,18 +399,25 @@ function LichSuGiaoDich() {
                         style={{ width: '70px' }}
                         onChange={(e) => {
                             setSoLuongBan(e.target.value)
+
+                            _arrDonHang[indexBill].lstSanPham[
+                                props.index
+                            ].soluongBan = e.target.value
+
+                            _arrDonHang[indexBill].lstSanPham[
+                                props.index
+                            ].pricesum =
+                                e.target.value *
+                                _arrDonHang[indexBill].lstSanPham[props.index]
+                                    .price
                         }}
-                        onBlur={() => {
-                            dispatch({
-                                type: UpdateValueItemBill,
-                                value: {
-                                    soluongBan: soluongBan,
-                                    price: price,
-                                    pricesum: soluongBan * price,
-                                    indexBill: props.index,
-                                    Ghichu: ghiChu,
-                                },
-                            })
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                dispatch({
+                                    type: UpdateThanhTienDonHang,
+                                    value: thanhTien,
+                                })
+                            }
                         }}
                     />
                 </TableCell>
@@ -390,40 +428,39 @@ function LichSuGiaoDich() {
                         style={{ width: '180px' }}
                         onChange={(e) => {
                             setPrice(e.target.value)
+
+                            _arrDonHang[indexBill].lstSanPham[
+                                props.index
+                            ].price = e.target.value
+
+                            _arrDonHang[indexBill].lstSanPham[
+                                props.index
+                            ].pricesum =
+                                e.target.value *
+                                _arrDonHang[indexBill].lstSanPham[props.index]
+                                    .soluongBan
                         }}
-                        onBlur={(e) => {
-                            dispatch({
-                                type: UpdateValueItemBill,
-                                value: {
-                                    soluongBan: soluongBan,
-                                    price: price,
-                                    pricesum: soluongBan * price,
-                                    indexBill: props.index,
-                                    Ghichu: ghiChu,
-                                },
-                            })
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                dispatch({
+                                    type: UpdateThanhTienDonHang,
+                                    value: thanhTien,
+                                })
+                            }
                         }}
                     />
                 </TableCell>
                 <TableCell>
                     <TextareaAutosize
-                        placeholder="Ghi chú "
+                        placeholder="Ghi chú sản phẩm"
                         rowsMax={3}
                         rowsMin={3}
                         onChange={(e) => {
                             setGhiChu(e.target.value)
-                        }}
-                        onBlur={() => {
-                            dispatch({
-                                type: UpdateValueItemBill,
-                                value: {
-                                    soluongBan: soluongBan,
-                                    price: price,
-                                    pricesum: soluongBan * price,
-                                    indexBill: props.index,
-                                    Ghichu: ghiChu,
-                                },
-                            })
+
+                            _arrDonHang[indexBill].lstSanPham[
+                                props.index
+                            ].Ghichu = e.target.value
                         }}
                         value={ghiChu}
                     />
@@ -442,10 +479,14 @@ function LichSuGiaoDich() {
                         }}
                         onClick={() => {
                             // xóa phần tử trong danh sách bill
-                            dispatch({
-                                type: DeleteItemBill,
-                                value: props.index,
-                            })
+
+                            _arrDonHang[indexBill].lstSanPham.splice(
+                                props.index,
+                                1
+                            )
+                            RenderUIUpdateBill(
+                                _arrDonHang[indexBill].lstSanPham
+                            )
                         }}
                     />
                 </TableCell>
@@ -453,25 +494,30 @@ function LichSuGiaoDich() {
         )
     }
 
+    const [addHeightScroll, setAddHeightScroll] = useState(0)
     function ModalUpdateBill() {
-        const tenKhach = objectBill.TenKhach
-        const sdt = objectBill.SDTKhach
-        const diaChiKhach = objectBill.DiaChiKhach
+        const tenKhach =
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].TenKhach : ''
+
+        const sdt =
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].SDTKhach : ''
+
+        const diaChiKhach =
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].DiaChiKhach : ''
+
         const [thanhTien, setThanhTien] = useState(
-            `${formatNumber(objectBill.ThanhTien)} VNĐ`
+            `${formatNumber(
+                _arrDonHang.length != 0 ? _arrDonHang[indexBill].ThanhTien : ''
+            )} VNĐ`
         )
 
-        // Tính thành tiền mỗi khi xóa hay thêm 1 bill
-        // useEffect(() => {
-        //     console.log(objectBill)
-        //     var sum = 0
-        //     objectBill.lstSanPham.forEach((e) => {
-        //         sum += e.pricesum
-        //     })
-        //     setThanhTien(() => `${formatNumber(objectBill.ThanhTien)} VNĐ`)
+        const [ghiChu, setGhiChu] = useState(
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].Ghichu : ''
+        )
 
-        //     console.log(objectBill.ThanhTien)
-        // }, [objectBill])
+        useEffect(() => {
+            setThanhTien(`${formatNumber(thanh_tien)} VNĐ`)
+        }, [thanh_tien])
 
         return (
             <div
@@ -479,11 +525,10 @@ function LichSuGiaoDich() {
                     display: showModalUpdateBill ? 'flex' : 'none',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    position: 'fixed',
-                    top: '0',
-                    bottom: '0',
+                    position: 'absolute',
                     right: '0',
                     left: '0',
+                    height: `calc(100vh + ${addHeightScroll}vh)`,
                     backgroundColor: 'rgba(0, 0, 0, .5)',
                     zIndex: '50',
                 }}
@@ -494,6 +539,8 @@ function LichSuGiaoDich() {
                         backgroundColor: 'white',
                         padding: '10px',
                         borderRadius: '5px',
+                        position: 'absolute',
+                        top: '30px',
                     }}
                 >
                     <h4>Chỉnh sửa bill</h4>
@@ -528,11 +575,7 @@ function LichSuGiaoDich() {
                             variant="outlined"
                         />
                     </div>
-                    <TableContainer
-                        style={{
-                            maxHeight: '500px',
-                        }}
-                    >
+                    <TableContainer>
                         <Table aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
@@ -540,8 +583,8 @@ function LichSuGiaoDich() {
                                     <TableCell>Sản Phẩm</TableCell>
                                     <TableCell>Số Lượng</TableCell>
                                     <TableCell>Giá Tiền</TableCell>
-                                    <TableCell>Ghi Chú</TableCell>
-                                    <TableCell>Tổng Tiền</TableCell>
+                                    <TableCell>Ghi Chú SP</TableCell>
+                                    <TableCell>Tổng Tiền SP</TableCell>
                                     <TableCell>Xóa Bill</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -549,6 +592,35 @@ function LichSuGiaoDich() {
                             <TableBody>{resultUpdateBill}</TableBody>
                         </Table>
                     </TableContainer>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label
+                            for="ghiChu"
+                            style={{
+                                fontSize: '17px',
+                                marginBottom: '0px',
+                                fontWeight: '600',
+                            }}
+                        >
+                            Ghi chú đơn hàng
+                        </label>
+                        <TextareaAutosize
+                            placeholder="Ghi chú đơn hàng"
+                            rowsMax={3}
+                            rowsMin={3}
+                            id="ghiChu"
+                            value={ghiChu}
+                            onChange={(e) => {
+                                setGhiChu(e.target.value)
+
+                                _arrDonHang[indexBill].Ghichu = e.target.value
+                            }}
+                            style={{
+                                paddingLeft: '7px',
+                                paddingTop: '5px',
+                                fontSize: '17px',
+                            }}
+                        />
+                    </div>
                     <div style={{ display: 'flex', marginTop: '10px' }}>
                         <h5 style={{ marginBottom: '0' }}>Thành Tiền: </h5>
                         <input
@@ -564,6 +636,8 @@ function LichSuGiaoDich() {
                             value={thanhTien}
                             onChange={(e) => {
                                 setThanhTien(e.target.value)
+                                _arrDonHang[indexBill].ThanhTien = +e.target
+                                    .value
                             }}
                             onBlur={(e) =>
                                 setThanhTien(
@@ -588,6 +662,8 @@ function LichSuGiaoDich() {
                         <AddCircleOutlineIcon
                             style={{ fontSize: '40px', cursor: 'pointer' }}
                             onClick={() => {
+                                setAddHeightScroll(addHeightScroll + 12)
+
                                 // khởi tạo 1 object bill mới
                                 // là sản phẩm đầu tiên của danh sách sản phẩm hiện tại
                                 const objectNewBill = {
@@ -604,12 +680,21 @@ function LichSuGiaoDich() {
                                     SDTNhaCC: '',
                                     pricesum: 0,
                                     soluongBan: 0,
+                                    Ghichu: '',
                                 }
 
-                                dispatch({
-                                    type: AddBill,
-                                    value: objectNewBill,
-                                })
+                                // dispatch({
+                                //     type: AddBill,
+                                //     value: objectNewBill,
+                                // })
+
+                                _arrDonHang[indexBill].lstSanPham.push(
+                                    objectNewBill
+                                )
+
+                                RenderUIUpdateBill(
+                                    _arrDonHang[indexBill].lstSanPham
+                                )
                             }}
                         />
 
@@ -618,26 +703,24 @@ function LichSuGiaoDich() {
                                 variant="contained"
                                 color="primary"
                                 onClick={() => {
-                                    //Tính thành tiền trước khi bấm cập nhật
-                                    var thanh_tien = 0
-                                    objectBill.lstSanPham.map((e) => {
-                                        thanh_tien += e.pricesum
-                                    })
-                                    console.log(thanh_tien)
-
                                     //Loại bỏ các thuộc tính ko cần thiết
                                     const objectNewBillPOST = {
-                                        _id: objectBill._id,
-                                        TenKhach: objectBill.TenKhach,
-                                        DiaChiKhach: objectBill.DiaChiKhach,
-                                        SDTKhach: objectBill.SDTKhach,
-                                        ThanhTien: thanh_tien,
-                                        lstSanPham: objectBill.lstSanPham,
+                                        _id: _arrDonHang[indexBill]._id,
+                                        TenKhach:
+                                            _arrDonHang[indexBill].TenKhach,
+                                        DiaChiKhach:
+                                            _arrDonHang[indexBill].DiaChiKhach,
+                                        SDTKhach:
+                                            _arrDonHang[indexBill].SDTKhach,
+                                        ThanhTien:
+                                            _arrDonHang[indexBill].ThanhTien,
+                                        Ghichu: ghiChu,
+                                        lstSanPham:
+                                            _arrDonHang[indexBill].lstSanPham,
                                     }
 
-                                    setShowModalUpdateBill(false)
                                     updateBill(objectNewBillPOST)
-                                    console.log(objectNewBillPOST)
+                                    setShowModalUpdateBill(false)
                                 }}
                             >
                                 Cập Nhật
@@ -648,31 +731,8 @@ function LichSuGiaoDich() {
                                     marginLeft: '8px',
                                 }}
                                 onClick={() => {
-                                    setShowModalUpdateBill(false)
-                                    // reset store
-                                    dispatch({
-                                        type: SaveObjectBill,
-                                        value: {
-                                            Congno: 0,
-                                            Date: '',
-                                            DiaChiKhach: '',
-                                            Ghichu: '',
-                                            IDAction: 0,
-                                            NameNV: '',
-                                            SDTKhach: '',
-                                            SDTNV: '',
-                                            TenKhach: '',
-                                            ThanhTien: 0,
-                                            Time: '',
-                                            TimeOfDay: '',
-                                            TongTien: 0,
-                                            TraNo: 0,
-                                            doanhthu: 0,
-                                            lstSanPham: [],
-                                            _id: '',
-                                        },
-                                    })
                                     OnRefresh()
+                                    setShowModalUpdateBill(false)
                                 }}
                             >
                                 Hủy Bỏ
@@ -687,7 +747,7 @@ function LichSuGiaoDich() {
     function handleSearch(valueSearch, nameFilter) {
         // Nếu chuỗi tìm kiếm rỗng thì trả về toàn bộ ds
         if (!valueSearch) {
-            RenderDonHangTrongNgay(_arrDonHang)
+            RenderUIAllDonHang(_arrDonHang)
             return
         }
 
@@ -695,19 +755,23 @@ function LichSuGiaoDich() {
         var arrUI = []
 
         //Chuỗi text cần tìm
-        const reg = new RegExp(valueSearch.toLowerCase())
+        const reg = new RegExp(removeTones(valueSearch.toLowerCase()))
 
         switch (nameFilter) {
-            case 'Tìm tên khách hàng':
+            case 'Theo tên khách hàng':
                 for (var i = 0; i < len; ++i) {
-                    if (reg.exec(_arrDonHang[i].TenKhach.toLowerCase())) {
+                    if (
+                        reg.exec(
+                            removeTones(_arrDonHang[i].TenKhach.toLowerCase())
+                        )
+                    ) {
                         arrUI.push(_arrDonHang[i])
                     }
                 }
 
-                RenderDonHangTrongNgay(arrUI)
+                RenderUIAllDonHang(arrUI)
                 break
-            case 'Tìm tên sản phẩm':
+            case 'Theo tên sản phẩm':
                 handleShow()
                 setMessLoading('Đang tìm kiếm!')
 
@@ -724,10 +788,7 @@ function LichSuGiaoDich() {
                 NetWorking(_URL, requestOptions)
                     .then((res) => {
                         handleClose()
-                        if (res.success) {
-                            _arrDonHang = res.data
-                            RenderDonHangTrongNgay(res.data)
-                        }
+                        if (res.success) RenderUIAllDonHang(res.data)
                     })
                     .catch((e) => {
                         alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
@@ -755,8 +816,7 @@ function LichSuGiaoDich() {
                 handleClose()
                 if (res.success) {
                     _arrDonHang = res.data
-                    console.log(res.data)
-                    RenderDonHangTrongNgay(res.data)
+                    RenderUIAllDonHang(res.data)
                 }
             })
             .catch((e) => {
@@ -766,224 +826,250 @@ function LichSuGiaoDich() {
     }
 
     return (
-        <div
-            style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-            }}
-        >
+        <>
             <ModalUpdateBill />
-            <div>
-                <h1
-                    style={{
-                        textAlign: 'center',
-                        paddingRight: 200,
-                        color: resources.colorPrimary,
+            <div
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                }}
+            >
+                <Snackbar
+                    open={showMessage}
+                    autoHideDuration={2500}
+                    onClose={() => {
+                        setShowMessage(false)
                     }}
                 >
-                    Lịch Sử Giao Dịch
-                </h1>
-            </div>
+                    <Alert
+                        onClose={() => setShowMessage(false)}
+                        severity={'success'}
+                    >
+                        {textMessage}
+                    </Alert>
+                </Snackbar>
 
-            <div
-                style={{ display: 'flex', width: '100%', alignItems: 'center' }}
-            >
-                <TextField
-                    onChange={(e) => {
-                        setValueSearch(e.target.value)
-                    }}
-                    value={valueSearch}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSearch(e.target.value, nameFilterSearch)
-                        }
-                    }}
+                <div>
+                    <h1
+                        style={{
+                            textAlign: 'center',
+                            paddingRight: 200,
+                            color: resources.colorPrimary,
+                        }}
+                    >
+                        Lịch Sử Giao Dịch
+                    </h1>
+                </div>
+
+                <div
                     style={{
-                        height: 50,
-                        marginLeft: '30px',
-                        marginRight: '30px',
-                        width: 350,
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
                     }}
-                    placeholder={nameFilterSearch}
-                    variant="outlined"
-                    InputProps={{
-                        endAdornment: (
-                            <CloseIcon
+                >
+                    <TextField
+                        onChange={(e) => {
+                            setValueSearch(e.target.value)
+                        }}
+                        value={valueSearch}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSearch(e.target.value, nameFilterSearch)
+                            }
+                        }}
+                        style={{
+                            height: 50,
+                            marginLeft: '30px',
+                            marginRight: '30px',
+                            width: 350,
+                        }}
+                        placeholder={nameFilterSearch}
+                        variant="outlined"
+                        InputProps={{
+                            endAdornment: (
+                                <CloseIcon
+                                    onClick={(e) => {
+                                        setValueSearch('')
+                                        handleSearch('')
+                                    }}
+                                    style={{
+                                        cursor: 'pointer',
+                                        display: valueSearch ? 'block' : 'none',
+                                    }}
+                                />
+                            ),
+                            startAdornment: (
+                                <SearchIcon
+                                    style={{
+                                        marginRight: '11px',
+                                    }}
+                                />
+                            ),
+                        }}
+                    />
+
+                    <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                            {nameFilterSearch}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            <Dropdown.Item
                                 onClick={(e) => {
-                                    setValueSearch('')
-                                    handleSearch('')
+                                    setNameFilterSearch('Theo tên khách hàng')
                                 }}
-                                style={{
-                                    cursor: 'pointer',
-                                    display: valueSearch ? 'block' : 'none',
+                            >
+                                Theo tên khách hàng
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                onClick={(e) => {
+                                    setNameFilterSearch('Theo tên sản phẩm')
+                                }}
+                            >
+                                Theo tên sản phẩm
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+
+                    <FormControlLabel
+                        style={{ marginLeft: '10px' }}
+                        control={
+                            <Checkbox
+                                color="primary"
+                                defaultChecked={true}
+                                onChange={(e) => {
+                                    setCheckedView(e.target.checked)
+                                    if (e.target.checked) OnRefresh()
                                 }}
                             />
-                        ),
-                        startAdornment: (
-                            <SearchIcon
-                                style={{
-                                    marginRight: '11px',
-                                }}
-                            />
-                        ),
-                    }}
-                />
+                        }
+                        label="Xem toàn bộ"
+                    />
 
-                <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        {nameFilterSearch}
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                        <Dropdown.Item
-                            onClick={(e) => {
-                                setNameFilterSearch('Tìm tên khách hàng')
-                            }}
-                        >
-                            Tìm tên khách hàng
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            onClick={(e) => {
-                                setNameFilterSearch('Tìm tên sản phẩm')
-                            }}
-                        >
-                            Tìm tên sản phẩm
-                        </Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
-
-                <FormControlLabel
-                    style={{ marginLeft: '10px' }}
-                    control={
-                        <Checkbox
-                            color="primary"
-                            onChange={(e) => {
-                                setCheckedView(e.target.checked)
-                                if (!e.target.checked) OnRefresh()
-                            }}
-                        />
-                    }
-                    label="Xem theo ngày"
-                />
-
-                <TextField
-                    variant="outlined"
-                    id="date"
-                    label="Ngày Muốn Xem"
-                    type="date"
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    style={{
-                        width: 200,
-                        marginLeft: 30,
-                        height: 50,
-                        color: resources.colorPrimary,
-                        alignSelf: 'flex-start',
-                        display: checkedView ? 'block' : 'none',
-                    }}
-                    onChange={(e) => {
-                        setState({ ...state, DateTimKiem: e.target.value })
-                    }}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                    <TextField
+                        variant="outlined"
+                        id="date"
+                        label="Ngày Muốn Xem"
+                        type="date"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        style={{
+                            width: 200,
+                            marginLeft: 30,
+                            height: 50,
+                            color: resources.colorPrimary,
+                            alignSelf: 'flex-start',
+                            display: checkedView ? 'none' : 'block',
+                        }}
+                        onChange={(e) => {
                             setState({ ...state, DateTimKiem: e.target.value })
                             handleFilterDate(e.target.value)
-                        }
-                    }}
-                    value={DateTimKiem}
-                />
-            </div>
-            <h4
-                style={{
-                    color: 'red',
-                    paddingRight: 20,
-                    marginTop: 20,
-                    textAlign: 'center',
-                    width: '100%',
-                    alignSelf: 'center',
-                }}
-            >
-                Tổng Số Đơn: {totalBill}
-            </h4>
-            <TableContainer
-                style={{
-                    marginTop: 20,
-                    maxHeight: '450px',
-                    width: '93%',
-                }}
-            >
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>STT</TableCell>
-                            <TableCell>Thời Gian Giao Dịch</TableCell>
-                            <TableCell>Tên Khách</TableCell>
-                            <TableCell>Thành Tiền</TableCell>
-                            <TableCell>Danh Sách Sản Phẩm</TableCell>
-                            <TableCell>Điều Chỉnh</TableCell>
-                        </TableRow>
-                    </TableHead>
-
-                    <TableBody>{lstResult}</TableBody>
-                </Table>
-            </TableContainer>
-
-            <Modal
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                show={show}
-                onHide={handleClose}
-            >
-                <Modal.Body>
-                    <Modal.Title>
-                        <Spinner
-                            animation="border"
-                            variant="success"
-                            role="status"
-                        ></Spinner>
-                        {messLoading}
-                    </Modal.Title>
-                </Modal.Body>
-            </Modal>
-
-            <Modal
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                size="xl"
-                show={stateModal.open}
-                onHide={() => setStateModal({ ...stateModal, open: false })}
-            >
-                <Modal.Body
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                setState({
+                                    ...state,
+                                    DateTimKiem: e.target.value,
+                                })
+                                handleFilterDate(e.target.value)
+                            }
+                        }}
+                        value={DateTimKiem}
+                    />
+                </div>
+                <h4
                     style={{
-                        overflow: 'hidden',
-                        padding: '0',
+                        color: 'red',
+                        paddingRight: 20,
+                        marginTop: 20,
+                        textAlign: 'center',
+                        width: '100%',
+                        alignSelf: 'center',
                     }}
                 >
-                    <PrintedDonHang
-                        ref={componentRef}
-                        item={stateModal.itemSelected}
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <ReactToPrint
-                        trigger={() => <Button>In</Button>}
-                        content={() => componentRef.current}
-                    />
-                    <Button
-                        onClick={(e) =>
-                            setStateModal({ ...stateModal, open: false })
-                        }
+                    Tổng Số Đơn: {totalBill}
+                </h4>
+                <TableContainer
+                    style={{
+                        marginTop: 20,
+                        maxHeight: '450px',
+                        width: '93%',
+                    }}
+                >
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>STT</TableCell>
+                                <TableCell>Thời Gian Giao Dịch</TableCell>
+                                <TableCell>Tên Khách</TableCell>
+                                <TableCell>Thành Tiền</TableCell>
+                                <TableCell>Danh Sách Sản Phẩm</TableCell>
+                                <TableCell>Điều Chỉnh</TableCell>
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>{lstResult}</TableBody>
+                    </Table>
+                </TableContainer>
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={show}
+                    onHide={handleClose}
+                >
+                    <Modal.Body>
+                        <Modal.Title>
+                            <Spinner
+                                animation="border"
+                                variant="success"
+                                role="status"
+                            ></Spinner>
+                            {messLoading}
+                        </Modal.Title>
+                    </Modal.Body>
+                </Modal>
+
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    size="xl"
+                    show={stateModal.open}
+                    onHide={() => setStateModal({ ...stateModal, open: false })}
+                >
+                    <Modal.Body
+                        style={{
+                            overflow: 'hidden',
+                            padding: '0',
+                        }}
                     >
-                        Huỷ Bỏ
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
+                        <PrintedDonHang
+                            ref={componentRef}
+                            item={stateModal.itemSelected}
+                        />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <ReactToPrint
+                            trigger={() => <Button>In</Button>}
+                            content={() => componentRef.current}
+                        />
+                        <Button
+                            onClick={(e) =>
+                                setStateModal({ ...stateModal, open: false })
+                            }
+                        >
+                            Huỷ Bỏ
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
+        </>
     )
 }
 

@@ -8,12 +8,9 @@ import {
     SaveListSPThieuSL,
     UpdateGhiChuNewSpThieuSl,
     SaveObjectBill,
-    DeleteItemBill,
-    AddBill,
-    UpdateItemBill,
-    UpdateValueItemBill,
     UpdateKhachHang,
     DeleteSanPham,
+    UpdateThanhTienDonHang,
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -83,7 +80,7 @@ const Reducer = (state = defineState, action) => {
                     break
                 }
             }
-            state = JSON.parse(JSON.stringify(state))
+            state.AllSanPham = JSON.parse(JSON.stringify(state.AllSanPham))
             return state
 
         case GetAllKhachHang:
@@ -99,6 +96,9 @@ const Reducer = (state = defineState, action) => {
         case AddNewSanPham:
             const objSanPham = { ...action.dataNewSanPham }
             state.AllSanPham.push(objSanPham)
+
+            state.AllSanPham = JSON.parse(JSON.stringify(state.AllSanPham))
+
             return state
 
         case IsUpdateCongNo:
@@ -113,6 +113,9 @@ const Reducer = (state = defineState, action) => {
         case UpdateGhiChuNewSpThieuSl:
             const objClone = { ...action.value }
             state.ListSPThieuSL[objClone.index].Ghichu = objClone.ghiChuNew
+            state.ListSPThieuSL = JSON.parse(
+                JSON.stringify(state.ListSPThieuSL)
+            )
             return state
 
         case SaveObjectBill:
@@ -120,67 +123,11 @@ const Reducer = (state = defineState, action) => {
             state.objectBill = objBillClone
             return state
 
-        case DeleteItemBill:
-            state.objectBill.lstSanPham.splice(action.value, 1)
-
-            let thanhTien1 = 0
-            state.objectBill.lstSanPham.map((e) => {
-                thanhTien1 += e.pricesum
-            })
-
-            state.objectBill.ThanhTien = thanhTien1
-
-            state.objectBill = JSON.parse(JSON.stringify(state.objectBill))
-            return state
-
-        case AddBill:
-            const objNewBillClone = { ...action.value }
-            state.objectBill.lstSanPham.push(objNewBillClone)
-
-            let thanhTien2 = 0
-            state.objectBill.lstSanPham.map((e) => {
-                thanhTien2 += e.pricesum
-            })
-
-            state.objectBill.ThanhTien = thanhTien2
-
-            state.objectBill = JSON.parse(JSON.stringify(state.objectBill))
-            return state
-
-        case UpdateItemBill:
-            const objNewUpdateBillClone = { ...action.value.objBillUpdate }
-            state.objectBill.lstSanPham[
-                action.value.indexBill
-            ] = objNewUpdateBillClone
-
-            return state
-
-        case UpdateValueItemBill:
-            const objNewValueItemBillClone = { ...action.value }
-            state.objectBill.lstSanPham[
-                objNewValueItemBillClone.indexBill
-            ].soluongBan = objNewValueItemBillClone.soluongBan
-
-            state.objectBill.lstSanPham[
-                objNewValueItemBillClone.indexBill
-            ].price = objNewValueItemBillClone.price
-
-            state.objectBill.lstSanPham[
-                objNewValueItemBillClone.indexBill
-            ].pricesum = objNewValueItemBillClone.pricesum
-
-            state.objectBill.lstSanPham[
-                objNewValueItemBillClone.indexBill
-            ].Ghichu = objNewValueItemBillClone.Ghichu
-
-            let thanhTien = 0
-            state.objectBill.lstSanPham.map((e) => {
-                thanhTien += e.pricesum
-            })
-
-            state.objectBill.ThanhTien = thanhTien
-
-            state = JSON.parse(JSON.stringify(state))
+        case UpdateThanhTienDonHang:
+            state.objectBill.ThanhTien = action.value
+            state.objectBill.ThanhTien = JSON.parse(
+                JSON.stringify(state.objectBill.ThanhTien)
+            )
 
             return state
 
@@ -196,7 +143,7 @@ const Reducer = (state = defineState, action) => {
                 o.objectKhachHang.SoHangDaMua
             state.AllKhachHang[o.index].ThoiQuen = o.objectKhachHang.ThoiQuen
 
-            state = JSON.parse(JSON.stringify(state))
+            state.AllKhachHang = JSON.parse(JSON.stringify(state.AllKhachHang))
 
             return state
 

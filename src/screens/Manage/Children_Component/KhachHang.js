@@ -13,6 +13,9 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
+// xóa dấu
+import removeTones from '../../../utils/removeTones'
+
 // icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
@@ -21,9 +24,9 @@ import resources from '../../../resource/color/ColorApp'
 
 //hook, action redux
 import { useSelector, useDispatch } from 'react-redux'
-import { UpdateKhachHang } from '../../../Redux/ActionType'
+import { UpdateKhachHang, GetAllKhachHang } from '../../../Redux/ActionType'
 
-export default function NhatKyCongNo() {
+export default function KhachHang() {
     const [resultTableNhatKy, setResultTableNhatKy] = useState()
     const [uiNhatKy, setUiNhatKy] = useState()
     const [messLoading, setMessLoading] = useState('Đang load đợi tí nhé!')
@@ -38,19 +41,59 @@ export default function NhatKyCongNo() {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
+    function GetAllKH() {
+        setMessLoading('Đang tải!')
+        handleShow()
+
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        }
+
+        let _URL = URL_API + 'ToanBoKhachHang'
+
+        NetWorking(_URL, requestOptions)
+            .then((res) => {
+                if (res.success) {
+                    RenderUIKhachHang(res.data)
+
+                    dispatch({
+                        type: GetAllKhachHang,
+                        dataKhachHang: res.data,
+                    })
+                }
+
+                handleClose()
+            })
+            .catch((e) => {
+                handleClose()
+                console.log(e)
+            })
+    }
+
     function RenderUIKhachHang(data) {
         let maxRender = 0
-        const result = data.map((e, index) => {
+        let result = []
+        const lenData = data.length
+
+        for (let i = 0; i < lenData; ++i) {
             maxRender++
-            if (maxRender < 101) {
-                return <ItemKhachHang data={e} index={index} />
-            }
-        })
+            if (maxRender < 151)
+                result.push(<ItemKhachHang data={data[i]} index={i} />)
+            else break
+        }
+
         setResultTableNhatKy(result)
         setUiNhatKy(result)
     }
 
     function updateKhachHang(objectKhachHang, index) {
+        setMessLoading('Đang cập nhật')
+        handleShow()
+
         const _url = URL_API + 'UpdateKhachHang'
         const requestOptions = {
             method: 'POST',
@@ -64,7 +107,6 @@ export default function NhatKyCongNo() {
             .then((res) => {
                 if (res.success) {
                     setMessLoading(res.mess)
-                    handleShow()
 
                     //cập nhật khách hàng trên redux store
                     dispatch({
@@ -74,19 +116,19 @@ export default function NhatKyCongNo() {
 
                     setTimeout(() => {
                         handleClose()
-                    }, 1500)
+                    }, 1000)
                 } else {
                     setMessLoading(res.mess)
-                    handleShow()
 
                     RenderUIKhachHang(allKhachHang)
 
                     setTimeout(() => {
                         handleClose()
-                    }, 1500)
+                    }, 1000)
                 }
             })
             .catch((e) => {
+                handleClose()
                 alert('Có Lỗi Ở Công Nợ!')
             })
     }
@@ -227,7 +269,7 @@ export default function NhatKyCongNo() {
     }
 
     useEffect(() => {
-        RenderUIKhachHang(allKhachHang)
+        GetAllKH()
     }, [])
 
     function handleSearch(value) {
@@ -236,22 +278,18 @@ export default function NhatKyCongNo() {
             return
         }
 
-        const textSearch = value.toLowerCase()
-        const reg = new RegExp(textSearch)
+        const reg = new RegExp(removeTones(value.toLowerCase()))
 
         let maxRender = 0
         let result = []
         const len = allKhachHang.length
 
         for (let i = 0; i < len; ++i) {
-            if (reg.exec(allKhachHang[i].Name.toLowerCase())) {
+            if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase()))) {
                 maxRender++
                 if (maxRender < 200) {
                     result.push(
-                        <ItemKhachHang
-                            data={allKhachHang[i]}
-                            index={maxRender}
-                        />
+                        <ItemKhachHang data={allKhachHang[i]} index={i} />
                     )
                 } else {
                     break
@@ -325,7 +363,7 @@ export default function NhatKyCongNo() {
                         color: 'rgb(0, 123, 255)',
                     }}
                     onClick={() => {
-                        RenderUIKhachHang(allKhachHang)
+                        GetAllKH()
                     }}
                 />
             </div>
