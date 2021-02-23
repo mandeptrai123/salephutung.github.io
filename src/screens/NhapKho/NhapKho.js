@@ -194,6 +194,7 @@ function NhapKho() {
                 if (res.success) {
                     arr_NhatKy = res.data
                     UpdateNhatKy(arr_NhatKy)
+                    console.log(res.data)
                 }
 
                 handleClose()
@@ -651,7 +652,6 @@ function NhapKho() {
                         </h6>
                         <Autocomplete
                             id="combo-box-nhacc"
-                            freeSolo={true}
                             options={lstnhaCC}
                             getOptionLabel={(option) => option.NameNhaCC}
                             style={{
@@ -660,6 +660,7 @@ function NhapKho() {
                                 paddingLeft: 5,
                                 marginTop: 10,
                             }}
+                            clearOnBlur={false}
                             inputValue={nhacc}
                             onInputChange={(event, newInputValue) => {
                                 setNhaCC(newInputValue)
@@ -671,6 +672,11 @@ function NhapKho() {
                                     text={nhacc}
                                     onChange={(e) => {
                                         setNhaCC(e.target.value)
+                                    }}
+                                    onKeyPress={(e) => {
+                                        if (e.key == 'Enter') {
+                                            ThemVaoKho()
+                                        }
                                     }}
                                     inputRef={SDTNhaCCRef}
                                     variant="outlined"

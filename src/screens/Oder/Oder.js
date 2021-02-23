@@ -780,7 +780,6 @@ function Oder() {
                     style={{
                         display: 'flex',
                         marginRight: 10,
-                        marginLeft: 10,
                         padding: 10,
                     }}
                     className="container-input"
@@ -942,17 +941,6 @@ function Oder() {
                         }}
                         inputRef={ngayDatHang}
                     />
-
-                    <div
-                        style={{
-                            marginLeft: 30,
-                            paddingLeft: 20,
-                            fontWeight: 'bold',
-                            color: resources.colorPrimary,
-                        }}
-                    >
-                        Tên Nhân Viên: {HoTenNV}
-                    </div>
                 </div>
 
                 <div style={{ margin: 20, display: 'flex' }}>
@@ -1161,6 +1149,15 @@ function Oder() {
                 <div style={{ width: 200 }}>
                     <div
                         style={{
+                            marginBottom: '40px',
+                            fontWeight: 'bold',
+                            color: resources.colorPrimary,
+                        }}
+                    >
+                        Tên Nhân Viên: {HoTenNV}
+                    </div>
+                    <div
+                        style={{
                             width: '100%',
                             marginLeft: 20,
                             fontSize: 20,
@@ -1185,6 +1182,7 @@ function Oder() {
                     >
                         {parseInt(thanhtien) % 1 === 0 ? thanhtien : 0}
                     </div>
+
                     <TextField
                         value={ghichu}
                         onChange={(e) => {

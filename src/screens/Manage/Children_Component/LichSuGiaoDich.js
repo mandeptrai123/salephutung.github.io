@@ -6,6 +6,9 @@ import {
     UpdateThanhTienDonHang,
 } from '../../../Redux/ActionType'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+
 import { Modal, Spinner } from 'react-bootstrap'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -958,6 +961,7 @@ function LichSuGiaoDich() {
                                     setCheckedView(e.target.checked)
                                     if (e.target.checked) OnRefresh()
                                 }}
+                                checked={checkedView}
                             />
                         }
                         label="Xem toàn bộ"
@@ -995,6 +999,18 @@ function LichSuGiaoDich() {
                         }}
                         defaultValue="2017-05-24"
                         value={DateTimKiem}
+                    />
+
+                    <FontAwesomeIcon
+                        style={{ marginLeft: 30, cursor: 'pointer' }}
+                        onClick={(e) => {
+                            setMessLoading(' Đang Tải Thông Tin Đơn Hàng!')
+                            OnRefresh()
+                            setCheckedView(true)
+                        }}
+                        color={resources.colorPrimary}
+                        size="3x"
+                        icon={faSyncAlt}
                     />
                 </div>
                 <h4

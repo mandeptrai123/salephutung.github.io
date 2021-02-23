@@ -87,9 +87,9 @@ function MatHangHetSL() {
                         rowsMin={3}
                         style={{
                             height: '60px',
-                            paddingLeft: '10px',
-                            paddingTop: ' 5px',
-                            paddingRight: '10px',
+                            paddingLeft: '15px',
+                            paddingTop: ' 10px',
+                            paddingRight: '15px',
                         }}
                         value={valueGhiChuEachSP}
                         placeholder="Số lượng"

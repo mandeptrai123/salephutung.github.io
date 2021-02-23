@@ -17,10 +17,6 @@
   flex-direction: column;
 }
 
-.hang-container__content .title {
-  margin-bottom: 20px;
-}
-
 .hang-container__content .list-item__hang {
   width: 100%;
 }
