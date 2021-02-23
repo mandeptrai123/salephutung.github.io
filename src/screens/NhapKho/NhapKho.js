@@ -604,7 +604,6 @@ function NhapKho() {
                         </h6>
                         <Autocomplete
                             id="combo-box-sdtnhacc"
-                            freeSolo={true}
                             options={lstnhaCC}
                             getOptionLabel={(option) => option.SDTNhaCC}
                             style={{
@@ -617,21 +616,25 @@ function NhapKho() {
                             onInputChange={(event, newInputValue) => {
                                 setSDTNhaCC(newInputValue)
                             }}
+                            clearOnBlur={false}
                             onChange={(event, newValue) => {
                                 if (newValue) {
-                                    setNhaCC(newValue.NameNhaCC)
+                                    setNhaCC(
+                                        newValue.NameNhaCC
+                                            ? newValue.NameNhaCC
+                                            : ''
+                                    )
                                 }
                             }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="SDT Nhà CC"
-                                    text={sdtnhacc}
                                     onChange={(e) => {
                                         setSDTNhaCC(e.target.value)
                                     }}
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
+                                    onKeyPress={(ev) => {
+                                        if (ev.key === 'Enter') {
                                             SDTNhaCCRef.current.focus()
                                         }
                                     }}

@@ -915,6 +915,7 @@ function Oder() {
                             marginLeft: 30,
                             marginTop: 5,
                             color: resources.colorPrimary,
+                            pointerEvents: 'none',
                         }}
                         onChange={(e) => {
                             var _d = new Date(e.target.value)

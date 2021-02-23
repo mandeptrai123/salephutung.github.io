@@ -285,35 +285,35 @@ function LichSuGiaoDich() {
 
     function ItemUpdateBill(props) {
         const [name, setName] = useState(
-            _arrDonHang[indexBill].lstSanPham[props.index]
+            _arrDonHang[indexBill].lstSanPham
                 ? _arrDonHang[indexBill].lstSanPham[props.index].name
                 : ''
         )
         const [soluongBan, setSoLuongBan] = useState(
-            _arrDonHang[indexBill].lstSanPham[props.index]
+            _arrDonHang[indexBill].lstSanPham
                 ? _arrDonHang[indexBill].lstSanPham[props.index].soluongBan
                 : ''
         )
         const [price, setPrice] = useState(
-            _arrDonHang[indexBill].lstSanPham[props.index]
+            _arrDonHang[indexBill].lstSanPham
                 ? _arrDonHang[indexBill].lstSanPham[props.index].price
                 : ''
         )
         const [priceSum, setPriceSum] = useState(
             formatNumber(
-                _arrDonHang[indexBill].lstSanPham[props.index]
+                _arrDonHang[indexBill].lstSanPham
                     ? _arrDonHang[indexBill].lstSanPham[props.index].pricesum
                     : ''
             )
         )
         const [ghiChu, setGhiChu] = useState(
-            _arrDonHang[indexBill].lstSanPham[props.index]
+            _arrDonHang[indexBill].lstSanPham
                 ? _arrDonHang[indexBill].lstSanPham[props.index].Ghichu
                 : ''
         )
 
         const [thanhTien, setThanhTien] = useState(
-            _arrDonHang[indexBill].lstSanPham[props.index]
+            _arrDonHang[indexBill].lstSanPham
                 ? _arrDonHang[indexBill].lstSanPham[props.index].ThanhTien
                 : ''
         )
@@ -419,6 +419,12 @@ function LichSuGiaoDich() {
                                 })
                             }
                         }}
+                        onBlur={(e) => {
+                            dispatch({
+                                type: UpdateThanhTienDonHang,
+                                value: thanhTien,
+                            })
+                        }}
                     />
                 </TableCell>
                 <TableCell>
@@ -447,6 +453,12 @@ function LichSuGiaoDich() {
                                     value: thanhTien,
                                 })
                             }
+                        }}
+                        onBlur={(e) => {
+                            dispatch({
+                                type: UpdateThanhTienDonHang,
+                                value: thanhTien,
+                            })
                         }}
                     />
                 </TableCell>
@@ -966,6 +978,7 @@ function LichSuGiaoDich() {
                             color: resources.colorPrimary,
                             alignSelf: 'flex-start',
                             display: checkedView ? 'none' : 'block',
+                            pointerEvents: 'none',
                         }}
                         onChange={(e) => {
                             setState({ ...state, DateTimKiem: e.target.value })
@@ -980,6 +993,7 @@ function LichSuGiaoDich() {
                                 handleFilterDate(e.target.value)
                             }
                         }}
+                        defaultValue="2017-05-24"
                         value={DateTimKiem}
                     />
                 </div>

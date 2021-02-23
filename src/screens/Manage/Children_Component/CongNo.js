@@ -337,9 +337,10 @@ function CongNo() {
         var maxItemSearch = 0
         const len = arr_KhachHang.length
         var arrUI = []
+
         switch (nameFilter) {
             case 'Theo tên khách hàng':
-                //render 20 kết quả tìm đc
+                //render 200 kết quả tìm đc
                 for (var i = 0; i < len; ++i) {
                     if (
                         regex.exec(
@@ -348,12 +349,22 @@ function CongNo() {
                     ) {
                         maxItemSearch++
                         if (maxItemSearch < 200) {
-                            arrUI.push(
-                                <ItemCongNo
-                                    data={arr_KhachHang[i]}
-                                    soThuTu={maxItemSearch}
-                                />
-                            )
+                            if (checkboxView) {
+                                if (arr_KhachHang[i].Congno != 0) {
+                                    arrUI.push(
+                                        <ItemCongNo
+                                            data={arr_KhachHang[i]}
+                                            soThuTu={maxItemSearch}
+                                        />
+                                    )
+                                }
+                            } else
+                                arrUI.push(
+                                    <ItemCongNo
+                                        data={arr_KhachHang[i]}
+                                        soThuTu={maxItemSearch}
+                                    />
+                                )
                         } else {
                             break
                         }
@@ -364,7 +375,7 @@ function CongNo() {
 
                 break
             case 'Theo địa chỉ':
-                //render 20 kết quả tìm đc
+                //render 200 kết quả tìm đc
                 for (var i = 0; i < len; ++i) {
                     if (
                         regex.exec(
@@ -373,12 +384,22 @@ function CongNo() {
                     ) {
                         maxItemSearch++
                         if (maxItemSearch < 200) {
-                            arrUI.push(
-                                <ItemCongNo
-                                    data={arr_KhachHang[i]}
-                                    soThuTu={maxItemSearch}
-                                />
-                            )
+                            if (checkboxView) {
+                                if (arr_KhachHang[i].Congno != 0) {
+                                    arrUI.push(
+                                        <ItemCongNo
+                                            data={arr_KhachHang[i]}
+                                            soThuTu={maxItemSearch}
+                                        />
+                                    )
+                                }
+                            } else
+                                arrUI.push(
+                                    <ItemCongNo
+                                        data={arr_KhachHang[i]}
+                                        soThuTu={maxItemSearch}
+                                    />
+                                )
                         } else {
                             break
                         }

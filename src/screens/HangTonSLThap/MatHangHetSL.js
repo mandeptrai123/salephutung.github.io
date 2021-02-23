@@ -87,6 +87,9 @@ function MatHangHetSL() {
                         rowsMin={3}
                         style={{
                             height: '60px',
+                            paddingLeft: '10px',
+                            paddingTop: ' 5px',
+                            paddingRight: '10px',
                         }}
                         value={valueGhiChuEachSP}
                         placeholder="Số lượng"
@@ -539,7 +542,7 @@ function MatHangHetSL() {
                     style={{
                         width: '100%',
                         display: 'flex',
-                        justifyContent: 'space-between',
+                        justifyContent: 'flex-end',
                     }}
                 >
                     <EmailIcon
