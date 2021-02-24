@@ -72,8 +72,8 @@ function formatNumber(num) {
 function LichSuGiaoDich() {
     //react redux hook, lấy toàn state all sp và khách hàng từ store
     const arrAllSanPham = useSelector((state) => state.AllSanPham)
-    const objectBill = useSelector((state) => state.objectBill)
-    const thanh_tien = useSelector((state) => state.objectBill.ThanhTien)
+    const thanh_tien = useSelector((state) => state.thanhTienDH)
+
     const dispatch = useDispatch()
 
     const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
@@ -191,13 +191,12 @@ function LichSuGiaoDich() {
                             marginLeft: '4px',
                         }}
                         onClick={() => {
-                            //Khi click chỉnh sửa 1 bill thì lưu index bill của đơn hàng
+                            //Khi click chỉnh sửa 1 bill thì lưu index bill vào redux của đơn hàng
                             setIndexBill(index)
 
-                            dispatch({ type: SaveObjectBill, value: props })
-                            setShowModalUpdateBill(true)
+                            RenderUIUpdateBill(props.lstSanPham, index)
 
-                            RenderUIUpdateBill(props.lstSanPham)
+                            setShowModalUpdateBill(true)
                         }}
                     >
                         Chỉnh sửa
@@ -283,12 +282,18 @@ function LichSuGiaoDich() {
         )
     }
 
-    function RenderUIUpdateBill(listSP) {
+    function RenderUIUpdateBill(listSP, indexBill = 0) {
         let _thanhtien = 0
         setResultUpdateBill(
             listSP.map((e, index) => {
                 _thanhtien += e.price * e.soluongBan
-                return <ItemUpdateBill data={e} index={index} />
+                return (
+                    <ItemUpdateBill
+                        data={e}
+                        index={index}
+                        indexBill={indexBill}
+                    />
+                )
             })
         )
         dispatch({ type: UpdateThanhTienDonHang, value: _thanhtien })
@@ -329,46 +334,54 @@ function LichSuGiaoDich() {
 
     function ItemUpdateBill(props) {
         const [name, setName] = useState(
-            _arrDonHang[indexBill].lstSanPham
-                ? _arrDonHang[indexBill].lstSanPham[props.index].name
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index].name
                 : ''
+            // props.data.name
         )
         const [soluongBan, setSoLuongBan] = useState(
-            _arrDonHang[indexBill].lstSanPham
-                ? _arrDonHang[indexBill].lstSanPham[props.index].soluongBan
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index]
+                      .soluongBan
                 : ''
+            // props.data.soluongBan
         )
         const [price, setPrice] = useState(
-            _arrDonHang[indexBill].lstSanPham
-                ? _arrDonHang[indexBill].lstSanPham[props.index].price
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index].price
                 : ''
+            // props.data.price
         )
         const [priceSum, setPriceSum] = useState(
             formatNumber(
-                _arrDonHang[indexBill].lstSanPham
-                    ? _arrDonHang[indexBill].lstSanPham[props.index].pricesum
+                _arrDonHang[props.indexBill].lstSanPham[props.index]
+                    ? _arrDonHang[props.indexBill].lstSanPham[props.index]
+                          .pricesum
                     : ''
             )
+            // props.data.pricesum
         )
         const [ghiChu, setGhiChu] = useState(
-            _arrDonHang[indexBill].lstSanPham
-                ? _arrDonHang[indexBill].lstSanPham[props.index].Ghichu
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index].Ghichu
                 : ''
+            // props.data.Ghichu
         )
 
         const [thanhTien, setThanhTien] = useState(
-            _arrDonHang[indexBill].lstSanPham
-                ? _arrDonHang[indexBill].lstSanPham[props.index].ThanhTien
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index].ThanhTien
                 : ''
+            // props.data.ThanhTien
         )
 
         useEffect(() => {
             setPriceSum(formatNumber(soluongBan * price))
             var thanh_tien = 0
-            _arrDonHang[indexBill].lstSanPham.map((e) => {
+            _arrDonHang[props.indexBill].lstSanPham.map((e) => {
                 thanh_tien += e.pricesum
             })
-            _arrDonHang[indexBill].ThanhTien = thanh_tien
+            _arrDonHang[props.indexBill].ThanhTien = thanh_tien
 
             setThanhTien(thanh_tien)
         }, [soluongBan, price])
@@ -392,12 +405,15 @@ function LichSuGiaoDich() {
                                 // Kiểm tra sản phẩm vừa thêm vào bill đã có chưa
                                 var isHave = false
                                 const len =
-                                    _arrDonHang[indexBill].lstSanPham.length
+                                    _arrDonHang[props.indexBill].lstSanPham
+                                        .length
 
                                 for (var i = 0; i < len; i++) {
                                     if (
                                         newValue._id ==
-                                        _arrDonHang[indexBill].lstSanPham[i]._id
+                                        _arrDonHang[props.indexBill].lstSanPham[
+                                            i
+                                        ]._id
                                     ) {
                                         isHave = true
                                         break
@@ -419,7 +435,7 @@ function LichSuGiaoDich() {
                                     newValue.pricesum = priceSum
                                     newValue.soluongBan = soluongBan
 
-                                    _arrDonHang[indexBill].lstSanPham[
+                                    _arrDonHang[props.indexBill].lstSanPham[
                                         props.index
                                     ] = newValue
                                 }
@@ -442,18 +458,20 @@ function LichSuGiaoDich() {
                         value={soluongBan}
                         style={{ width: '70px' }}
                         onChange={(e) => {
-                            setSoLuongBan(e.target.value)
+                            const value = e.target.value
+                            setSoLuongBan(value)
 
-                            _arrDonHang[indexBill].lstSanPham[
+                            _arrDonHang[props.indexBill].lstSanPham[
                                 props.index
-                            ].soluongBan = e.target.value
+                            ].soluongBan = value
 
-                            _arrDonHang[indexBill].lstSanPham[
+                            _arrDonHang[props.indexBill].lstSanPham[
                                 props.index
                             ].pricesum =
-                                e.target.value *
-                                _arrDonHang[indexBill].lstSanPham[props.index]
-                                    .price
+                                value *
+                                _arrDonHang[props.indexBill].lstSanPham[
+                                    props.index
+                                ].price
                         }}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
@@ -477,18 +495,20 @@ function LichSuGiaoDich() {
                         value={price}
                         style={{ width: '180px' }}
                         onChange={(e) => {
-                            setPrice(e.target.value)
+                            const value = e.target.value
+                            setPrice(value)
 
-                            _arrDonHang[indexBill].lstSanPham[
+                            _arrDonHang[props.indexBill].lstSanPham[
                                 props.index
-                            ].price = e.target.value
+                            ].price = value
 
-                            _arrDonHang[indexBill].lstSanPham[
+                            _arrDonHang[props.indexBill].lstSanPham[
                                 props.index
                             ].pricesum =
-                                e.target.value *
-                                _arrDonHang[indexBill].lstSanPham[props.index]
-                                    .soluongBan
+                                value *
+                                _arrDonHang[props.indexBill].lstSanPham[
+                                    props.index
+                                ].soluongBan
                         }}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
@@ -514,7 +534,7 @@ function LichSuGiaoDich() {
                         onChange={(e) => {
                             setGhiChu(e.target.value)
 
-                            _arrDonHang[indexBill].lstSanPham[
+                            _arrDonHang[props.indexBill].lstSanPham[
                                 props.index
                             ].Ghichu = e.target.value
                         }}
@@ -535,13 +555,14 @@ function LichSuGiaoDich() {
                         }}
                         onClick={() => {
                             // xóa phần tử trong danh sách bill
-
-                            _arrDonHang[indexBill].lstSanPham.splice(
+                            _arrDonHang[props.indexBill].lstSanPham.splice(
                                 props.index,
                                 1
                             )
+
                             RenderUIUpdateBill(
-                                _arrDonHang[indexBill].lstSanPham
+                                _arrDonHang[props.indexBill].lstSanPham,
+                                props.indexBill
                             )
                         }}
                     />
@@ -551,6 +572,7 @@ function LichSuGiaoDich() {
     }
 
     const [addHeightScroll, setAddHeightScroll] = useState(0)
+
     function ModalUpdateBill() {
         const tenKhach =
             _arrDonHang.length != 0 ? _arrDonHang[indexBill].TenKhach : ''
@@ -561,14 +583,14 @@ function LichSuGiaoDich() {
         const diaChiKhach =
             _arrDonHang.length != 0 ? _arrDonHang[indexBill].DiaChiKhach : ''
 
+        const [ghiChu, setGhiChu] = useState(
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].Ghichu : ''
+        )
+
         const [thanhTien, setThanhTien] = useState(
             `${formatNumber(
                 _arrDonHang.length != 0 ? _arrDonHang[indexBill].ThanhTien : ''
             )} VNĐ`
-        )
-
-        const [ghiChu, setGhiChu] = useState(
-            _arrDonHang.length != 0 ? _arrDonHang[indexBill].Ghichu : ''
         )
 
         useEffect(() => {
@@ -739,17 +761,13 @@ function LichSuGiaoDich() {
                                     Ghichu: '',
                                 }
 
-                                // dispatch({
-                                //     type: AddBill,
-                                //     value: objectNewBill,
-                                // })
-
                                 _arrDonHang[indexBill].lstSanPham.push(
-                                    objectNewBill
+                                    Object.assign({}, objectNewBill)
                                 )
 
                                 RenderUIUpdateBill(
-                                    _arrDonHang[indexBill].lstSanPham
+                                    _arrDonHang[indexBill].lstSanPham,
+                                    indexBill
                                 )
                             }}
                         />
@@ -777,6 +795,7 @@ function LichSuGiaoDich() {
 
                                     updateBill(objectNewBillPOST)
                                     setShowModalUpdateBill(false)
+                                    RenderUIUpdateBill([]) // reset modal bill
                                 }}
                             >
                                 Cập Nhật
@@ -789,6 +808,7 @@ function LichSuGiaoDich() {
                                 onClick={() => {
                                     OnRefresh()
                                     setShowModalUpdateBill(false)
+                                    RenderUIUpdateBill([]) //reset modal bill
                                 }}
                             >
                                 Hủy Bỏ

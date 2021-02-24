@@ -7,7 +7,6 @@ import {
     IsUpdateCongNo,
     SaveListSPThieuSL,
     UpdateGhiChuNewSpThieuSl,
-    SaveObjectBill,
     UpdateKhachHang,
     DeleteSanPham,
     UpdateThanhTienDonHang,
@@ -33,25 +32,7 @@ const defineState = {
             SDTNhaCC: '',
         },
     ],
-    objectBill: {
-        Congno: 0,
-        Date: '',
-        DiaChiKhach: '',
-        Ghichu: '',
-        IDAction: 0,
-        NameNV: '',
-        SDTKhach: '',
-        SDTNV: '',
-        TenKhach: '',
-        ThanhTien: 0,
-        Time: '',
-        TimeOfDay: '',
-        TongTien: 0,
-        TraNo: 0,
-        doanhthu: 0,
-        lstSanPham: [],
-        _id: '',
-    },
+    thanhTienDH: 0,
 }
 
 const Reducer = (state = defineState, action) => {
@@ -118,16 +99,9 @@ const Reducer = (state = defineState, action) => {
             )
             return state
 
-        case SaveObjectBill:
-            const objBillClone = { ...action.value }
-            state.objectBill = objBillClone
-            return state
-
         case UpdateThanhTienDonHang:
-            state.objectBill.ThanhTien = action.value
-            state.objectBill.ThanhTien = JSON.parse(
-                JSON.stringify(state.objectBill.ThanhTien)
-            )
+            state.thanhTienDH = action.value
+            state.thanhTienDH = JSON.parse(JSON.stringify(state.thanhTienDH))
 
             return state
 

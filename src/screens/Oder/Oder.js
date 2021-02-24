@@ -201,6 +201,7 @@ function Oder() {
                                 (i) => i._id == props._id
                             )
                             arr_Cart[_index].chietKhau = +e.target.value
+
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         value={props.chietKhau ? props.chietKhau : ''}
