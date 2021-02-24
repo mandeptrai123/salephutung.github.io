@@ -194,7 +194,6 @@ function NhapKho() {
                 if (res.success) {
                     arr_NhatKy = res.data
                     UpdateNhatKy(arr_NhatKy)
-                    console.log(res.data)
                 }
 
                 handleClose()

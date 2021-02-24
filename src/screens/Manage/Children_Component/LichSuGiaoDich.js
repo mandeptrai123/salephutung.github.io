@@ -31,6 +31,7 @@ import Button from '@material-ui/core/Button'
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+import iconExcel from '../../../assets/icons/png/icons8-microsoft_excel.png'
 
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -44,6 +45,9 @@ import { Autocomplete } from '@material-ui/lab'
 
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
+
+//xuất file excel
+import ReactExport from 'react-data-export'
 
 // xóa dấu
 import removeTones from '../../../utils/removeTones'
@@ -83,6 +87,12 @@ function LichSuGiaoDich() {
     //const [startDate, setStartDate] = useState(new Date());
     const [messLoading, setMessLoading] = useState('')
     const [show, setShow] = useState(false)
+
+    //data excel
+    const ExcelFile = ReactExport.ExcelFile
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn
+    const [dataSheetExcel, setDataSheetExcel] = useState([])
 
     //Show/hidden modal cập nhật bill
     const [showModalUpdateBill, setShowModalUpdateBill] = useState(false)
@@ -202,15 +212,17 @@ function LichSuGiaoDich() {
         var maxRender = 0
         const lenArr = arr.length
         let _result = []
+        dataSheetExcel.length = 0
 
         for (var i = 0; i < lenArr; i++) {
             // Kiểm tra xem khách hàng này có lịch sử đơn hàng nào ko
             if (arr[i].lstSanPham.length != 0) {
                 _total += 1
                 maxRender++
-                if (maxRender < 101)
+                if (maxRender < 101) {
+                    dataSheetExcel.push(Object.assign({}, arr[i]))
                     _result.push(ItemDonHang(arr[i], handleClickPrint, i))
-                else break
+                } else break
             }
         }
 
@@ -240,6 +252,35 @@ function LichSuGiaoDich() {
                 alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
                 handleClose()
             })
+    }
+
+    function ExcelDownload(props) {
+        return (
+            <ExcelFile
+                element={
+                    <img
+                        src={iconExcel}
+                        style={{
+                            height: 50,
+                            width: 50,
+                            cursor: 'pointer',
+                        }}
+                    />
+                }
+            >
+                <ExcelSheet data={props.data} name="Sản phẩm">
+                    <ExcelColumn label="Tên Khách" value="TenKhach" />
+                    <ExcelColumn label="Thời Gian Giao Dịch" value="Date" />
+                    <ExcelColumn label="Thành Tiền" value="ThanhTien" />
+                    <ExcelColumn
+                        label="Danh Sách Sản Phẩm"
+                        value={(data) =>
+                            data.lstSanPham.map((e) => e.name).join(', ')
+                        }
+                    />
+                </ExcelSheet>
+            </ExcelFile>
+        )
     }
 
     function RenderUIUpdateBill(listSP) {
@@ -766,22 +807,36 @@ function LichSuGiaoDich() {
             return
         }
 
+        let maxRender = 0
         const len = _arrDonHang.length
         var arrUI = []
 
         //Chuỗi text cần tìm
         const reg = new RegExp(removeTones(valueSearch.toLowerCase()))
 
+        dataSheetExcel.length = 0
+
         switch (nameFilter) {
             case 'Theo tên khách hàng':
                 for (var i = 0; i < len; ++i) {
-                    if (
-                        reg.exec(
-                            removeTones(_arrDonHang[i].TenKhach.toLowerCase())
-                        )
-                    ) {
-                        arrUI.push(_arrDonHang[i])
-                    }
+                    maxRender++
+                    if (maxRender < 201) {
+                        if (
+                            reg.exec(
+                                removeTones(
+                                    _arrDonHang[i].TenKhach.toLowerCase()
+                                )
+                            )
+                        ) {
+                            //data excel
+                            dataSheetExcel.push(
+                                Object.assign({}, _arrDonHang[i])
+                            )
+                            //data excel
+
+                            arrUI.push(_arrDonHang[i])
+                        }
+                    } else break
                 }
 
                 RenderUIAllDonHang(arrUI)
@@ -803,7 +858,9 @@ function LichSuGiaoDich() {
                 NetWorking(_URL, requestOptions)
                     .then((res) => {
                         handleClose()
-                        if (res.success) RenderUIAllDonHang(res.data)
+                        if (res.success) {
+                            RenderUIAllDonHang(res.data)
+                        }
                     })
                     .catch((e) => {
                         alert('Có Lỗi Ở Đơn Hàng Trong Ngày ! ')
@@ -1002,7 +1059,11 @@ function LichSuGiaoDich() {
                     />
 
                     <FontAwesomeIcon
-                        style={{ marginLeft: 30, cursor: 'pointer' }}
+                        style={{
+                            marginLeft: 30,
+                            marginRight: 40,
+                            cursor: 'pointer',
+                        }}
                         onClick={(e) => {
                             setMessLoading(' Đang Tải Thông Tin Đơn Hàng!')
                             OnRefresh()
@@ -1012,6 +1073,8 @@ function LichSuGiaoDich() {
                         size="3x"
                         icon={faSyncAlt}
                     />
+
+                    <ExcelDownload data={dataSheetExcel} />
                 </div>
                 <h4
                     style={{

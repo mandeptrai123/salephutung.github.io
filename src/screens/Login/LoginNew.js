@@ -21,11 +21,13 @@ import MuiAlert from '@material-ui/lab/Alert'
 import { Modal, Spinner } from 'react-bootstrap'
 import resources from '../../resource/color/ColorApp'
 
+import icon from '../../assets/icons/png/1024.png'
+
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
+            <Link color="inherit" href="/">
                 Phụ Tùng Nam Thành
             </Link>{' '}
             {new Date().getFullYear()}
@@ -76,6 +78,8 @@ export default function SignIn() {
     const [Pass, setPass] = useState('')
     const [showLoading, setShowLoading] = useState(false)
 
+    const [versionApp, setVersionApp] = useState('')
+
     function LoginBySDT(SDT, Pass) {
         if (SDT == '' || Pass == '') {
             setStateSnackbar({
@@ -125,15 +129,48 @@ export default function SignIn() {
             })
     }
 
-    useEffect(() => {}, [])
+    function getVersionApp() {
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        }
+
+        let _URL = URL_API + 'VersionApp'
+
+        NetWorking(_URL, requestOptions)
+            .then((res) => {
+                if (res.success) {
+                    setVersionApp(res.data.VersionApp)
+                }
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }
+
+    useEffect(() => {
+        getVersionApp()
+    }, [])
 
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
-                </Avatar>
+                <div
+                    style={{
+                        borderRadius: '50%',
+                        width: '65px',
+                        height: '65px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <img src={icon} alt="logo" style={{ width: '50px' }} />
+                </div>
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
@@ -215,6 +252,14 @@ export default function SignIn() {
             </div>
             <Box mt={8}>
                 <Copyright />
+                <p
+                    style={{
+                        textAlign: 'center',
+                        color: 'rgba(0, 0, 0, 0.54)',
+                    }}
+                >
+                    Version {versionApp}
+                </p>
             </Box>
 
             <Snackbar

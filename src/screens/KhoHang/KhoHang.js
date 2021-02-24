@@ -15,6 +15,9 @@ import Alert from '@material-ui/lab/Alert'
 // xóa dấu
 import removeTones from '../../utils/removeTones'
 
+//xuất file excel
+import ReactExport from 'react-data-export'
+
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
@@ -31,6 +34,8 @@ import { Autocomplete } from '@material-ui/lab'
 import _, { result } from 'lodash'
 import { useSelector, useDispatch } from 'react-redux'
 
+import iconExcel from '../../assets/icons/png/icons8-microsoft_excel.png'
+
 //Action
 import { AllSanPham, DeleteSanPham } from '../../Redux/ActionType'
 
@@ -45,6 +50,7 @@ function KhoHang() {
     const [messLoading, setMessLoading] = useState('')
     const [lstResult, setLstResult] = useState()
     const [uiKhoHang, setUIKhoHang] = useState()
+    const [dataSheetExcel, setDataSheetExcel] = useState([])
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
@@ -65,11 +71,19 @@ function KhoHang() {
 
     const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
+    // xuất file excel
+    const ExcelFile = ReactExport.ExcelFile
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn
+
     function RenderKhoSanPham(arr) {
+        dataSheetExcel.length = 0
         let maxRender = 0
         const result = arr.map((e, index) => {
             maxRender++
             if (maxRender < 101) {
+                e.index = index
+                dataSheetExcel.push(Object.assign({}, e))
                 return <ItemSanPham data={e} soThuTu={index} />
             }
         })
@@ -426,14 +440,46 @@ function KhoHang() {
         RenderKhoSanPham(TatCaSanPham)
     }, [TatCaSanPham])
 
+    function ExcelDownload(props) {
+        return (
+            <ExcelFile
+                element={
+                    <img
+                        src={iconExcel}
+                        style={{
+                            height: 50,
+                            width: 50,
+                            cursor: 'pointer',
+                            marginRight: '50px',
+                        }}
+                        onClick={(e) => {
+                            console.log('click')
+                        }}
+                    />
+                }
+            >
+                <ExcelSheet data={props.data} name="Sản phẩm">
+                    <ExcelColumn label="STT" value="index" />
+                    <ExcelColumn label="Tên" value="name" />
+                    <ExcelColumn label="SĐT Cung Cấp" value="SDTNhaCC" />
+                    <ExcelColumn label="Nhà Cung Cấp" value="NhaCC" />
+                    <ExcelColumn label="Số Lượng Hiện Tại" value="amount" />
+                </ExcelSheet>
+            </ExcelFile>
+        )
+    }
+
     function handleSearch(value, nameFilterSearch = '') {
         // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
         if (!value) {
-            setLstResult(uiKhoHang)
+            // setLstResult(uiKhoHang)
+            RenderKhoSanPham(TatCaSanPham)
             return
         }
 
         const regex = new RegExp(removeTones(value.toLowerCase()))
+
+        dataSheetExcel.length = 0
 
         switch (nameFilterSearch) {
             case 'Tìm tên nhà cung cấp':
@@ -450,6 +496,11 @@ function KhoHang() {
                     ) {
                         maxLengthSearch++
                         if (maxLengthSearch < 200) {
+                            //data excel
+                            const o = TatCaSanPham[i]
+                            o.index = maxLengthSearch
+                            dataSheetExcel.push(Object.assign({}, o))
+
                             arrUI.push(
                                 <ItemSanPham
                                     data={TatCaSanPham[i]}
@@ -478,6 +529,11 @@ function KhoHang() {
                     ) {
                         maxLengthSearchs++
                         if (maxLengthSearchs < 200) {
+                            //data excel
+                            const ob = TatCaSanPham[i]
+                            ob.index = maxLengthSearchs
+                            dataSheetExcel.push(Object.assign({}, ob))
+
                             arrUIs.push(
                                 <ItemSanPham
                                     data={TatCaSanPham[i]}
@@ -528,8 +584,8 @@ function KhoHang() {
                 <div
                     style={{
                         display: 'flex',
-                        justifyContent: 'space-between',
                         alignContent: 'center',
+                        justifyContent: 'space-between',
                     }}
                 >
                     <div
@@ -606,21 +662,22 @@ function KhoHang() {
                                 </Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
+                        <FontAwesomeIcon
+                            style={{
+                                marginLeft: 40,
+                                marginTop: 10,
+                                cursor: 'pointer',
+                            }}
+                            onClick={(e) => {
+                                Refresh()
+                            }}
+                            color={resources.colorPrimary}
+                            size="3x"
+                            icon={faSyncAlt}
+                        />
                     </div>
 
-                    <FontAwesomeIcon
-                        style={{
-                            marginRight: 40,
-                            marginTop: 10,
-                            cursor: 'pointer',
-                        }}
-                        onClick={(e) => {
-                            Refresh()
-                        }}
-                        color={resources.colorPrimary}
-                        size="3x"
-                        icon={faSyncAlt}
-                    />
+                    <ExcelDownload data={dataSheetExcel} />
                 </div>
 
                 <div>

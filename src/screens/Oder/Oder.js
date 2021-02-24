@@ -56,6 +56,13 @@ function TienVietNam(input) {
     return x
 }
 
+function formatNumber(num) {
+    if (num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ' VND'
+    }
+    return num
+}
+
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
@@ -157,6 +164,7 @@ function Oder() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        type="number"
                         style={{ width: 30, fontSize: 16, fontWeight: 'bold' }}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
@@ -170,6 +178,7 @@ function Oder() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        type="number"
                         style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
@@ -185,28 +194,34 @@ function Oder() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        type="number"
                         style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
-                        value="chiết khấu"
+                        onChange={(e) => {
+                            var _index = arr_Cart.findIndex(
+                                (i) => i._id == props._id
+                            )
+                            arr_Cart[_index].chietKhau = +e.target.value
+                            RenderKetQuaGioHang(arr_Cart)
+                        }}
+                        value={props.chietKhau ? props.chietKhau : ''}
                     />
                 </TableCell>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
-                    {parseInt(
-                        TienVietNam(
-                            parseInt(props.price) * parseInt(props.soluongBan)
-                        )
-                    ) %
-                        1 ===
-                    0
-                        ? TienVietNam(
-                              parseInt(props.price) * parseInt(props.soluongBan)
-                          )
-                        : 0}
+                    {formatNumber(
+                        props.chietKhau
+                            ? props.price * props.soluongBan -
+                                  props.price *
+                                      props.soluongBan *
+                                      (props.chietKhau / 100)
+                            : props.price * props.soluongBan
+                    )}
                 </TableCell>
-                <TableCell style={{ padding: '0' }}>
+                <TableCell>
                     <TextareaAutosize
                         placeholder="Ghi chú sản phẩm"
                         rowsMax={3}
                         rowsMin={3}
+                        style={{ padding: '3px 8px' }}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
@@ -368,8 +383,13 @@ function Oder() {
         var _sum = 0
 
         arr_Cart.map((e) => {
-            _sum += e.price * e.soluongBan //Tính tổng tiền tất cả sản phẩm
-            e.pricesum = e.price * e.soluongBan // tính tổng tiền trên mỗi sản phẩm
+            e.pricesum = e.chietKhau
+                ? e.price * e.soluongBan -
+                  e.price * e.soluongBan * (e.chietKhau / 100)
+                : e.price * e.soluongBan // tính tổng tiền trên mỗi sản phẩm
+
+            _sum += e.pricesum // Tính tổng tiền tất cả sản phẩm
+
             return _sum
         })
 
@@ -1118,7 +1138,7 @@ function Oder() {
                                                 fontWeight: 'bold',
                                             }}
                                         >
-                                            Chiết Khấu
+                                            Chiết Khấu (%)
                                         </TableCell>
                                         <TableCell
                                             style={{

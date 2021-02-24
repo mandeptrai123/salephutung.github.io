@@ -27,6 +27,10 @@ import { useSelector, useDispatch } from 'react-redux'
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+import iconExcel from '../../../assets/icons/png/icons8-microsoft_excel.png'
+
+//xuất file excel
+import ReactExport from 'react-data-export'
 
 // xóa dấu
 import removeTones from '../../../utils/removeTones'
@@ -67,6 +71,12 @@ function CongNo() {
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
+
+    // xuất file excel
+    const ExcelFile = ReactExport.ExcelFile
+    const ExcelSheet = ReactExport.ExcelFile.ExcelSheet
+    const ExcelColumn = ReactExport.ExcelFile.ExcelColumn
+    const [dataSheetExcel, setDataSheetExcel] = useState([])
 
     const [nameFilterSearch, setNameFilterSearch] = useState(
         'Theo tên khách hàng'
@@ -243,6 +253,31 @@ function CongNo() {
         OnFresh()
     }, [refresh])
 
+    function ExcelDownload(props) {
+        return (
+            <ExcelFile
+                element={
+                    <img
+                        src={iconExcel}
+                        style={{
+                            height: 50,
+                            width: 50,
+                            cursor: 'pointer',
+                            marginRight: '50px',
+                        }}
+                    />
+                }
+            >
+                <ExcelSheet data={props.data} name="Sản phẩm">
+                    <ExcelColumn label="Tên Khách" value="Name" />
+                    <ExcelColumn label="Số Điện Thoại" value="SDT" />
+                    <ExcelColumn label="Địa Chỉ" value="DiaChi" />
+                    <ExcelColumn label="Công Nợ Hiện Tại" value="Congno" />
+                </ExcelSheet>
+            </ExcelFile>
+        )
+    }
+
     function OnFresh() {
         handleShow()
         setMessLoading('Đang làm mới dữ liệu')
@@ -273,16 +308,31 @@ function CongNo() {
         var _congno = 0
         let maxRender = 0
         let result = []
+        dataSheetExcel.length = 0
         const lengthArr = arr.length
+
+        console.log(arr)
+
         for (let i = 0; i < lengthArr; ++i) {
             _congno += parseInt(arr[i].Congno)
 
             maxRender++
-            if (maxRender < 151) {
+            if (maxRender < 201) {
                 if (checkedView) {
-                    if (arr[i].Congno != 0)
+                    if (arr[i].Congno != 0) {
+                        //data excel
+                        dataSheetExcel.push(Object.assign({}, arr[i]))
+                        //data excel
+
                         result.push(<ItemCongNo data={arr[i]} soThuTu={i} />)
-                } else result.push(<ItemCongNo data={arr[i]} soThuTu={i} />)
+                    }
+                } else {
+                    //data excel
+                    dataSheetExcel.push(Object.assign({}, arr[i]))
+                    //data excel
+
+                    result.push(<ItemCongNo data={arr[i]} soThuTu={i} />)
+                }
             } else break
         }
 
@@ -329,7 +379,7 @@ function CongNo() {
     function handleSearch(value, nameFilter) {
         // Nếu chuỗi tìm kiếm rỗng thì cho render toàn bộ
         if (!value) {
-            setResult(lstUI)
+            RenderCongNo(arr_KhachHang, checkboxView)
             return
         }
 
@@ -337,6 +387,8 @@ function CongNo() {
         var maxItemSearch = 0
         const len = arr_KhachHang.length
         var arrUI = []
+
+        dataSheetExcel.length = 0
 
         switch (nameFilter) {
             case 'Theo tên khách hàng':
@@ -351,6 +403,12 @@ function CongNo() {
                         if (maxItemSearch < 200) {
                             if (checkboxView) {
                                 if (arr_KhachHang[i].Congno != 0) {
+                                    //data excel
+                                    dataSheetExcel.push(
+                                        Object.assign({}, arr_KhachHang[i])
+                                    )
+                                    //data excel
+
                                     arrUI.push(
                                         <ItemCongNo
                                             data={arr_KhachHang[i]}
@@ -358,13 +416,20 @@ function CongNo() {
                                         />
                                     )
                                 }
-                            } else
+                            } else {
+                                //data excel
+                                dataSheetExcel.push(
+                                    Object.assign({}, arr_KhachHang[i])
+                                )
+                                //data excel
+
                                 arrUI.push(
                                     <ItemCongNo
                                         data={arr_KhachHang[i]}
                                         soThuTu={maxItemSearch}
                                     />
                                 )
+                            }
                         } else {
                             break
                         }
@@ -386,6 +451,12 @@ function CongNo() {
                         if (maxItemSearch < 200) {
                             if (checkboxView) {
                                 if (arr_KhachHang[i].Congno != 0) {
+                                    //data excel
+                                    dataSheetExcel.push(
+                                        Object.assign({}, arr_KhachHang[i])
+                                    )
+                                    //data excel
+
                                     arrUI.push(
                                         <ItemCongNo
                                             data={arr_KhachHang[i]}
@@ -393,13 +464,20 @@ function CongNo() {
                                         />
                                     )
                                 }
-                            } else
+                            } else {
+                                //data excel
+                                dataSheetExcel.push(
+                                    Object.assign({}, arr_KhachHang[i])
+                                )
+                                //data excel
+
                                 arrUI.push(
                                     <ItemCongNo
                                         data={arr_KhachHang[i]}
                                         soThuTu={maxItemSearch}
                                     />
                                 )
+                            }
                         } else {
                             break
                         }
@@ -549,7 +627,12 @@ function CongNo() {
                 icon={faSyncAlt}
             />
             <div
-                style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                }}
             >
                 <TextField
                     style={{
@@ -629,6 +712,8 @@ function CongNo() {
                     }
                     label="Chỉ hiện thị khách nợ"
                 />
+
+                <ExcelDownload data={dataSheetExcel} />
             </div>
 
             <TableContainer
