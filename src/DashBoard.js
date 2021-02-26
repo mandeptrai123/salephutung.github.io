@@ -22,13 +22,13 @@ function DashBoard() {
 
     useEffect(() => {
         //disableScroll.on();
-
         // Kiem Tra Account
 
         if (HoTenNV == 'Chưa Có') {
             history.push('/')
         }
     }, [])
+
     return (
         <div>
             <Tab.Container id="left-tabs-example" defaultActiveKey="banhang">
