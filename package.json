@@ -5,21 +5,24 @@
   "homepage": "./",
   "main": "public/electron.js",
   "build": {
-    "appId": "com.electron.electron-with-create-react-app",
-    "icon": "build/1024x1024.png or any route to the right png file > 256px X 256px",
-    "directories": {
-      "buildResources": "public"
+    "appId": "viesoftware.vn.salephutung",
+    "productName":"POS Phu Tung",
+    "mac":{
+      "icon": "./public/icons/mac/icon.icns",  
+      "category": "public.app-category.utilities"
     },
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
-      ]
+      "icon": "./public/icons/png/256x256.png"
+    },
+    "files": [
+      "./build/**/*",
+      "./dist/**/*",
+      "./node_modules/**/*",
+      "./public/**/*",      
+      "*.js"
+    ],
+    "directories": {
+      "buildResources": "public"
     }
   },
   "dependencies": {
