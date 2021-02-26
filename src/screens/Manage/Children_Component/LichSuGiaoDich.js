@@ -337,20 +337,25 @@ function LichSuGiaoDich() {
             _arrDonHang[props.indexBill].lstSanPham[props.index]
                 ? _arrDonHang[props.indexBill].lstSanPham[props.index].name
                 : ''
-            // props.data.name
         )
         const [soluongBan, setSoLuongBan] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
                 ? _arrDonHang[props.indexBill].lstSanPham[props.index]
                       .soluongBan
                 : ''
-            // props.data.soluongBan
         )
+
+        const [soluongQuaTang, setSoLuongQuaTang] = useState(
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index]
+                      .soluongQuaTang
+                : ''
+        )
+
         const [price, setPrice] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
                 ? _arrDonHang[props.indexBill].lstSanPham[props.index].price
                 : ''
-            // props.data.price
         )
         const [priceSum, setPriceSum] = useState(
             formatNumber(
@@ -359,20 +364,17 @@ function LichSuGiaoDich() {
                           .pricesum
                     : ''
             )
-            // props.data.pricesum
         )
         const [ghiChu, setGhiChu] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
                 ? _arrDonHang[props.indexBill].lstSanPham[props.index].Ghichu
                 : ''
-            // props.data.Ghichu
         )
 
         const [thanhTien, setThanhTien] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
                 ? _arrDonHang[props.indexBill].lstSanPham[props.index].ThanhTien
                 : ''
-            // props.data.ThanhTien
         )
 
         useEffect(() => {
@@ -454,6 +456,7 @@ function LichSuGiaoDich() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        type="number"
                         placeholder="Số lượng"
                         value={soluongBan}
                         style={{ width: '70px' }}
@@ -489,6 +492,24 @@ function LichSuGiaoDich() {
                         }}
                     />
                 </TableCell>
+
+                <TableCell>
+                    <TextField
+                        type="number"
+                        placeholder="Số lượng quà tặng"
+                        value={soluongQuaTang}
+                        style={{ width: '70px' }}
+                        onChange={(e) => {
+                            const value = +e.target.value
+                            setSoLuongQuaTang(value)
+
+                            _arrDonHang[props.indexBill].lstSanPham[
+                                props.index
+                            ].soluongQuaTang = value
+                        }}
+                    />
+                </TableCell>
+
                 <TableCell>
                     <TextField
                         placeholder="Giá tiền"
@@ -660,6 +681,7 @@ function LichSuGiaoDich() {
                                     <TableCell>STT</TableCell>
                                     <TableCell>Sản Phẩm</TableCell>
                                     <TableCell>Số Lượng</TableCell>
+                                    <TableCell>Quà Tặng</TableCell>
                                     <TableCell>Giá Tiền</TableCell>
                                     <TableCell>Ghi Chú SP</TableCell>
                                     <TableCell>Tổng Tiền SP</TableCell>
@@ -792,6 +814,8 @@ function LichSuGiaoDich() {
                                         lstSanPham:
                                             _arrDonHang[indexBill].lstSanPham,
                                     }
+
+                                    console.log(objectNewBillPOST)
 
                                     updateBill(objectNewBillPOST)
                                     setShowModalUpdateBill(false)

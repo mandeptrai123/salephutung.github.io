@@ -235,6 +235,22 @@ function Oder() {
                 </TableCell>
 
                 <TableCell>
+                    <TextField
+                        type="number"
+                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
+                        onChange={(e) => {
+                            var _index = arr_Cart.findIndex(
+                                (i) => i._id == props._id
+                            )
+                            arr_Cart[_index].soluongQuaTang = +e.target.value
+
+                            RenderKetQuaGioHang(arr_Cart)
+                        }}
+                        value={props.soluongQuaTang ? props.soluongQuaTang : ''}
+                    />
+                </TableCell>
+
+                <TableCell>
                     <FontAwesomeIcon
                         style={{
                             alignSelf: 'center',
@@ -1158,6 +1174,15 @@ function Oder() {
                                             }}
                                         >
                                             Ghi Chú
+                                        </TableCell>
+                                        <TableCell
+                                            style={{
+                                                fontSize: 12,
+                                                maxWidth: '5px',
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            Quà Tặng
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>

@@ -81,7 +81,7 @@ export default function KhachHang() {
 
         for (let i = 0; i < lenData; ++i) {
             maxRender++
-            if (maxRender < 151)
+            if (maxRender < 201)
                 result.push(<ItemKhachHang data={data[i]} index={i} />)
             else break
         }

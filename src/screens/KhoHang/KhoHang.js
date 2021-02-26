@@ -106,6 +106,7 @@ function KhoHang() {
         const _URL = URL_API + 'CapNhatSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
+                console.log(response)
                 handleClose()
                 if (response.success) {
                     setShowMessage(true)
@@ -135,7 +136,6 @@ function KhoHang() {
         const _URL = URL_API + 'XoaSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
-                console.log(response)
                 if (response.success) {
                     dispatch({ type: DeleteSanPham, value: id })
                     setShowMessage(true)
