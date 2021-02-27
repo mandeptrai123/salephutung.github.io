@@ -116,22 +116,18 @@ function MatHangHetSL() {
     }
 
     function ModalSendEmailGhiChu() {
-        try {
-            const listGhiChu = _.chain(listSPThieuSL)
-                .groupBy('NhaCC')
-                .map((value, key) => {
-                    return {
-                        NhaCC: key,
-                        SDTNhaCC: value[0].SDTNhaCC,
-                        Ghichu: value.map((e) => {
-                            return {ghichu: e.Ghichu, tenSP: e.Name}
-                        }),
-                    }
-                })
-                .value()
-        } catch (err) {
-            handleErr(err.name, 'MatHangHetSL', '181')
-        }
+        const listGhiChu = _.chain(listSPThieuSL)
+            .groupBy('NhaCC')
+            .map((value, key) => {
+                return {
+                    NhaCC: key,
+                    SDTNhaCC: value[0].SDTNhaCC,
+                    Ghichu: value.map((e) => {
+                        return {ghichu: e.Ghichu, tenSP: e.Name}
+                    }),
+                }
+            })
+            .value()
 
         //Show mes khi nhấn copy
         const [showMessage, setShowMessage] = useState(false)

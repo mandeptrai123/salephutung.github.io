@@ -392,12 +392,13 @@ function Oder() {
             } else {
                 arr_Cart.push(_item)
             }
+
+            TinhToanThanhTien()
+            RenderKetQuaGioHang(arr_Cart)
+            handleHideHieuChinh()
         } catch (err) {
             handleErr(err.name, 'Oder', '365')
         }
-        TinhToanThanhTien()
-        RenderKetQuaGioHang(arr_Cart)
-        handleHideHieuChinh()
     }
 
     function TinhToanThanhTien() {

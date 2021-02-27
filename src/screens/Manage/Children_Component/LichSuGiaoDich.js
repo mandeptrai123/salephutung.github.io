@@ -400,45 +400,48 @@ function LichSuGiaoDich() {
                         inputValue={name}
                         value={name}
                         onChange={(event, newValue) => {
-                            if (newValue) {
-                                // Kiểm tra sản phẩm vừa thêm vào bill đã có chưa
-                                var isHave = false
-                                const len =
-                                    _arrDonHang[props.indexBill].lstSanPham
-                                        .length
+                            try {
+                                if (newValue) {
+                                    // Kiểm tra sản phẩm vừa thêm vào bill đã có chưa
+                                    var isHave = false
+                                    const len =
+                                        _arrDonHang[props.indexBill].lstSanPham
+                                            .length
 
-                                for (var i = 0; i < len; i++) {
-                                    if (
-                                        newValue._id ==
-                                        _arrDonHang[props.indexBill].lstSanPham[
-                                            i
-                                        ]._id
-                                    ) {
-                                        isHave = true
-                                        break
+                                    for (var i = 0; i < len; i++) {
+                                        if (
+                                            newValue._id ==
+                                            _arrDonHang[props.indexBill]
+                                                .lstSanPham[i]._id
+                                        ) {
+                                            isHave = true
+                                            break
+                                        }
                                     }
-                                }
 
-                                if (isHave) {
-                                    setShowMessage(true)
-                                    setTextMessage(
-                                        'Đã có sản phẩm này rồi, vui lòng chọn sản phẩm khác!'
-                                    )
+                                    if (isHave) {
+                                        setShowMessage(true)
+                                        setTextMessage(
+                                            'Đã có sản phẩm này rồi, vui lòng chọn sản phẩm khác!'
+                                        )
 
-                                    return
-                                } else {
-                                    setName(newValue.name)
-                                    setPrice(newValue.price)
-                                    setSoLuongBan(0)
+                                        return
+                                    } else {
+                                        setName(newValue.name)
+                                        setPrice(newValue.price)
+                                        setSoLuongBan(0)
 
-                                    newValue.pricesum = priceSum
-                                    newValue.soluongBan = soluongBan
+                                        newValue.pricesum = priceSum
+                                        newValue.soluongBan = soluongBan
 
-                                    _arrDonHang[props.indexBill].lstSanPham[
-                                        props.index
-                                    ] = newValue
-                                }
-                            } else setName('')
+                                        _arrDonHang[props.indexBill].lstSanPham[
+                                            props.index
+                                        ] = newValue
+                                    }
+                                } else setName('')
+                            } catch (err) {
+                                handleErr(err.name, 'LichSuGiaoDich', '403')
+                            }
                         }}
                         renderInput={(params) => (
                             <TextField
