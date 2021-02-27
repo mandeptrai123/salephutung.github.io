@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -10,16 +10,18 @@ import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import { LoginAction } from '../../Redux/ActionType'
+import {useDispatch} from 'react-redux'
+import {useHistory} from 'react-router-dom'
+import {LoginAction} from '../../Redux/ActionType'
 import NetWorking from '../../networking/fetchWithTimeout'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
-import { Modal, Spinner } from 'react-bootstrap'
+import {Modal, Spinner} from 'react-bootstrap'
 import resources from '../../resource/color/ColorApp'
+
+import handleErr from '../../utils/handleError'
 
 import icon from '../../assets/icons/png/1024.png'
 
@@ -72,7 +74,7 @@ export default function SignIn() {
         messSnackbar: '',
         isSuccess: false,
     })
-    const { openSnackbar, messSnackbar, isSuccess } = stateSnackbar
+    const {openSnackbar, messSnackbar, isSuccess} = stateSnackbar
 
     const [SDT, setSDT] = useState('')
     const [Pass, setPass] = useState('')
@@ -120,6 +122,7 @@ export default function SignIn() {
                 }
             })
             .catch((e) => {
+                handleErr('api login', 'LoginNew', '85')
                 setShowLoading(false)
                 setStateSnackbar({
                     ...stateSnackbar,
@@ -147,7 +150,7 @@ export default function SignIn() {
                 }
             })
             .catch((e) => {
-                console.log(e)
+                handleErr('api get version app', 'LoginNew', '135')
             })
     }
 
@@ -167,9 +170,8 @@ export default function SignIn() {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                    }}
-                >
-                    <img src={icon} alt="logo" style={{ width: '50px' }} />
+                    }}>
+                    <img src={icon} alt="logo" style={{width: '50px'}} />
                 </div>
                 <Typography component="h1" variant="h5">
                     Sign in
@@ -226,8 +228,7 @@ export default function SignIn() {
                         fullWidth
                         variant="contained"
                         color="primary"
-                        className={classes.submit}
-                    >
+                        className={classes.submit}>
                         Đăng Nhập
                     </Button>
                     <Grid container>
@@ -239,8 +240,7 @@ export default function SignIn() {
                                     )
                                 }}
                                 href="#"
-                                variant="body2"
-                            >
+                                variant="body2">
                                 Quên Mật Khẩu ?
                             </Link>
                         </Grid>
@@ -256,8 +256,7 @@ export default function SignIn() {
                     style={{
                         textAlign: 'center',
                         color: 'rgba(0, 0, 0, 0.54)',
-                    }}
-                >
+                    }}>
                     Version {versionApp}
                 </p>
             </Box>
@@ -266,9 +265,8 @@ export default function SignIn() {
                 open={openSnackbar}
                 autoHideDuration={3000}
                 onClose={() => {
-                    setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
-                }}
-            >
+                    setStateSnackbar({...stateSnackbar, openSnackbar: false})
+                }}>
                 <Alert
                     onClose={() => {
                         setStateSnackbar({
@@ -276,8 +274,7 @@ export default function SignIn() {
                             openSnackbar: false,
                         })
                     }}
-                    severity={isSuccess ? 'success' : 'error'}
-                >
+                    severity={isSuccess ? 'success' : 'error'}>
                     {messSnackbar}
                 </Alert>
             </Snackbar>
@@ -287,21 +284,19 @@ export default function SignIn() {
                 centered
                 size="sm"
                 backdrop="static"
-                show={showLoading}
-            >
+                show={showLoading}>
                 <Modal.Title
                     style={{
                         color: resources.colorPrimary,
                         padding: 20,
                         fontSize: 15,
                         textAlign: 'center',
-                    }}
-                >
+                    }}>
                     "Đang Kiểm Tra Thông Tin Nhân Viên !"
                 </Modal.Title>
                 <Modal.Body>
                     <Spinner
-                        style={{ marginLeft: '40%', marginBottom: 100 }}
+                        style={{marginLeft: '40%', marginBottom: 100}}
                         animation="border"
                     />
                 </Modal.Body>

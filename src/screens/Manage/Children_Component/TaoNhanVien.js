@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 
 //import component react material
-import { TextField } from '@material-ui/core'
-import { Button, Modal, Spinner } from 'react-bootstrap'
+import {TextField} from '@material-ui/core'
+import {Button, Modal, Spinner} from 'react-bootstrap'
 import resources from '../../../resource/color/ColorApp'
 import '../css/Manage.css'
 import NetWorking from '../../../networking/fetchWithTimeout'
@@ -13,6 +13,9 @@ import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 import FormLabel from '@material-ui/core/FormLabel'
+
+//log
+import handleErr from '../../../utils/handleError'
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
@@ -36,7 +39,7 @@ function TaoNhanVien() {
         messSnackbar: '',
         isSuccess: true,
     })
-    const { openSnackbar, messSnackbar, isSuccess } = stateSnackbar
+    const {openSnackbar, messSnackbar, isSuccess} = stateSnackbar
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
@@ -44,7 +47,7 @@ function TaoNhanVien() {
     const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     function handleCloseSnackbar() {
-        setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
+        setStateSnackbar({...stateSnackbar, openSnackbar: false})
     }
     useEffect(() => {
         setMessLoading(' Đang Đăng Ký Tài Khoản , Đợi Chút Nhé!')
@@ -92,6 +95,7 @@ function TaoNhanVien() {
                 }
             })
             .catch((e) => {
+                handleErr('api them nhan vien', 'TaoNhanVien', '52')
                 alert('Xảy Ra Sự Cố ,Kiểm Tra Lại Internet !')
                 handleClose()
             })
@@ -102,15 +106,13 @@ function TaoNhanVien() {
                 justifyContent: 'center',
                 alignContent: 'center',
                 height: '100%',
-            }}
-        >
+            }}>
             <h1
                 style={{
                     lineHeight: '60px',
                     textAlign: 'center',
                     color: resources.colorPrimary,
-                }}
-            >
+                }}>
                 Thêm Nhân Viên
             </h1>
             <div
@@ -120,8 +122,7 @@ function TaoNhanVien() {
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
-                className="borderW"
-            >
+                className="borderW">
                 <TextField
                     variant="outlined"
                     style={{
@@ -171,8 +172,7 @@ function TaoNhanVien() {
                         name="gender1"
                         onChange={(e) => {
                             setPhanQuyen(e.target.value)
-                        }}
-                    >
+                        }}>
                         <FormControlLabel
                             value="1"
                             control={<Radio color="primary" />}
@@ -198,8 +198,7 @@ function TaoNhanVien() {
                         marginTop: 100,
                         width: '200px',
                         height: '50px',
-                    }}
-                >
+                    }}>
                     Tạo Nhân Viên
                 </Button>
             </div>
@@ -208,15 +207,13 @@ function TaoNhanVien() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -226,16 +223,14 @@ function TaoNhanVien() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 backdrop="static"
-                show={showResponse}
-            >
+                show={showResponse}>
                 <Modal.Body>
                     <Modal.Title>{messResponse}</Modal.Title>
                     <Modal.Footer>
                         <Button
                             onClick={(e) => {
                                 setShowResponse(false)
-                            }}
-                        >
+                            }}>
                             OK
                         </Button>
                     </Modal.Footer>
@@ -246,13 +241,11 @@ function TaoNhanVien() {
                 open={stateSnackbar.openSnackbar}
                 autoHideDuration={2000}
                 onClose={() => {
-                    setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
-                }}
-            >
+                    setStateSnackbar({...stateSnackbar, openSnackbar: false})
+                }}>
                 <Alert
                     onClose={handleCloseSnackbar}
-                    severity={stateSnackbar.isSuccess ? 'success' : 'error'}
-                >
+                    severity={stateSnackbar.isSuccess ? 'success' : 'error'}>
                     {stateSnackbar.messSnackbar}
                 </Alert>
             </Snackbar>

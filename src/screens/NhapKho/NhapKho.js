@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useFocus, useRef } from 'react'
+import React, {useState, useEffect, useFocus, useRef} from 'react'
 // import css
 import './css/NhapKho.css'
 //import component
 import InputText from '../../resource/InputText/InputText'
-import { Modal, Spinner } from 'react-bootstrap'
+import {Modal, Spinner} from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -12,22 +12,24 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
 import resources from '../../resource/color/ColorApp'
 import NetWorking from '../../networking/fetchWithTimeout'
-import { Autocomplete } from '@material-ui/lab'
+import {Autocomplete} from '@material-ui/lab'
+
+import handleErr from '../../utils/handleError'
 
 //icon
 import CloseIcon from '@material-ui/icons/Close'
 import SearchIcon from '@material-ui/icons/Search'
 
-import { TextField } from '@material-ui/core'
+import {TextField} from '@material-ui/core'
 
-import { Snackbar } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import { useSelector, useDispatch } from 'react-redux'
-import { AddNewSanPham } from '../../Redux/ActionType'
+import {Snackbar} from '@material-ui/core'
+import {Alert} from '@material-ui/lab'
+import {useSelector, useDispatch} from 'react-redux'
+import {AddNewSanPham} from '../../Redux/ActionType'
 import _ from 'lodash'
 
 // xóa dấu
@@ -72,13 +74,7 @@ function NhapKho() {
     const [valueNhatKy, setTimKiemNhatKy] = useState()
     const [valueNhaCungCap, SelectorNhaCC] = useState('')
 
-    const {
-        vertical,
-        horizontal,
-        open,
-        messSnackbar,
-        isSuccess,
-    } = stateSnackbar
+    const {vertical, horizontal, open, messSnackbar, isSuccess} = stateSnackbar
 
     const NameRef = useRef()
     const DonViRef = useRef()
@@ -147,7 +143,7 @@ function NhapKho() {
             })
             if (_index == -1) {
                 object_request.isNhaCCMoi = true
-                arr_NhaCC.push({ NameNhaCC: nhacc })
+                arr_NhaCC.push({NameNhaCC: nhacc})
             } else {
                 object_request.isNhaCCMoi = false
             }
@@ -204,6 +200,7 @@ function NhapKho() {
                     open: true,
                     messSnackbar: 'Lỗi Khi Load Nhật Ký Kho Hàng',
                 })
+                handleErr('api nhật kí sản phẩm', 'NhapKho', '178')
                 handleClose()
             })
     }
@@ -285,7 +282,7 @@ function NhapKho() {
 
                     item._id = res._id
 
-                    dispatch({ type: AddNewSanPham, dataNewSanPham: item })
+                    dispatch({type: AddNewSanPham, dataNewSanPham: item})
                 }
                 handleClose()
             })
@@ -296,6 +293,7 @@ function NhapKho() {
                     isSuccess: false,
                     open: true,
                 })
+                handleErr('api thêm sản phẩm', 'NhapKho', '213')
                 handleClose()
             })
     }
@@ -335,49 +333,52 @@ function NhapKho() {
             })
             .catch((e) => {
                 alert('Có Lỗi Ở Nhập Kho! ')
-
+                handleErr('api toàn bộ nhà cung cấp', 'NhapKho', '315')
                 handleClose()
             })
     }
 
     function handleSearch(value) {
-        const reg = new RegExp(removeTones(value.toLowerCase()))
+        try {
+            const reg = new RegExp(removeTones(value.toLowerCase()))
 
-        // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
-        if (!value) {
-            UpdateNhatKy(arr_NhatKy)
-            return
-        }
-        console.log(arr_NhatKy)
+            // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+            if (!value) {
+                UpdateNhatKy(arr_NhatKy)
+                return
+            }
+            console.log(arr_NhatKy)
 
-        //Do dữ liệu nhiều nên render 50 sản phẩm khi search
-        var maxSearchResult = 0
-        var arrUI = []
-        const len = arr_NhatKy.length
+            //Do dữ liệu nhiều nên render 50 sản phẩm khi search
+            var maxSearchResult = 0
+            var arrUI = []
+            const len = arr_NhatKy.length
 
-        for (var i = 0; i < len; ++i) {
-            if (reg.exec(removeTones(arr_NhatKy[i].TenSP.toLowerCase()))) {
-                maxSearchResult++
-                if (maxSearchResult < 200) {
-                    arrUI.push(arr_NhatKy[i])
-                } else {
-                    break
+            for (var i = 0; i < len; ++i) {
+                if (reg.exec(removeTones(arr_NhatKy[i].TenSP.toLowerCase()))) {
+                    maxSearchResult++
+                    if (maxSearchResult < 200) {
+                        arrUI.push(arr_NhatKy[i])
+                    } else {
+                        break
+                    }
                 }
             }
-        }
 
-        UpdateNhatKy(arrUI)
+            UpdateNhatKy(arrUI)
+        } catch (err) {
+            handleErr(err.name, 'NhapKho', '341')
+        }
     }
 
     return (
         <section
-            style={{ marginTop: 40, marginLeft: 20 }}
-            className="nhapkho-container"
-        >
+            style={{marginTop: 40, marginLeft: 20}}
+            className="nhapkho-container">
             <div className="nhapkho-container__product">
                 <ul className="list-items__input">
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             Tên Sản Phẩm
                         </h6>
                         <div
@@ -385,15 +386,14 @@ function NhapKho() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
-                            <span style={{ color: 'red' }}>
+                            }}>
+                            <span style={{color: 'red'}}>
                                 {validEmptyTenSP
                                     ? ''
                                     : '* Vui lòng điền vào tên sản phẩm'}
                             </span>
                             <input
-                                style={{ height: 50, paddingLeft: '10px' }}
+                                style={{height: 50, paddingLeft: '10px'}}
                                 variant="outlined"
                                 ref={NameRef}
                                 onKeyPress={(event) => {
@@ -418,7 +418,7 @@ function NhapKho() {
                         </div>
                     </li>
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             Số Lượng
                         </h6>
                         <div
@@ -426,10 +426,9 @@ function NhapKho() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
+                            }}>
                             <input
-                                style={{ height: 50, paddingLeft: '10px' }}
+                                style={{height: 50, paddingLeft: '10px'}}
                                 variant="outlined"
                                 value={soluong}
                                 onChange={(e) => {
@@ -448,23 +447,20 @@ function NhapKho() {
                         </div>
                     </li>
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
-                            Đơn Vị
-                        </h6>
+                        <h6 style={{color: resources.colorPrimary}}>Đơn Vị</h6>
                         <div
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
-                            <span style={{ color: 'red' }}>
+                            }}>
+                            <span style={{color: 'red'}}>
                                 {validEmptyDonVi
                                     ? ''
                                     : '* Vui lòng điền vào đơn vị'}
                             </span>
                             <input
-                                style={{ height: 50, paddingLeft: '10px' }}
+                                style={{height: 50, paddingLeft: '10px'}}
                                 variant="outlined"
                                 ref={DonViRef}
                                 onKeyPress={(event) => {
@@ -489,7 +485,7 @@ function NhapKho() {
                         </div>
                     </li>
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             Số Lượng Báo Động
                         </h6>
                         <div
@@ -497,8 +493,7 @@ function NhapKho() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
+                            }}>
                             <input
                                 style={{
                                     height: 50,
@@ -523,18 +518,15 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
-                            Giá Gốc
-                        </h6>
+                        <h6 style={{color: resources.colorPrimary}}>Giá Gốc</h6>
                         <div
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
+                            }}>
                             <input
-                                style={{ height: 50, paddingLeft: '10px' }}
+                                style={{height: 50, paddingLeft: '10px'}}
                                 variant="outlined"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -564,7 +556,7 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             Giá Bán Lẻ
                         </h6>
                         <div
@@ -572,10 +564,9 @@ function NhapKho() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 width: '250px',
-                            }}
-                        >
+                            }}>
                             <input
-                                style={{ height: 50, paddingLeft: '10px' }}
+                                style={{height: 50, paddingLeft: '10px'}}
                                 variant="outlined"
                                 onKeyPress={(event) => {
                                     if (event.key === 'Enter') {
@@ -599,7 +590,7 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             SDT Cung Cấp
                         </h6>
                         <Autocomplete
@@ -646,7 +637,7 @@ function NhapKho() {
                     </li>
 
                     <li className="item__input">
-                        <h6 style={{ color: resources.colorPrimary }}>
+                        <h6 style={{color: resources.colorPrimary}}>
                             Tên Nhà Cung Cấp
                         </h6>
                         <Autocomplete
@@ -696,8 +687,7 @@ function NhapKho() {
                             }}
                             onClick={ThemVaoKho}
                             type="button"
-                            className="btn-nhapkho"
-                        >
+                            className="btn-nhapkho">
                             Cho vào kho
                         </button>
                     </li>
@@ -705,29 +695,26 @@ function NhapKho() {
             </div>
 
             <div
-                style={{ marginTop: 40, marginRight: 40, marginBottom: 20 }}
-                className="nhapkho-container__diary"
-            >
+                style={{marginTop: 40, marginRight: 40, marginBottom: 20}}
+                className="nhapkho-container__diary">
                 <div className="diary__content">
                     <div
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             marginTop: 10,
-                        }}
-                    >
+                        }}>
                         <h4
                             style={{
                                 color: resources.colorPrimary,
                                 marginLeft: 20,
-                            }}
-                        >
+                            }}>
                             Nhật kí nhập hàng
                         </h4>
 
                         <TextField
                             variant="outlined"
-                            style={{ width: '300px' }}
+                            style={{width: '300px'}}
                             value={valueNhatKy}
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
@@ -780,8 +767,7 @@ function NhapKho() {
                             height: '80%',
                             width: '93%',
                             marginTop: 10,
-                        }}
-                    >
+                        }}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
@@ -800,15 +786,13 @@ function NhapKho() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={loading}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {mess}
                     </Modal.Title>
                 </Modal.Body>
@@ -818,15 +802,13 @@ function NhapKho() {
                 open={open}
                 autoHideDuration={3000}
                 onClose={() => {
-                    setStateSnackbar({ ...stateSnackbar, open: false })
-                }}
-            >
+                    setStateSnackbar({...stateSnackbar, open: false})
+                }}>
                 <Alert
                     onClose={() => {
-                        setStateSnackbar({ ...stateSnackbar, open: false })
+                        setStateSnackbar({...stateSnackbar, open: false})
                     }}
-                    severity={isSuccess ? 'success' : 'error'}
-                >
+                    severity={isSuccess ? 'success' : 'error'}>
                     {messSnackbar}
                 </Alert>
             </Snackbar>

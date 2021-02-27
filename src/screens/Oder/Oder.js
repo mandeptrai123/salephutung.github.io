@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 // import css
 import './css/Oder.css'
 //import component
 import InputText from '../../resource/InputText/InputText'
-import { Modal, Button, Spinner } from 'react-bootstrap'
+import {Modal, Button, Spinner} from 'react-bootstrap'
 import resources from '../../resource/color/ColorApp'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -11,14 +11,17 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
-import { TextField } from '@material-ui/core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSyncAlt, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {TextField} from '@material-ui/core'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSyncAlt, faTrash} from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../networking/fetchWithTimeout'
-import { Autocomplete } from '@material-ui/lab'
+import {Autocomplete} from '@material-ui/lab'
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Snackbar from '@material-ui/core/Snackbar'
 import MuiAlert from '@material-ui/lab/Alert'
+
+//log
+import handleErr from '../../utils/handleError'
 
 import {
     Dialog,
@@ -26,17 +29,17 @@ import {
     DialogContent,
     DialogActions,
 } from '@material-ui/core'
-import { useSelector, useDispatch } from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 
 //Action
-import { AllSanPham, AddNewKhachHang } from '../../Redux/ActionType'
+import {AllSanPham, AddNewKhachHang} from '../../Redux/ActionType'
 
 //import component in bill
-import ReactToPrint, { useReactToPrint } from 'react-to-print'
+import ReactToPrint, {useReactToPrint} from 'react-to-print'
 import PrintedDonHang from '../Print/PrintedDonHang'
 
 // xóa dấu
@@ -52,7 +55,7 @@ var _thanhtien = 0
 
 function TienVietNam(input) {
     var x = parseInt(input)
-    x = x.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+    x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'})
     return x
 }
 
@@ -153,19 +156,19 @@ function Oder() {
     const URL_API = 'http://engcouple.com:3000/SalePhuTung/'
 
     function handleClickPrint(item) {
-        setStateModal({ ...stateModal, open: true, itemSelected: item })
+        setStateModal({...stateModal, open: true, itemSelected: item})
     }
 
     function ItemCart(props) {
         return (
             <TableRow hover>
-                <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
+                <TableCell style={{fontSize: 16, fontWeight: 'bold'}}>
                     {props.name}
                 </TableCell>
                 <TableCell>
                     <TextField
                         type="number"
-                        style={{ width: 30, fontSize: 16, fontWeight: 'bold' }}
+                        style={{width: 30, fontSize: 16, fontWeight: 'bold'}}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
@@ -179,7 +182,7 @@ function Oder() {
                 <TableCell>
                     <TextField
                         type="number"
-                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
+                        style={{width: 80, fontSize: 16, fontWeight: 'bold'}}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id === props._id
@@ -195,7 +198,7 @@ function Oder() {
                 <TableCell>
                     <TextField
                         type="number"
-                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
+                        style={{width: 80, fontSize: 16, fontWeight: 'bold'}}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
@@ -207,7 +210,7 @@ function Oder() {
                         value={props.chietKhau ? props.chietKhau : ''}
                     />
                 </TableCell>
-                <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
+                <TableCell style={{fontSize: 16, fontWeight: 'bold'}}>
                     {formatNumber(
                         props.chietKhau
                             ? props.price * props.soluongBan -
@@ -222,7 +225,7 @@ function Oder() {
                         placeholder="Ghi chú sản phẩm"
                         rowsMax={3}
                         rowsMin={3}
-                        style={{ padding: '3px 8px' }}
+                        style={{padding: '3px 8px'}}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
@@ -237,7 +240,7 @@ function Oder() {
                 <TableCell>
                     <TextField
                         type="number"
-                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
+                        style={{width: 80, fontSize: 16, fontWeight: 'bold'}}
                         onChange={(e) => {
                             var _index = arr_Cart.findIndex(
                                 (i) => i._id == props._id
@@ -301,8 +304,7 @@ function Oder() {
                 }
             })
             .catch((error) => {
-                console.log('lỗi', error)
-
+                handleErr('api toan bo san pham', 'Oder', '279')
                 setShow(false)
             })
     }
@@ -323,16 +325,16 @@ function Oder() {
     function ItemSanPham(props) {
         return (
             <TableRow hover>
-                <TableCell width={40} style={{ fontSize: 12 }}>
+                <TableCell width={40} style={{fontSize: 12}}>
                     {props.name}
                 </TableCell>
-                <TableCell width={40} style={{ fontSize: 12 }}>
+                <TableCell width={40} style={{fontSize: 12}}>
                     {props.amount}
                 </TableCell>
-                <TableCell width={40} style={{ fontSize: 12 }}>
+                <TableCell width={40} style={{fontSize: 12}}>
                     {TienVietNam(props.price)}
                 </TableCell>
-                <TableCell width={40} style={{ fontSize: 12 }}>
+                <TableCell width={40} style={{fontSize: 12}}>
                     <Button
                         onClick={(e) => {
                             if (props.amount > 0) {
@@ -352,8 +354,7 @@ function Oder() {
                                     messSnackbar: 'Số Lượng Hiện Tại Nhỏ Hơn 1',
                                 })
                             }
-                        }}
-                    >
+                        }}>
                         Chọn
                     </Button>
                 </TableCell>
@@ -362,33 +363,37 @@ function Oder() {
     }
 
     function Handle_AddToCart(_id) {
-        //Tìm sản phẩm có id vừa đc nhấn chọn
-        var _item
-        arrAllSP.forEach((e) => {
-            if (e._id == _id) {
-                _item = { ...e }
-                return
+        try {
+            //Tìm sản phẩm có id vừa đc nhấn chọn
+            var _item
+            arrAllSP.forEach((e) => {
+                if (e._id == _id) {
+                    _item = {...e}
+                    return
+                }
+            })
+
+            if (_item.amount < soluongBan) {
+                setShowHieuChinh(false)
+                setMessResponse('Số Lượng Trong Kho Không Đủ !')
+                setShowResponse(true)
+                return false
             }
-        })
 
-        if (_item.amount < soluongBan) {
-            setShowHieuChinh(false)
-            setMessResponse('Số Lượng Trong Kho Không Đủ !')
-            setShowResponse(true)
-            return false
-        }
-
-        // Tìm Xem Trong Giỏ Hàng Đã Có Sản Phẩm Này Chưa
-        var indexAlready = arr_Cart.findIndex((e) => e._id === _id)
-        if (indexAlready > -1) {
-            setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
-            setShow(true)
-            setTimeout(() => {
-                setShow(false)
-            }, 1500)
-            return false
-        } else {
-            arr_Cart.push(_item)
+            // Tìm Xem Trong Giỏ Hàng Đã Có Sản Phẩm Này Chưa
+            var indexAlready = arr_Cart.findIndex((e) => e._id === _id)
+            if (indexAlready > -1) {
+                setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
+                setShow(true)
+                setTimeout(() => {
+                    setShow(false)
+                }, 1500)
+                return false
+            } else {
+                arr_Cart.push(_item)
+            }
+        } catch (err) {
+            handleErr(err.name, 'Oder', '365')
         }
         TinhToanThanhTien()
         RenderKetQuaGioHang(arr_Cart)
@@ -581,6 +586,7 @@ function Oder() {
                 }
             })
             .catch((e) => {
+                handleErr('api dat hang', 'Oder', '481')
                 handleClose()
                 setMessResponse(
                     'Có Vấn Đề Về Internet ! Vui Lòng Thử Lại !: ' + e
@@ -615,7 +621,7 @@ function Oder() {
                 }
             })
             .catch((e) => {
-                console.log(e)
+                handleErr('api get toan bo khach hang', 'Oder', '603')
             })
     }
 
@@ -643,18 +649,16 @@ function Oder() {
                 open={showModalDienSoLuongSP}
                 onClose={() => setShowModalDienSoLuongSP(false)}
                 maxWidth="sm"
-                fullWidth
-            >
+                fullWidth>
                 <div
                     style={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         padding: '12px',
-                    }}
-                >
+                    }}>
                     <h5>Điền số lượng sản phẩm</h5>
                     <CloseIcon
-                        style={{ cursor: 'pointer' }}
+                        style={{cursor: 'pointer'}}
                         onClick={() => {
                             setShowModalDienSoLuongSP(false)
                         }}
@@ -668,7 +672,7 @@ function Oder() {
                         margin="normal"
                         type="number"
                         variant="outlined"
-                        style={{ width: '100%' }}
+                        style={{width: '100%'}}
                         onChange={(e) => {
                             setSoLuongSanPhamDaChon(e.target.value)
                         }}
@@ -693,8 +697,7 @@ function Oder() {
                             setTimeout(() => {
                                 searchRef.current.focus()
                             }, 350)
-                        }}
-                    >
+                        }}>
                         Thêm sản phẩm
                     </Button>
                 </DialogActions>
@@ -708,14 +711,12 @@ function Oder() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 size="xl"
-                show={stateModal.open}
-            >
+                show={stateModal.open}>
                 <Modal.Body
                     style={{
                         overflow: 'hidden',
                         padding: '0',
-                    }}
-                >
+                    }}>
                     <PrintedDonHang
                         ref={componentRef}
                         item={stateModal.itemSelected}
@@ -729,10 +730,9 @@ function Oder() {
                     <Button
                         variant="danger"
                         onClick={(e) => {
-                            setStateModal({ ...stateModal, open: false })
+                            setStateModal({...stateModal, open: false})
                             GetAllSanPham() //làm mới lại bảng sản phẩm khi đặt hàng thành công
-                        }}
-                    >
+                        }}>
                         Hủy Bỏ
                     </Button>
                 </Modal.Footer>
@@ -741,76 +741,83 @@ function Oder() {
     }
 
     function handleClickThemSanPham(soLuongSanPhamDaChon) {
-        setShowModalDienSoLuongSP(false)
-        //sau khi điền sl sp thì thêm vào giỏ hàng
+        try {
+            setShowModalDienSoLuongSP(false)
+            //sau khi điền sl sp thì thêm vào giỏ hàng
 
-        if (idSanPham) {
-            //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k
-            //Kiểm tra số lượng > 0
-            if (
-                objSanPham.amount < soLuongSanPhamDaChon ||
-                soLuongSanPhamDaChon < 0
-            ) {
-                setStateSnackbar({
-                    ...stateSnackbar,
-                    messSnackbar:
-                        soLuongSanPhamDaChon < 0
-                            ? 'Số lượng phải lớn hơn 0'
-                            : 'Số lượng hiện tại không đủ !',
-                    isSuccess: false,
-                    openSnackbar: true,
-                })
-                return
+            if (idSanPham) {
+                //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k
+                //Kiểm tra số lượng > 0
+                if (
+                    objSanPham.amount < soLuongSanPhamDaChon ||
+                    soLuongSanPhamDaChon < 0
+                ) {
+                    setStateSnackbar({
+                        ...stateSnackbar,
+                        messSnackbar:
+                            soLuongSanPhamDaChon < 0
+                                ? 'Số lượng phải lớn hơn 0'
+                                : 'Số lượng hiện tại không đủ !',
+                        isSuccess: false,
+                        openSnackbar: true,
+                    })
+                    return
+                }
+                //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
+                //hoặc kiểm tra số lượng hàng có đủ hay không
+                if (Handle_AddToCart(idSanPham) == false) {
+                    return
+                }
+                var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
+                arr_Cart[_index].soluongBan = +soLuongSanPhamDaChon
+                arr_Cart[_index].Ghichu = ''
+                setsoluongBan(arr_Cart[_index].soluongBan)
+                RenderKetQuaGioHang(arr_Cart)
             }
-            //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
-            //hoặc kiểm tra số lượng hàng có đủ hay không
-            if (Handle_AddToCart(idSanPham) == false) {
-                return
-            }
-            var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
-            arr_Cart[_index].soluongBan = +soLuongSanPhamDaChon
-            arr_Cart[_index].Ghichu = ''
-            setsoluongBan(arr_Cart[_index].soluongBan)
-            RenderKetQuaGioHang(arr_Cart)
+        } catch (err) {
+            handleErr(err.name, 'Oder', 743)
         }
     }
 
     function handleSearch(value) {
-        const reg = new RegExp(removeTones(value.toLowerCase()))
+        try {
+            const reg = new RegExp(removeTones(value.toLowerCase()))
 
-        // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
-        if (!value) {
-            setUIAllSanPham(lspUIAllSP)
-            return
-        }
+            // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+            if (!value) {
+                setUIAllSanPham(lspUIAllSP)
+                return
+            }
 
-        //Do dữ liệu nhiều nên render 200 sản phẩm khi search
-        var maxSearchResult = 0
-        var arrUI = []
-        const length = arrAllSP.length
-        for (var i = 0; i < length; ++i) {
-            if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
-                maxSearchResult++
-                if (maxSearchResult < 200) {
-                    arrUI.push(ItemSanPham(arrAllSP[i]))
-                } else {
-                    break
+            //Do dữ liệu nhiều nên render 200 sản phẩm khi search
+            var maxSearchResult = 0
+            var arrUI = []
+            const length = arrAllSP.length
+            for (var i = 0; i < length; ++i) {
+                if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
+                    maxSearchResult++
+                    if (maxSearchResult < 200) {
+                        arrUI.push(ItemSanPham(arrAllSP[i]))
+                    } else {
+                        break
+                    }
                 }
             }
+            setUIAllSanPham(arrUI)
+        } catch (err) {
+            handleErr(err.name, 'Oder', '782')
         }
-        setUIAllSanPham(arrUI)
     }
 
     return (
         <section
-            style={{ marginLeft: 20, marginRight: 40 }}
-            className="oder-container"
-        >
+            style={{marginLeft: 20, marginRight: 40}}
+            className="oder-container">
             <ModalDienSoLuongSP />
             <ModalShowBill />
 
             <header className="oder-header">
-                <div style={{ color: resources.colorPrimary, margin: 10 }}>
+                <div style={{color: resources.colorPrimary, margin: 10}}>
                     Thông Tin Khách Hàng
                 </div>
                 <div
@@ -819,8 +826,7 @@ function Oder() {
                         marginRight: 10,
                         padding: 10,
                     }}
-                    className="container-input"
-                >
+                    className="container-input">
                     <div className="input-content">
                         <Autocomplete
                             id="combo-box-khach"
@@ -829,7 +835,7 @@ function Oder() {
                             getOptionLabel={(option) =>
                                 `${option.Name} (${option.DiaChi})`
                             }
-                            style={{ width: 200 }}
+                            style={{width: 200}}
                             inputValue={tenkhach}
                             onInputChange={(event, newInputValue) => {
                                 setTenKhach(newInputValue)
@@ -889,7 +895,7 @@ function Oder() {
 
                     <div className="input-content">
                         <TextField
-                            style={{ height: 50, marginRight: 30 }}
+                            style={{height: 50, marginRight: 30}}
                             onChange={(e) => {
                                 setSoDienThoai(e.target.value)
                             }}
@@ -916,7 +922,7 @@ function Oder() {
 
                     <div className="input-content">
                         <TextField
-                            style={{ height: 50, marginRight: 30 }}
+                            style={{height: 50, marginRight: 30}}
                             onChange={(e) => {
                                 setDiaChi(e.target.value)
                             }}
@@ -980,7 +986,7 @@ function Oder() {
                     />
                 </div>
 
-                <div style={{ margin: 20, display: 'flex' }}>
+                <div style={{margin: 20, display: 'flex'}}>
                     {/* <FontAwesomeIcon
                 style={{position:'absolute',right:420}}   
                 onClick={e=>{
@@ -1057,8 +1063,7 @@ function Oder() {
                             style={{
                                 height: '100%',
                                 width: '100%',
-                            }}
-                        >
+                            }}>
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
                                     <TableRow>
@@ -1067,8 +1072,7 @@ function Oder() {
                                                 fontSize: 10,
                                                 maxWidth: '30',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Tên Sản Phẩm
                                         </TableCell>
                                         <TableCell
@@ -1076,8 +1080,7 @@ function Oder() {
                                                 fontSize: 10,
                                                 maxWidth: '30',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Số Lượng Đang Có
                                         </TableCell>
                                         <TableCell
@@ -1085,8 +1088,7 @@ function Oder() {
                                                 fontSize: 10,
                                                 maxWidth: '30',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Giá Bán
                                         </TableCell>
                                         <TableCell
@@ -1094,8 +1096,7 @@ function Oder() {
                                                 fontSize: 10,
                                                 maxWidth: '30',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Điều Chỉnh
                                         </TableCell>
                                     </TableRow>
@@ -1107,17 +1108,15 @@ function Oder() {
                     </div>
                 </div>
 
-                <div style={{ height: 800, width: '60%', margin: 10 }}>
+                <div style={{height: 800, width: '60%', margin: 10}}>
                     <div
-                        style={{ height: '70%', width: '100%' }}
-                        className="content-right__price"
-                    >
+                        style={{height: '70%', width: '100%'}}
+                        className="content-right__price">
                         <TableContainer
                             style={{
                                 height: '100%',
                                 width: '100%',
-                            }}
-                        >
+                            }}>
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
                                     <TableRow>
@@ -1126,8 +1125,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Tên Sản Phẩm
                                         </TableCell>
                                         <TableCell
@@ -1135,8 +1133,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Số Lượng
                                         </TableCell>
                                         <TableCell
@@ -1144,8 +1141,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Đơn Giá
                                         </TableCell>
                                         <TableCell
@@ -1153,8 +1149,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Chiết Khấu (%)
                                         </TableCell>
                                         <TableCell
@@ -1162,8 +1157,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Tổng Tiền
                                         </TableCell>
                                         <TableCell
@@ -1171,8 +1165,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Ghi Chú
                                         </TableCell>
                                         <TableCell
@@ -1180,8 +1173,7 @@ function Oder() {
                                                 fontSize: 12,
                                                 maxWidth: '5px',
                                                 fontWeight: 'bold',
-                                            }}
-                                        >
+                                            }}>
                                             Quà Tặng
                                         </TableCell>
                                     </TableRow>
@@ -1192,14 +1184,13 @@ function Oder() {
                         </TableContainer>
                     </div>
                 </div>
-                <div style={{ width: 200 }}>
+                <div style={{width: 200}}>
                     <div
                         style={{
                             marginBottom: '40px',
                             fontWeight: 'bold',
                             color: resources.colorPrimary,
-                        }}
-                    >
+                        }}>
                         Tên Nhân Viên: {HoTenNV}
                     </div>
                     <div
@@ -1212,8 +1203,7 @@ function Oder() {
                             textAlign: 'center',
                             marginTop: 20,
                         }}
-                        className="total-price"
-                    >
+                        className="total-price">
                         Thành tiền
                     </div>
                     <div
@@ -1224,8 +1214,7 @@ function Oder() {
                             color: 'red',
                             paddingLeft: 10,
                         }}
-                        className="price"
-                    >
+                        className="price">
                         {parseInt(thanhtien) % 1 === 0 ? thanhtien : 0}
                     </div>
 
@@ -1264,8 +1253,7 @@ function Oder() {
                                 DatHang()
                             }}
                             type="button"
-                            className="btn-submit"
-                        >
+                            className="btn-submit">
                             Đặt Hàng
                         </button>
                     </div>
@@ -1277,15 +1265,13 @@ function Oder() {
                 centered
                 backdrop="static"
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -1296,8 +1282,7 @@ function Oder() {
                 centered
                 backdrop="static"
                 show={showHieuChinh}
-                onHide={handleHideHieuChinh}
-            >
+                onHide={handleHideHieuChinh}>
                 <Modal.Body>
                     <Modal.Title>
                         <h4>Số Lượng Bán</h4>
@@ -1339,16 +1324,14 @@ function Oder() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 backdrop="static"
-                show={showResponse}
-            >
+                show={showResponse}>
                 <Modal.Body>
                     <Modal.Title>{messResponse}</Modal.Title>
                     <Modal.Footer>
                         <Button
                             onClick={(e) => {
                                 setShowResponse(false)
-                            }}
-                        >
+                            }}>
                             OK
                         </Button>
                     </Modal.Footer>
@@ -1359,13 +1342,11 @@ function Oder() {
                 open={stateSnackbar.openSnackbar}
                 autoHideDuration={2000}
                 onClose={() => {
-                    setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
-                }}
-            >
+                    setStateSnackbar({...stateSnackbar, openSnackbar: false})
+                }}>
                 <Alert
                     onClose={handleCloseSnackbar}
-                    severity={stateSnackbar.isSuccess ? 'success' : 'error'}
-                >
+                    severity={stateSnackbar.isSuccess ? 'success' : 'error'}>
                     {stateSnackbar.messSnackbar}
                 </Alert>
             </Snackbar>

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
 import TextField from '@material-ui/core/TextField'
 import RefreshIcon from '@material-ui/icons/Refresh'
 
 //import component
-import { Modal, Button, Spinner } from 'react-bootstrap'
+import {Modal, Button, Spinner} from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -16,6 +16,9 @@ import TableRow from '@material-ui/core/TableRow'
 // xóa dấu
 import removeTones from '../../../utils/removeTones'
 
+//log
+import handleErr from '../../../utils/handleError'
+
 // icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
@@ -23,8 +26,8 @@ import NetWorking from '../../../networking/fetchWithTimeout'
 import resources from '../../../resource/color/ColorApp'
 
 //hook, action redux
-import { useSelector, useDispatch } from 'react-redux'
-import { UpdateKhachHang, GetAllKhachHang } from '../../../Redux/ActionType'
+import {useSelector, useDispatch} from 'react-redux'
+import {UpdateKhachHang, GetAllKhachHang} from '../../../Redux/ActionType'
 
 export default function KhachHang() {
     const [resultTableNhatKy, setResultTableNhatKy] = useState()
@@ -70,7 +73,7 @@ export default function KhachHang() {
             })
             .catch((e) => {
                 handleClose()
-                console.log(e)
+                handleErr('api lấy toàn bộ khách hàng', 'KhachHang', '47')
             })
     }
 
@@ -111,7 +114,7 @@ export default function KhachHang() {
                     //cập nhật khách hàng trên redux store
                     dispatch({
                         type: UpdateKhachHang,
-                        value: { objectKhachHang, index },
+                        value: {objectKhachHang, index},
                     })
 
                     setTimeout(() => {
@@ -130,6 +133,7 @@ export default function KhachHang() {
             .catch((e) => {
                 handleClose()
                 alert('Có Lỗi Ở Công Nợ!')
+                handleErr('api cập nhật khách hàng', 'KhachHang', '96')
             })
     }
 
@@ -252,15 +256,13 @@ export default function KhachHang() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -273,31 +275,35 @@ export default function KhachHang() {
     }, [])
 
     function handleSearch(value) {
-        if (!value) {
-            setResultTableNhatKy(uiNhatKy)
-            return
-        }
+        try {
+            if (!value) {
+                setResultTableNhatKy(uiNhatKy)
+                return
+            }
 
-        const reg = new RegExp(removeTones(value.toLowerCase()))
+            const reg = new RegExp(removeTones(value.toLowerCase()))
 
-        let maxRender = 0
-        let result = []
-        const len = allKhachHang.length
+            let maxRender = 0
+            let result = []
+            const len = allKhachHang.length
 
-        for (let i = 0; i < len; ++i) {
-            if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase()))) {
-                maxRender++
-                if (maxRender < 200) {
-                    result.push(
-                        <ItemKhachHang data={allKhachHang[i]} index={i} />
-                    )
-                } else {
-                    break
+            for (let i = 0; i < len; ++i) {
+                if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase()))) {
+                    maxRender++
+                    if (maxRender < 200) {
+                        result.push(
+                            <ItemKhachHang data={allKhachHang[i]} index={i} />
+                        )
+                    } else {
+                        break
+                    }
                 }
             }
-        }
 
-        setResultTableNhatKy(result)
+            setResultTableNhatKy(result)
+        } catch (err) {
+            handleErr(err.name, 'KhachHang', '277')
+        }
     }
 
     return (
@@ -308,8 +314,7 @@ export default function KhachHang() {
                     textAlign: 'center',
                     marginTop: '20px',
                     color: resources.colorPrimary,
-                }}
-            >
+                }}>
                 Khách Hàng
             </h1>
             <div
@@ -318,8 +323,7 @@ export default function KhachHang() {
                     paddingBottom: '15px',
                     display: 'flex',
                     justifyContent: 'space-around',
-                }}
-            >
+                }}>
                 <TextField
                     id="outlined-basic"
                     placeholder="Tìm kiếm theo tên khách hàng"
@@ -372,14 +376,12 @@ export default function KhachHang() {
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
-                }}
-            >
+                }}>
                 <TableContainer
                     style={{
                         maxHeight: '550px',
                         width: '95%',
-                    }}
-                >
+                    }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>

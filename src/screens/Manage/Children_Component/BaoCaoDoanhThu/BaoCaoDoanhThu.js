@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import './css/BaoCaoDoanhThu.css'
 
 //import component react-bootstrap
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
-import { Row, Col, Modal, Spinner } from 'react-bootstrap'
+import {Row, Col, Modal, Spinner} from 'react-bootstrap'
 // import Table from 'react-bootstrap/Table'
 
 import Table from '@material-ui/core/Table'
@@ -17,8 +17,10 @@ import TableRow from '@material-ui/core/TableRow'
 import resources from '../../../../resource/color/ColorApp'
 import NetWorking from '../../../../networking/fetchWithTimeout'
 
-import { Snackbar, TextField } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import {Snackbar, TextField} from '@material-ui/core'
+import {Alert} from '@material-ui/lab'
+
+import handleErr from '../../../../utils/handleError'
 
 function BaoCaoDoanhThu(props) {
     const [lstResult, setResult] = useState()
@@ -38,7 +40,7 @@ function BaoCaoDoanhThu(props) {
         isSuccess: false,
     })
 
-    const { openSnackbar, messSnackbar, isSuccess } = stateSnackbar
+    const {openSnackbar, messSnackbar, isSuccess} = stateSnackbar
 
     const [dateViewProduct, setDateViewProduct] = useState()
 
@@ -267,7 +269,7 @@ function BaoCaoDoanhThu(props) {
                 handleClose()
             })
             .catch((error) => {
-                console.log('Lỗi', error)
+                handleErr('api doanh thu theo tuan', 'BaoCaoDoanhThu', '245')
                 alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
@@ -296,7 +298,7 @@ function BaoCaoDoanhThu(props) {
                 handleClose()
             })
             .catch((error) => {
-                console.log('Lỗi', error)
+                handleErr('api doanh thu theo thang', 'BaoCaoDoanhThu', '245')
                 alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
@@ -325,7 +327,7 @@ function BaoCaoDoanhThu(props) {
                 handleClose()
             })
             .catch((error) => {
-                console.log('Lỗi', error)
+                handleErr('api doanh thu theo nam', 'BaoCaoDoanhThu', '245')
                 alert('Có Lỗi Ở Báo Cáo Doanh Thu! ')
                 handleClose()
             })
@@ -355,9 +357,8 @@ function BaoCaoDoanhThu(props) {
         <section className="baocao-container">
             <header className="baocao-header">
                 <h1
-                    style={{ paddingRight: 200, color: resources.colorPrimary }}
-                    className="title-baocao"
-                >
+                    style={{paddingRight: 200, color: resources.colorPrimary}}
+                    className="title-baocao">
                     Báo Cáo Doanh Thu
                 </h1>
             </header>
@@ -445,8 +446,7 @@ function BaoCaoDoanhThu(props) {
                                 alignItems: 'center',
                                 height: '50px',
                                 backgroundColor: resources.colorPrimary,
-                            }}
-                        >
+                            }}>
                             {viewModeDropdown}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -469,8 +469,7 @@ function BaoCaoDoanhThu(props) {
                                     dislay: 'flex',
                                     alignItems: 'center',
                                     height: '40px',
-                                }}
-                            >
+                                }}>
                                 Doanh thu ngày hôm nay
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -499,8 +498,7 @@ function BaoCaoDoanhThu(props) {
                                     dislay: 'flex',
                                     alignItems: 'center',
                                     height: '40px',
-                                }}
-                            >
+                                }}>
                                 Doanh thu 7 ngày gần đây
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -516,8 +514,7 @@ function BaoCaoDoanhThu(props) {
                                     dislay: 'flex',
                                     alignItems: 'center',
                                     height: '40px',
-                                }}
-                            >
+                                }}>
                                 Doanh thu tháng này
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -535,8 +532,7 @@ function BaoCaoDoanhThu(props) {
                                     dislay: 'flex',
                                     alignItems: 'center',
                                     height: '40px',
-                                }}
-                            >
+                                }}>
                                 Doanh thu tháng trước
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -552,8 +548,7 @@ function BaoCaoDoanhThu(props) {
                                     dislay: 'flex',
                                     alignItems: 'center',
                                     height: '40px',
-                                }}
-                            >
+                                }}>
                                 Doanh thu năm nay
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -573,8 +568,7 @@ function BaoCaoDoanhThu(props) {
                                         }-${dateNow.getDate()}`,
                                         'BaoCaoTuanNay'
                                     )
-                                }}
-                            >
+                                }}>
                                 Doanh thu tuần này
                             </Dropdown.Item>
                         </Dropdown.Menu>
@@ -586,15 +580,13 @@ function BaoCaoDoanhThu(props) {
                     style={{
                         color: 'red',
                         textAlign: 'left',
-                    }}
-                >
+                    }}>
                     Bạn đang xem doanh thu {viewDoanhThuMonthYear}
                 </h4>
                 <TableContainer
                     style={{
                         maxHeight: '470px',
-                    }}
-                >
+                    }}>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -616,15 +608,13 @@ function BaoCaoDoanhThu(props) {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
-                    <Modal.Title style={{ display: 'flex' }}>
+                    <Modal.Title style={{display: 'flex'}}>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         <h3>Đang tải</h3>
                     </Modal.Title>
                 </Modal.Body>
@@ -634,9 +624,8 @@ function BaoCaoDoanhThu(props) {
                 open={openSnackbar}
                 autoHideDuration={2000}
                 onClose={() => {
-                    setStateSnackbar({ ...stateSnackbar, openSnackbar: false })
-                }}
-            >
+                    setStateSnackbar({...stateSnackbar, openSnackbar: false})
+                }}>
                 <Alert
                     onClose={() =>
                         setStateSnackbar({
@@ -644,8 +633,7 @@ function BaoCaoDoanhThu(props) {
                             openSnackbar: false,
                         })
                     }
-                    severity={isSuccess ? 'success' : 'error'}
-                >
+                    severity={isSuccess ? 'success' : 'error'}>
                     {messSnackbar}
                 </Alert>
             </Snackbar>
@@ -664,8 +652,7 @@ function Checkbox(props) {
                     fontSize: '18px',
                     margin: '5px 0',
                     textAlign: 'center',
-                }}
-            >
+                }}>
                 {props.txtLabel}
             </label>
             <input

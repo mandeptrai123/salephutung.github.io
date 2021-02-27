@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 
 //import component
-import { Modal, Button, Spinner } from 'react-bootstrap'
-import { TextField } from '@material-ui/core'
+import {Modal, Button, Spinner} from 'react-bootstrap'
+import {TextField} from '@material-ui/core'
 // import css
 import '../css/Manage.css'
 
@@ -19,10 +19,13 @@ import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import resources from '../../../resource/color/ColorApp'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../../networking/fetchWithTimeout'
-import { useSelector, useDispatch } from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
+
+//log
+import handleErr from '../../../utils/handleError'
 
 //icon
 import SearchIcon from '@material-ui/icons/Search'
@@ -36,7 +39,7 @@ import ReactExport from 'react-data-export'
 import removeTones from '../../../utils/removeTones'
 
 //import redux
-import { IsUpdateCongNo } from '../../../Redux/ActionType'
+import {IsUpdateCongNo} from '../../../Redux/ActionType'
 
 let SDTSelected
 var arr_KhachHang = []
@@ -96,7 +99,7 @@ function CongNo() {
         openDieuChinh: false,
         Pass: '',
     })
-    const { openDieuChinh, CongNoCu, CongNoMoi, Pass } = stateModalDieuChinh
+    const {openDieuChinh, CongNoCu, CongNoMoi, Pass} = stateModalDieuChinh
 
     const [checkboxView, setCheckboxView] = useState(true)
 
@@ -238,9 +241,8 @@ function CongNo() {
                         `${formatNumber(congNoMoi)} VNĐ`
                     ) : (
                         <Button
-                            style={{ width: '120px' }}
-                            onClick={() => GetLichSuCapNhat(sdt)}
-                        >
+                            style={{width: '120px'}}
+                            onClick={() => GetLichSuCapNhat(sdt)}>
                             Xem Lịch Sử
                         </Button>
                     )}
@@ -266,8 +268,7 @@ function CongNo() {
                             marginRight: '50px',
                         }}
                     />
-                }
-            >
+                }>
                 <ExcelSheet data={props.data} name="Sản phẩm">
                     <ExcelColumn label="Tên Khách" value="Name" />
                     <ExcelColumn label="Số Điện Thoại" value="SDT" />
@@ -299,6 +300,7 @@ function CongNo() {
                 }
             })
             .catch((e) => {
+                handleErr('api lấy toàn bộ khách hàng', 'CongNo', '282')
                 alert('Có Lỗi Ở Công Nợ! ')
                 handleClose()
             })
@@ -344,7 +346,7 @@ function CongNo() {
 
     function TienVietNam(input) {
         var x = parseInt(input)
-        x = x.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
+        x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'})
         return x
     }
 
@@ -371,38 +373,54 @@ function CongNo() {
                 }
             })
             .catch((e) => {
+                handleErr('api cập nhật công nợ', 'CongNo', '353')
                 alert('Có Lỗi Khi Cập Nhật Công Nợ! ')
                 handleClose()
             })
     }
 
     function handleSearch(value, nameFilter) {
-        // Nếu chuỗi tìm kiếm rỗng thì cho render toàn bộ
-        if (!value) {
-            RenderCongNo(arr_KhachHang, checkboxView)
-            return
-        }
+        try {
+            // Nếu chuỗi tìm kiếm rỗng thì cho render toàn bộ
+            if (!value) {
+                RenderCongNo(arr_KhachHang, checkboxView)
+                return
+            }
 
-        const regex = new RegExp(removeTones(value.toLowerCase()))
-        var maxItemSearch = 0
-        const len = arr_KhachHang.length
-        var arrUI = []
+            const regex = new RegExp(removeTones(value.toLowerCase()))
+            var maxItemSearch = 0
+            const len = arr_KhachHang.length
+            var arrUI = []
 
-        dataSheetExcel.length = 0
+            dataSheetExcel.length = 0
 
-        switch (nameFilter) {
-            case 'Theo tên khách hàng':
-                //render 200 kết quả tìm đc
-                for (var i = 0; i < len; ++i) {
-                    if (
-                        regex.exec(
-                            removeTones(arr_KhachHang[i].Name.toLowerCase())
-                        )
-                    ) {
-                        maxItemSearch++
-                        if (maxItemSearch < 200) {
-                            if (checkboxView) {
-                                if (arr_KhachHang[i].Congno != 0) {
+            switch (nameFilter) {
+                case 'Theo tên khách hàng':
+                    //render 200 kết quả tìm đc
+                    for (var i = 0; i < len; ++i) {
+                        if (
+                            regex.exec(
+                                removeTones(arr_KhachHang[i].Name.toLowerCase())
+                            )
+                        ) {
+                            maxItemSearch++
+                            if (maxItemSearch < 200) {
+                                if (checkboxView) {
+                                    if (arr_KhachHang[i].Congno != 0) {
+                                        //data excel
+                                        dataSheetExcel.push(
+                                            Object.assign({}, arr_KhachHang[i])
+                                        )
+                                        //data excel
+
+                                        arrUI.push(
+                                            <ItemCongNo
+                                                data={arr_KhachHang[i]}
+                                                soThuTu={maxItemSearch}
+                                            />
+                                        )
+                                    }
+                                } else {
                                     //data excel
                                     dataSheetExcel.push(
                                         Object.assign({}, arr_KhachHang[i])
@@ -417,40 +435,42 @@ function CongNo() {
                                     )
                                 }
                             } else {
-                                //data excel
-                                dataSheetExcel.push(
-                                    Object.assign({}, arr_KhachHang[i])
-                                )
-                                //data excel
-
-                                arrUI.push(
-                                    <ItemCongNo
-                                        data={arr_KhachHang[i]}
-                                        soThuTu={maxItemSearch}
-                                    />
-                                )
+                                break
                             }
-                        } else {
-                            break
                         }
                     }
-                }
 
-                setResult(arrUI)
+                    setResult(arrUI)
 
-                break
-            case 'Theo địa chỉ':
-                //render 200 kết quả tìm đc
-                for (var i = 0; i < len; ++i) {
-                    if (
-                        regex.exec(
-                            removeTones(arr_KhachHang[i].DiaChi.toLowerCase())
-                        )
-                    ) {
-                        maxItemSearch++
-                        if (maxItemSearch < 200) {
-                            if (checkboxView) {
-                                if (arr_KhachHang[i].Congno != 0) {
+                    break
+                case 'Theo địa chỉ':
+                    //render 200 kết quả tìm đc
+                    for (var i = 0; i < len; ++i) {
+                        if (
+                            regex.exec(
+                                removeTones(
+                                    arr_KhachHang[i].DiaChi.toLowerCase()
+                                )
+                            )
+                        ) {
+                            maxItemSearch++
+                            if (maxItemSearch < 200) {
+                                if (checkboxView) {
+                                    if (arr_KhachHang[i].Congno != 0) {
+                                        //data excel
+                                        dataSheetExcel.push(
+                                            Object.assign({}, arr_KhachHang[i])
+                                        )
+                                        //data excel
+
+                                        arrUI.push(
+                                            <ItemCongNo
+                                                data={arr_KhachHang[i]}
+                                                soThuTu={maxItemSearch}
+                                            />
+                                        )
+                                    }
+                                } else {
                                     //data excel
                                     dataSheetExcel.push(
                                         Object.assign({}, arr_KhachHang[i])
@@ -465,30 +485,19 @@ function CongNo() {
                                     )
                                 }
                             } else {
-                                //data excel
-                                dataSheetExcel.push(
-                                    Object.assign({}, arr_KhachHang[i])
-                                )
-                                //data excel
-
-                                arrUI.push(
-                                    <ItemCongNo
-                                        data={arr_KhachHang[i]}
-                                        soThuTu={maxItemSearch}
-                                    />
-                                )
+                                break
                             }
-                        } else {
-                            break
                         }
                     }
-                }
 
-                setResult(arrUI)
+                    setResult(arrUI)
 
-                break
-            default:
-                break
+                    break
+                default:
+                    break
+            }
+        } catch (err) {
+            handleErr(err.name, 'CongNo', '382')
         }
     }
 
@@ -501,6 +510,7 @@ function CongNo() {
                 }
             })
             .catch((e) => {
+                handleErr('api lịch sử cập nhật', 'CongNo', '504')
                 alert('Có Lỗi Khi Xem Lịch Sử Cập Nhật! ')
                 handleClose()
             })
@@ -538,8 +548,7 @@ function CongNo() {
                 centered
                 size="xl"
                 show={showLichSuCapNhat}
-                onHide={() => setShowLichSuCapNhat(false)}
-            >
+                onHide={() => setShowLichSuCapNhat(false)}>
                 <Modal.Header closeButton>
                     <h5>Lịch sử cập nhật công nợ</h5>
                 </Modal.Header>
@@ -547,8 +556,7 @@ function CongNo() {
                     <TableContainer
                         style={{
                             maxHeight: '570px',
-                        }}
-                    >
+                        }}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
@@ -577,12 +585,10 @@ function CongNo() {
                 autoHideDuration={2000}
                 onClose={() => {
                     setShowMessage(false)
-                }}
-            >
+                }}>
                 <Alert
                     onClose={() => setShowMessage(false)}
-                    severity={'success'}
-                >
+                    severity={'success'}>
                     Cập nhật thành công
                 </Alert>
             </Snackbar>
@@ -598,8 +604,7 @@ function CongNo() {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
-            }}
-        >
+            }}>
             <XemLichSuCapNhat />
             <MessageUpdateCongNo />
             <h1
@@ -607,8 +612,7 @@ function CongNo() {
                     textAlign: 'center',
                     paddingRight: 200,
                     color: resources.colorPrimary,
-                }}
-            >
+                }}>
                 Toàn Bộ Công Nợ
             </h1>
             <FontAwesomeIcon
@@ -632,8 +636,7 @@ function CongNo() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     width: '100%',
-                }}
-            >
+                }}>
                 <TextField
                     style={{
                         width: 450,
@@ -684,22 +687,20 @@ function CongNo() {
                         <Dropdown.Item
                             onClick={(e) => {
                                 setNameFilterSearch('Theo tên khách hàng')
-                            }}
-                        >
+                            }}>
                             Theo tên khách hàng
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={(e) => {
                                 setNameFilterSearch('Theo địa chỉ')
-                            }}
-                        >
+                            }}>
                             Theo địa chỉ
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
 
                 <FormControlLabel
-                    style={{ marginLeft: '10px' }}
+                    style={{marginLeft: '10px'}}
                     control={
                         <Checkbox
                             color="primary"
@@ -721,8 +722,7 @@ function CongNo() {
                     marginTop: 20,
                     maxHeight: '500px',
                     width: '97%',
-                }}
-            >
+                }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -739,9 +739,9 @@ function CongNo() {
                     <TableBody>{lstResult}</TableBody>
                 </Table>
             </TableContainer>
-            <div style={{ paddingRight: 200, marginTop: 30 }}>
-                <h4 style={{ textAlign: 'center' }}>Tổng Công Nợ</h4>
-                <h3 style={{ textAlign: 'center', color: 'red' }}>
+            <div style={{paddingRight: 200, marginTop: 30}}>
+                <h4 style={{textAlign: 'center'}}>Tổng Công Nợ</h4>
+                <h3 style={{textAlign: 'center', color: 'red'}}>
                     {totalCongNo}
                 </h3>
             </div>
@@ -750,15 +750,13 @@ function CongNo() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -768,21 +766,19 @@ function CongNo() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 backdrop="static"
-                show={openDieuChinh}
-            >
+                show={openDieuChinh}>
                 <Modal.Title
                     style={{
                         color: 'red',
                         fontWeight: 'bold',
                         padding: 10,
                         fontSize: 15,
-                    }}
-                >
+                    }}>
                     "Lưu Ý: Hoạt Động Này Sẽ Được Ghi Vào Nhật Ký !"
                 </Modal.Title>
 
                 <Modal.Body>
-                    <div style={{ width: '50%' }}>
+                    <div style={{width: '50%'}}>
                         <TextField
                             variant="outlined"
                             style={{
@@ -823,8 +819,7 @@ function CongNo() {
                             if (bodyRequestUpdateCongNo) {
                                 CapNhatCongNoMoi(bodyRequestUpdateCongNo)
                             }
-                        }}
-                    >
+                        }}>
                         Lưu
                     </Button>
                     <Button
@@ -836,8 +831,7 @@ function CongNo() {
 
                             //Cho tải lại dữ liệu để trở về như củ khi cập nhật thất bại
                             setRefresh(!refresh)
-                        }}
-                    >
+                        }}>
                         Hủy
                     </Button>
                 </Modal.Footer>
