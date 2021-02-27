@@ -795,7 +795,10 @@ function Oder() {
             var arrUI = []
             const length = arrAllSP.length
             for (var i = 0; i < length; ++i) {
-                if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
+                var _arrWords = removeTones(arrAllSP[i].name.toLowerCase()).split(' ');
+                for(var j = 0 ; j< _arrWords.length ; j++)
+                {
+                    if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
                     maxSearchResult++
                     if (maxSearchResult < 200) {
                         arrUI.push(ItemSanPham(arrAllSP[i]))
@@ -803,6 +806,8 @@ function Oder() {
                         break
                     }
                 }
+                }   
+                
             }
             setUIAllSanPham(arrUI)
         } catch (err) {

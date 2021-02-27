@@ -369,7 +369,8 @@ function MatHangHetSL() {
                 return
             }
 
-            const reg = new RegExp(removeTones(value.toLowerCase()))
+            var _arrValue = removeTones(value).toLowerCase();
+            const reg = new RegExp(_arrValue[0]);
 
             switch (nameFilterSearch) {
                 case 'Tìm tên nhà cung cấp':
