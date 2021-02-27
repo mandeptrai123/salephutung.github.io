@@ -15,10 +15,10 @@ body {
 
 .oder-header {
   width: 100%;
-  height: 170px;
+  height: 140px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 50px;
+  margin-bottom: 10px;
 }
 
 .oder-header .container-input {

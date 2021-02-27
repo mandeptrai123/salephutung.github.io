@@ -24,7 +24,7 @@ import resources from '../../resource/color/ColorApp'
 import handleErr from '../../utils/handleError'
 
 import icon from '../../assets/icons/png/1024.png'
-
+const versionAppLocal = 3;
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -146,7 +146,7 @@ export default function SignIn() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
-                    setVersionApp(res.data.VersionApp)
+                    setVersionApp(res.data.VersionApp);
                 }
             })
             .catch((e) => {
@@ -155,7 +155,7 @@ export default function SignIn() {
     }
 
     useEffect(() => {
-        getVersionApp()
+        getVersionApp();
     }, [])
 
     return (
@@ -257,7 +257,7 @@ export default function SignIn() {
                         textAlign: 'center',
                         color: 'rgba(0, 0, 0, 0.54)',
                     }}>
-                    Version {versionApp}
+                    Version {versionAppLocal}
                 </p>
             </Box>
 
