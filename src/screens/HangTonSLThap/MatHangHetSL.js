@@ -162,11 +162,38 @@ function MatHangHetSL() {
                         maxHeight: '640px',
                         overflowY: 'scroll',
                     }}>
-                    Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số mặt
-                    hàng sau:
-                    {listGhiChu.map((item) => {
-                        let result = ''
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}>
+                        <span>
+                            Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số
+                            mặt hàng sau:
+                        </span>
+                        <FileCopyIcon
+                            style={{
+                                margin: 'auto 0',
+                                cursor: 'pointer',
+                                color: '#0089ff',
+                            }}
+                            onClick={(e) => {
+                                let result = ''
+                                listGhiChu.map((e) => {
+                                    e.Ghichu.map((value) => {
+                                        if (value.ghichu)
+                                            result += `${value.ghichu} ${value.tenSP} \n`
+                                    })
+                                })
+                                console.log(result)
+                                navigator.clipboard.writeText(result)
 
+                                setShowMessage(true)
+                            }}
+                        />
+                    </div>
+
+                    {listGhiChu.map((item) => {
                         //kiểm tra có nhà cung cấp nào ko có ghi chú hay ko
                         //nếu ko thì ko hiện thị nhà cung cấp đó
                         let checkGhiChu = false
@@ -203,8 +230,6 @@ function MatHangHetSL() {
                                             }}>
                                             {item.Ghichu.map((e) => {
                                                 if (e.ghichu) {
-                                                    result += `${e.ghichu} ${e.tenSP} \n`
-
                                                     return (
                                                         <p
                                                             style={{
@@ -221,21 +246,6 @@ function MatHangHetSL() {
                                                 }
                                             })}
                                         </div>
-
-                                        <FileCopyIcon
-                                            style={{
-                                                margin: 'auto 0',
-                                                cursor: 'pointer',
-                                                color: '#0089ff',
-                                            }}
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(
-                                                    result
-                                                )
-
-                                                setShowMessage(true)
-                                            }}
-                                        />
                                     </div>
                                 </div>
                             </div>
