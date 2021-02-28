@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import './css/KhoHang.css'
 //import component
-import { Button, Modal, Spinner } from 'react-bootstrap'
+import {Button, Modal, Spinner} from 'react-bootstrap'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -22,22 +22,25 @@ import ReactExport from 'react-data-export'
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
 
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
 import resources from '../../resource/color/ColorApp'
 
 import NetWorking from '../../networking/fetchWithTimeout'
-import { TextField } from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab'
-import _, { result } from 'lodash'
-import { useSelector, useDispatch } from 'react-redux'
+import {TextField} from '@material-ui/core'
+import {Autocomplete} from '@material-ui/lab'
+import _, {result} from 'lodash'
+import {useSelector, useDispatch} from 'react-redux'
 
 import iconExcel from '../../assets/icons/png/icons8-microsoft_excel.png'
 
+//log
+import handleErr from '../../utils/handleError'
+
 //Action
-import { AllSanPham, DeleteSanPham } from '../../Redux/ActionType'
+import {AllSanPham, DeleteSanPham} from '../../Redux/ActionType'
 
 var ID = 0
 
@@ -114,7 +117,7 @@ function KhoHang() {
                 }
             })
             .catch((error) => {
-                console.log(lỗi, error)
+                handleErr('api cập nhật sản phẩm', 'KhoHang', 98)
                 alert('Có Lỗi Ở Kho Hàng! ')
                 handleClose()
             })
@@ -130,21 +133,21 @@ function KhoHang() {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ _id: id, name: name }),
+            body: JSON.stringify({_id: id, name: name}),
         }
 
         const _URL = URL_API + 'XoaSanPham'
         NetWorking(_URL, requestOptions)
             .then((response) => {
                 if (response.success) {
-                    dispatch({ type: DeleteSanPham, value: id })
+                    dispatch({type: DeleteSanPham, value: id})
                     setShowMessage(true)
                     setTextMessage('Xóa sản phẩm thành công!')
                 }
                 handleClose()
             })
             .catch((error) => {
-                console.log(lỗi, error)
+                handleErr('api xoá sản phẩm', 'KhoHang', '126')
                 alert('Có Lỗi Ở Kho Hàng! ')
                 handleClose()
             })
@@ -156,8 +159,7 @@ function KhoHang() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={showModalDel}
-                onHide={() => setShowModalDel(false)}
-            >
+                onHide={() => setShowModalDel(false)}>
                 <Modal.Header closeButton>
                     Bạn có muốn xóa sản phẩm này ?
                 </Modal.Header>
@@ -168,16 +170,14 @@ function KhoHang() {
                             handleDeleteSanPham(idSanPhamDel, nameSanPhamDel)
 
                             setShowModalDel(false)
-                        }}
-                    >
+                        }}>
                         Đồng ý
                     </Button>
                     <Button
                         variant="danger"
                         onClick={() => {
                             setShowModalDel(false)
-                        }}
-                    >
+                        }}>
                         Hủy
                     </Button>
                 </Modal.Footer>
@@ -335,14 +335,13 @@ function KhoHang() {
                 </TableCell>
                 <TableCell>
                     <Button
-                        style={{ fontSize: '14px', width: '90px' }}
+                        style={{fontSize: '14px', width: '90px'}}
                         variant="danger"
                         onClick={() => {
                             setShowModalDel(true)
                             setIdSanPhamDel(e._id)
                             setNameSanPhamDel(e.name)
-                        }}
-                    >
+                        }}>
                         Xóa
                     </Button>
                 </TableCell>
@@ -366,13 +365,13 @@ function KhoHang() {
                 handleClose()
                 if (res.success) {
                     //Thêm tất cả sp vào store
-                    dispatch({ type: AllSanPham, dataSanPham: res.data })
+                    dispatch({type: AllSanPham, dataSanPham: res.data})
                 }
             })
             .catch((e) => {
                 alert('Có Lỗi Ở Kho Hàng! ')
                 handleClose()
-                console.log(e)
+                handleErr('api lấy toàn bộ sản phẩm', 'KhoHang', '352')
             })
     }
 
@@ -406,6 +405,8 @@ function KhoHang() {
                 }
             })
             .catch((e) => {
+                handleErr('api cập nhật số lượng sản phẩm', 'KhoHang', '386')
+
                 handleClose()
             })
     }
@@ -432,6 +433,7 @@ function KhoHang() {
                 }
             })
             .catch((e) => {
+                handleErr('api cập nhật giá trị bán sản phẩm', 'KhoHang', '414')
                 handleClose()
             })
     }
@@ -456,8 +458,7 @@ function KhoHang() {
                             console.log('click')
                         }}
                     />
-                }
-            >
+                }>
                 <ExcelSheet data={props.data} name="Sản phẩm">
                     <ExcelColumn label="STT" value="index" />
                     <ExcelColumn label="Tên" value="name" />
@@ -470,87 +471,91 @@ function KhoHang() {
     }
 
     function handleSearch(value, nameFilterSearch = '') {
-        // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
-        if (!value) {
-            // setLstResult(uiKhoHang)
-            RenderKhoSanPham(TatCaSanPham)
-            return
-        }
+        try {
+            // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
+            if (!value) {
+                // setLstResult(uiKhoHang)
+                RenderKhoSanPham(TatCaSanPham)
+                return
+            }
 
-        const regex = new RegExp(removeTones(value.toLowerCase()))
+            const regex = new RegExp(removeTones(value.toLowerCase()))
 
-        dataSheetExcel.length = 0
+            dataSheetExcel.length = 0
 
-        switch (nameFilterSearch) {
-            case 'Tìm tên nhà cung cấp':
-                let arrUI = []
-                const len = TatCaSanPham.length
-                let maxLengthSearch = 0
+            switch (nameFilterSearch) {
+                case 'Tìm tên nhà cung cấp':
+                    let arrUI = []
+                    const len = TatCaSanPham.length
+                    let maxLengthSearch = 0
 
-                //cho render kết quả tìm kiếm tối đa là 20
-                for (let i = 0; i < len; ++i) {
-                    if (
-                        regex.exec(
-                            removeTones(TatCaSanPham[i].NhaCC.toLowerCase())
-                        )
-                    ) {
-                        maxLengthSearch++
-                        if (maxLengthSearch < 200) {
-                            //data excel
-                            const o = TatCaSanPham[i]
-                            o.index = maxLengthSearch
-                            dataSheetExcel.push(Object.assign({}, o))
-
-                            arrUI.push(
-                                <ItemSanPham
-                                    data={TatCaSanPham[i]}
-                                    soThuTu={maxLengthSearch}
-                                />
+                    //cho render kết quả tìm kiếm tối đa là 20
+                    for (let i = 0; i < len; ++i) {
+                        if (
+                            regex.exec(
+                                removeTones(TatCaSanPham[i].NhaCC.toLowerCase())
                             )
-                        } else {
-                            break
+                        ) {
+                            maxLengthSearch++
+                            if (maxLengthSearch < 200) {
+                                //data excel
+                                const o = TatCaSanPham[i]
+                                o.index = maxLengthSearch
+                                dataSheetExcel.push(Object.assign({}, o))
+
+                                arrUI.push(
+                                    <ItemSanPham
+                                        data={TatCaSanPham[i]}
+                                        soThuTu={maxLengthSearch}
+                                    />
+                                )
+                            } else {
+                                break
+                            }
                         }
                     }
-                }
-                setLstResult(arrUI)
+                    setLstResult(arrUI)
 
-                break
-            case 'Tìm tên sản phẩm':
-                let arrUIs = []
-                const length = TatCaSanPham.length
-                let maxLengthSearchs = 0
+                    break
+                case 'Tìm tên sản phẩm':
+                    let arrUIs = []
+                    const length = TatCaSanPham.length
+                    let maxLengthSearchs = 0
 
-                //cho render kết quả tìm kiếm tối đa là 20
-                for (let i = 0; i < length; ++i) {
-                    if (
-                        regex.exec(
-                            removeTones(TatCaSanPham[i].name.toLowerCase())
-                        )
-                    ) {
-                        maxLengthSearchs++
-                        if (maxLengthSearchs < 200) {
-                            //data excel
-                            const ob = TatCaSanPham[i]
-                            ob.index = maxLengthSearchs
-                            dataSheetExcel.push(Object.assign({}, ob))
-
-                            arrUIs.push(
-                                <ItemSanPham
-                                    data={TatCaSanPham[i]}
-                                    soThuTu={maxLengthSearchs}
-                                />
+                    //cho render kết quả tìm kiếm tối đa là 20
+                    for (let i = 0; i < length; ++i) {
+                        if (
+                            regex.exec(
+                                removeTones(TatCaSanPham[i].name.toLowerCase())
                             )
-                        } else {
-                            break
+                        ) {
+                            maxLengthSearchs++
+                            if (maxLengthSearchs < 200) {
+                                //data excel
+                                const ob = TatCaSanPham[i]
+                                ob.index = maxLengthSearchs
+                                dataSheetExcel.push(Object.assign({}, ob))
+
+                                arrUIs.push(
+                                    <ItemSanPham
+                                        data={TatCaSanPham[i]}
+                                        soThuTu={maxLengthSearchs}
+                                    />
+                                )
+                            } else {
+                                break
+                            }
                         }
                     }
-                }
 
-                setLstResult(arrUIs)
-                break
+                    setLstResult(arrUIs)
+                    break
 
-            default:
-                break
+                default:
+                    break
+            }
+        } catch (err) {
+            handleErr(err.name, 'KhoHang', '473')
         }
     }
 
@@ -563,21 +568,18 @@ function KhoHang() {
                 autoHideDuration={2500}
                 onClose={() => {
                     setShowMessage(false)
-                }}
-            >
+                }}>
                 <Alert
                     onClose={() => setShowMessage(false)}
-                    severity={'success'}
-                >
+                    severity={'success'}>
                     {textMessage}
                 </Alert>
             </Snackbar>
 
             <div className="khohang-container__content">
                 <h2
-                    style={{ color: resources.colorPrimary }}
-                    className="header-title"
-                >
+                    style={{color: resources.colorPrimary}}
+                    className="header-title">
                     Kho Hàng
                 </h2>
 
@@ -586,14 +588,12 @@ function KhoHang() {
                         display: 'flex',
                         alignContent: 'center',
                         justifyContent: 'space-between',
-                    }}
-                >
+                    }}>
                     <div
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                        }}
-                    >
+                        }}>
                         <TextField
                             style={{
                                 width: '450px',
@@ -649,15 +649,13 @@ function KhoHang() {
                                         setNameFilterSearch(
                                             'Tìm tên nhà cung cấp'
                                         )
-                                    }}
-                                >
+                                    }}>
                                     Tìm tên nhà cung cấp
                                 </Dropdown.Item>
                                 <Dropdown.Item
                                     onClick={() => {
                                         setNameFilterSearch('Tìm tên sản phẩm')
-                                    }}
-                                >
+                                    }}>
                                     Tìm tên sản phẩm
                                 </Dropdown.Item>
                             </Dropdown.Menu>
@@ -685,11 +683,10 @@ function KhoHang() {
                         style={{
                             height: '600px',
                             width: '100%',
-                        }}
-                    >
+                        }}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
-                                <TableRow style={{ fontSize: 8 }}>
+                                <TableRow style={{fontSize: 8}}>
                                     <TableCell>STT</TableCell>
                                     <TableCell>Tên Sản Phẩm</TableCell>
                                     <TableCell>Đơn Vị</TableCell>
@@ -712,15 +709,13 @@ function KhoHang() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}
-            >
+                onHide={handleClose}>
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"
-                        ></Spinner>
+                            role="status"></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -729,11 +724,10 @@ function KhoHang() {
             <Modal
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
-                show={showDieuChinh}
-            >
+                show={showDieuChinh}>
                 <Modal.Body>
                     <TextField
-                        style={{ width: 200 }}
+                        style={{width: 200}}
                         placeholder="Giá Trị Mới"
                         value={GiaTriMoi}
                         onChange={(e) => {
@@ -745,8 +739,7 @@ function KhoHang() {
                     <Button
                         onCLick={(e) => {
                             HanldGiaTriMoi()
-                        }}
-                    >
+                        }}>
                         Thay Đổi
                     </Button>
                 </Modal.Footer>

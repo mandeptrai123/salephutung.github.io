@@ -6,9 +6,9 @@
   "main": "public/electron.js",
   "build": {
     "appId": "viesoftware.vn.salephutung",
-    "productName":"POS Phu Tung",
-    "mac":{
-      "icon": "./public/icons/mac/icon.icns",  
+    "productName": "POS Phu Tung",
+    "mac": {
+      "icon": "./public/icons/mac/icon.icns",
       "category": "public.app-category.utilities"
     },
     "win": {
@@ -18,7 +18,7 @@
       "./build/**/*",
       "./dist/**/*",
       "./node_modules/**/*",
-      "./public/**/*",      
+      "./public/**/*",
       "*.js"
     ],
     "directories": {
