@@ -72,6 +72,7 @@ function Oder() {
     const HoTenNV = useSelector((state) => state.HoTen)
     const arrAllSP = useSelector((state) => state.AllSanPham)
     const arrAllKhachHang = useSelector((state) => state.AllKhachHang)
+    const [arrAllKhachHangSearch, setArrAllKhachHangSearch] = useState([])
     //Modal Loading
     const [show, setShow] = useState(false)
     const [txtButtonNegative, settxtButtonNegative] = useState('OK')
@@ -624,6 +625,12 @@ function Oder() {
         GetAllKhachHang()
     }, [])
 
+    useEffect(() => {
+        var arrNew = Object.assign([], arrAllKhachHang)
+
+        setArrAllKhachHangSearch(arrNew)
+    }, [arrAllKhachHang])
+
     // Handle Popup Snackbar + Manage State
     //#region
     function handleCloseSnackbar() {}
@@ -825,28 +832,35 @@ function Oder() {
                         <Autocomplete
                             id="combo-box-khach"
                             freeSolo={true}
-                            options={arrAllKhachHang}
+                            options={arrAllKhachHangSearch.map((e) => {
+                                return {
+                                    ...e,
+                                    Name: e.Name.replace('X', '')
+                                        .trimEnd()
+                                        .trimStart(),
+                                }
+                            })}
                             getOptionLabel={(option) =>
-                                `${option.Name} (${option.DiaChi})`
+                                `${option.Name} ${option.DiaChi}`
                             }
                             style={{ width: 200 }}
                             inputValue={tenkhach}
                             onInputChange={(event, newInputValue) => {
                                 setTenKhach(newInputValue)
-
                                 arrAllKhachHang.map((e, index) => {
                                     if (
                                         newInputValue.replace(
-                                            ` (${e.DiaChi})`,
+                                            ` ${e.DiaChi}`,
                                             ''
-                                        ) === arrAllKhachHang[index].Name
-                                    ) {
-                                        setTenKhach(
-                                            newInputValue.replace(
-                                                ` (${e.DiaChi})`,
-                                                ''
-                                            )
+                                        ) ===
+                                        arrAllKhachHang[index].Name.replace(
+                                            'X',
+                                            ''
                                         )
+                                            .trimEnd()
+                                            .trimStart()
+                                    ) {
+                                        setTenKhach(arrAllKhachHang[index].Name)
                                         if (arrAllKhachHang[index].SDT) {
                                             setSoDienThoai(e.SDT)
                                         } else {
