@@ -1077,6 +1077,15 @@ function Oder() {
                         marginLeft: 11,
                         width: '350px',
                     }}
+                    onKeyDown={(e) => {
+                        var x = e.which || e.keyCode
+                        if (x === 38) {
+                            ngayDatHang.current.focus()
+                        }
+                        if (x === 40) {
+                            tenKhachRef.current.focus()
+                        }
+                    }}
                     placeholder="Nhập sản phẩm cần tìm"
                     InputProps={{
                         endAdornment: (
