@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 
 //import component
-import {Modal, Button, Spinner} from 'react-bootstrap'
-import {TextField} from '@material-ui/core'
+import { Modal, Button, Spinner } from 'react-bootstrap'
+import { TextField } from '@material-ui/core'
 // import css
 import '../css/Manage.css'
 
@@ -19,10 +19,12 @@ import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import resources from '../../../resource/color/ColorApp'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import NetWorking from '../../../networking/fetchWithTimeout'
-import {useSelector, useDispatch} from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { debounce } from 'lodash'
 
 //log
 import handleErr from '../../../utils/handleError'
@@ -39,7 +41,7 @@ import ReactExport from 'react-data-export'
 import removeTones from '../../../utils/removeTones'
 
 //import redux
-import {IsUpdateCongNo} from '../../../Redux/ActionType'
+import { IsUpdateCongNo } from '../../../Redux/ActionType'
 
 let SDTSelected
 var arr_KhachHang = []
@@ -99,7 +101,7 @@ function CongNo() {
         openDieuChinh: false,
         Pass: '',
     })
-    const {openDieuChinh, CongNoCu, CongNoMoi, Pass} = stateModalDieuChinh
+    const { openDieuChinh, CongNoCu, CongNoMoi, Pass } = stateModalDieuChinh
 
     const [checkboxView, setCheckboxView] = useState(true)
 
@@ -241,8 +243,9 @@ function CongNo() {
                         `${formatNumber(congNoMoi)} VNĐ`
                     ) : (
                         <Button
-                            style={{width: '120px'}}
-                            onClick={() => GetLichSuCapNhat(sdt)}>
+                            style={{ width: '120px' }}
+                            onClick={() => GetLichSuCapNhat(sdt)}
+                        >
                             Xem Lịch Sử
                         </Button>
                     )}
@@ -268,7 +271,8 @@ function CongNo() {
                             marginRight: '50px',
                         }}
                     />
-                }>
+                }
+            >
                 <ExcelSheet data={props.data} name="Sản phẩm">
                     <ExcelColumn label="Tên Khách" value="Name" />
                     <ExcelColumn label="Số Điện Thoại" value="SDT" />
@@ -346,7 +350,7 @@ function CongNo() {
 
     function TienVietNam(input) {
         var x = parseInt(input)
-        x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'})
+        x = x.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
         return x
     }
 
@@ -380,6 +384,7 @@ function CongNo() {
     }
 
     function handleSearch(value, nameFilter) {
+        setValueSearch(value)
         try {
             // Nếu chuỗi tìm kiếm rỗng thì cho render toàn bộ
             if (!value) {
@@ -387,8 +392,8 @@ function CongNo() {
                 return
             }
 
-            const regex = new RegExp(removeTones(value.toLowerCase()))
-            var maxItemSearch = 0
+            const reg = new RegExp(removeTones(value.toLowerCase()))
+            var maxSearchResult = 0
             const len = arr_KhachHang.length
             var arrUI = []
 
@@ -396,101 +401,145 @@ function CongNo() {
 
             switch (nameFilter) {
                 case 'Theo tên khách hàng':
-                    //render 200 kết quả tìm đc
-                    for (var i = 0; i < len; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(arr_KhachHang[i].Name.toLowerCase())
-                            )
-                        ) {
-                            maxItemSearch++
-                            if (maxItemSearch < 200) {
-                                if (checkboxView) {
-                                    if (arr_KhachHang[i].Congno != 0) {
-                                        //data excel
-                                        dataSheetExcel.push(
-                                            Object.assign({}, arr_KhachHang[i])
-                                        )
-                                        //data excel
-
-                                        arrUI.push(
-                                            <ItemCongNo
-                                                data={arr_KhachHang[i]}
-                                                soThuTu={maxItemSearch}
-                                            />
-                                        )
-                                    }
+                    new Promise((resolve, reject) => {
+                        for (var i = 0; i < len; ++i) {
+                            if (
+                                reg.exec(
+                                    removeTones(
+                                        arr_KhachHang[i].Name.toLowerCase()
+                                    )
+                                )
+                            ) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(arr_KhachHang[i])
                                 } else {
-                                    //data excel
-                                    dataSheetExcel.push(
-                                        Object.assign({}, arr_KhachHang[i])
-                                    )
-                                    //data excel
-
-                                    arrUI.push(
-                                        <ItemCongNo
-                                            data={arr_KhachHang[i]}
-                                            soThuTu={maxItemSearch}
-                                        />
-                                    )
+                                    break
                                 }
-                            } else {
-                                break
                             }
                         }
-                    }
 
-                    setResult(arrUI)
+                        resolve(arrUI)
+                    }).then((arrResult) => {
+                        // so sanh đảo từ - loại bỏ trùng lặp
+                        for (var i = 0; i < arr_KhachHang.length; i++) {
+                            var _destinationWord = removeTones(
+                                arr_KhachHang[i].Name.toLowerCase()
+                            )
+                            var _arrWords = removeTones(
+                                value.toLowerCase()
+                            ).split(' ')
+                            var _lenghtWords = 0
+
+                            for (var k = 0; k < _arrWords.length; k++) {
+                                if (
+                                    new String(_destinationWord).includes(
+                                        _arrWords[k]
+                                    )
+                                ) {
+                                    _lenghtWords++
+                                }
+
+                                if (_lenghtWords == _arrWords.length) {
+                                    // kiểm tra trùng _id
+                                    var _isFind = false
+                                    for (var j = 0; j < arrResult.length; j++) {
+                                        if (
+                                            arr_KhachHang[i]._id ==
+                                            arrResult[j]._id
+                                        ) {
+                                            _isFind = true
+                                        }
+                                    }
+
+                                    if (_isFind == false) {
+                                        arrResult.push(arr_KhachHang[i])
+                                    }
+                                }
+                            }
+                        }
+
+                        // Render Data To Component
+                        var _arrUI = []
+                        var maxRender = 0
+                        for (var index = 0; index < arrResult.length; index++) {
+                            maxRender++
+                            if (maxRender < 201) _arrUI.push(arrResult[index])
+                            else break
+                        }
+                        RenderCongNo(_arrUI, checkboxView)
+                    })
 
                     break
                 case 'Theo địa chỉ':
-                    //render 200 kết quả tìm đc
-                    for (var i = 0; i < len; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(
-                                    arr_KhachHang[i].DiaChi.toLowerCase()
+                    new Promise((resolve, reject) => {
+                        for (var i = 0; i < len; ++i) {
+                            if (
+                                reg.exec(
+                                    removeTones(
+                                        arr_KhachHang[i].DiaChi.toLowerCase()
+                                    )
                                 )
-                            )
-                        ) {
-                            maxItemSearch++
-                            if (maxItemSearch < 200) {
-                                if (checkboxView) {
-                                    if (arr_KhachHang[i].Congno != 0) {
-                                        //data excel
-                                        dataSheetExcel.push(
-                                            Object.assign({}, arr_KhachHang[i])
-                                        )
-                                        //data excel
-
-                                        arrUI.push(
-                                            <ItemCongNo
-                                                data={arr_KhachHang[i]}
-                                                soThuTu={maxItemSearch}
-                                            />
-                                        )
-                                    }
+                            ) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(arr_KhachHang[i])
                                 } else {
-                                    //data excel
-                                    dataSheetExcel.push(
-                                        Object.assign({}, arr_KhachHang[i])
-                                    )
-                                    //data excel
-
-                                    arrUI.push(
-                                        <ItemCongNo
-                                            data={arr_KhachHang[i]}
-                                            soThuTu={maxItemSearch}
-                                        />
-                                    )
+                                    break
                                 }
-                            } else {
-                                break
                             }
                         }
-                    }
 
-                    setResult(arrUI)
+                        resolve(arrUI)
+                    }).then((arrResult) => {
+                        // so sanh đảo từ - loại bỏ trùng lặp
+                        for (var i = 0; i < arr_KhachHang.length; i++) {
+                            var _destinationWord = removeTones(
+                                arr_KhachHang[i].DiaChi.toLowerCase()
+                            )
+                            var _arrWords = removeTones(
+                                value.toLowerCase()
+                            ).split(' ')
+                            var _lenghtWords = 0
+
+                            for (var k = 0; k < _arrWords.length; k++) {
+                                if (
+                                    new String(_destinationWord).includes(
+                                        _arrWords[k]
+                                    )
+                                ) {
+                                    _lenghtWords++
+                                }
+
+                                if (_lenghtWords == _arrWords.length) {
+                                    // kiểm tra trùng _id
+                                    var _isFind = false
+                                    for (var j = 0; j < arrResult.length; j++) {
+                                        if (
+                                            arr_KhachHang[i]._id ==
+                                            arrResult[j]._id
+                                        ) {
+                                            _isFind = true
+                                        }
+                                    }
+
+                                    if (_isFind == false) {
+                                        arrResult.push(arr_KhachHang[i])
+                                    }
+                                }
+                            }
+                        }
+
+                        // Render Data To Component
+                        var _arrUI = []
+                        var maxRender = 0
+                        for (var index = 0; index < arrResult.length; index++) {
+                            maxRender++
+                            if (maxRender < 201) _arrUI.push(arrResult[index])
+                            else break
+                        }
+                        RenderCongNo(_arrUI, checkboxView)
+                    })
 
                     break
                 default:
@@ -500,6 +549,11 @@ function CongNo() {
             handleErr(err.name, 'CongNo', '382')
         }
     }
+
+    const searchDebounce = debounce(
+        (value) => handleSearch(value, nameFilterSearch),
+        500
+    )
 
     function GetLichSuCapNhat(sdt) {
         const _URL = URL_API + 'NhatKyCongNoBySDT?SDTKhach=' + sdt
@@ -548,7 +602,8 @@ function CongNo() {
                 centered
                 size="xl"
                 show={showLichSuCapNhat}
-                onHide={() => setShowLichSuCapNhat(false)}>
+                onHide={() => setShowLichSuCapNhat(false)}
+            >
                 <Modal.Header closeButton>
                     <h5>Lịch sử cập nhật công nợ</h5>
                 </Modal.Header>
@@ -556,7 +611,8 @@ function CongNo() {
                     <TableContainer
                         style={{
                             maxHeight: '570px',
-                        }}>
+                        }}
+                    >
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
@@ -585,10 +641,12 @@ function CongNo() {
                 autoHideDuration={2000}
                 onClose={() => {
                     setShowMessage(false)
-                }}>
+                }}
+            >
                 <Alert
                     onClose={() => setShowMessage(false)}
-                    severity={'success'}>
+                    severity={'success'}
+                >
                     Cập nhật thành công
                 </Alert>
             </Snackbar>
@@ -604,7 +662,8 @@ function CongNo() {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'center',
-            }}>
+            }}
+        >
             <XemLichSuCapNhat />
             <MessageUpdateCongNo />
             <h1
@@ -612,7 +671,8 @@ function CongNo() {
                     textAlign: 'center',
                     paddingRight: 200,
                     color: resources.colorPrimary,
-                }}>
+                }}
+            >
                 Toàn Bộ Công Nợ
             </h1>
             <FontAwesomeIcon
@@ -636,30 +696,25 @@ function CongNo() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     width: '100%',
-                }}>
+                }}
+            >
                 <TextField
                     style={{
                         width: 450,
                         marginRight: 35,
                         marginLeft: 35,
                     }}
-                    id="outlined-basic"
+                    id="search-congno"
                     placeholder={nameFilterSearch}
                     variant="outlined"
-                    onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                            handleSearch(event.target.value, nameFilterSearch)
-                        }
-                    }}
-                    value={valueSearch}
-                    onChange={(e) => {
-                        setValueSearch(e.target.value)
-                    }}
+                    onChange={(e) => searchDebounce(e.target.value)}
                     InputProps={{
                         endAdornment: (
                             <CloseIcon
                                 onClick={(e) => {
-                                    setValueSearch('')
+                                    document.getElementById(
+                                        'search-congno'
+                                    ).value = ''
                                     handleSearch('')
                                 }}
                                 style={{
@@ -687,20 +742,22 @@ function CongNo() {
                         <Dropdown.Item
                             onClick={(e) => {
                                 setNameFilterSearch('Theo tên khách hàng')
-                            }}>
+                            }}
+                        >
                             Theo tên khách hàng
                         </Dropdown.Item>
                         <Dropdown.Item
                             onClick={(e) => {
                                 setNameFilterSearch('Theo địa chỉ')
-                            }}>
+                            }}
+                        >
                             Theo địa chỉ
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
 
                 <FormControlLabel
-                    style={{marginLeft: '10px'}}
+                    style={{ marginLeft: '10px' }}
                     control={
                         <Checkbox
                             color="primary"
@@ -722,7 +779,8 @@ function CongNo() {
                     marginTop: 20,
                     maxHeight: '500px',
                     width: '97%',
-                }}>
+                }}
+            >
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
@@ -739,9 +797,9 @@ function CongNo() {
                     <TableBody>{lstResult}</TableBody>
                 </Table>
             </TableContainer>
-            <div style={{paddingRight: 200, marginTop: 30}}>
-                <h4 style={{textAlign: 'center'}}>Tổng Công Nợ</h4>
-                <h3 style={{textAlign: 'center', color: 'red'}}>
+            <div style={{ paddingRight: 200, marginTop: 30 }}>
+                <h4 style={{ textAlign: 'center' }}>Tổng Công Nợ</h4>
+                <h3 style={{ textAlign: 'center', color: 'red' }}>
                     {totalCongNo}
                 </h3>
             </div>
@@ -750,13 +808,15 @@ function CongNo() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}>
+                onHide={handleClose}
+            >
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"></Spinner>
+                            role="status"
+                        ></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -766,19 +826,21 @@ function CongNo() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 backdrop="static"
-                show={openDieuChinh}>
+                show={openDieuChinh}
+            >
                 <Modal.Title
                     style={{
                         color: 'red',
                         fontWeight: 'bold',
                         padding: 10,
                         fontSize: 15,
-                    }}>
+                    }}
+                >
                     "Lưu Ý: Hoạt Động Này Sẽ Được Ghi Vào Nhật Ký !"
                 </Modal.Title>
 
                 <Modal.Body>
-                    <div style={{width: '50%'}}>
+                    <div style={{ width: '50%' }}>
                         <TextField
                             variant="outlined"
                             style={{
@@ -819,7 +881,8 @@ function CongNo() {
                             if (bodyRequestUpdateCongNo) {
                                 CapNhatCongNoMoi(bodyRequestUpdateCongNo)
                             }
-                        }}>
+                        }}
+                    >
                         Lưu
                     </Button>
                     <Button
@@ -831,7 +894,8 @@ function CongNo() {
 
                             //Cho tải lại dữ liệu để trở về như củ khi cập nhật thất bại
                             setRefresh(!refresh)
-                        }}>
+                        }}
+                    >
                         Hủy
                     </Button>
                 </Modal.Footer>

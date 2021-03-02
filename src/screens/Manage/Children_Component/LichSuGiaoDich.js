@@ -1,12 +1,15 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
-import {useSelector, useDispatch} from 'react-redux'
-import {SaveObjectBill, UpdateThanhTienDonHang} from '../../../Redux/ActionType'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+    SaveObjectBill,
+    UpdateThanhTienDonHang,
+} from '../../../Redux/ActionType'
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 
-import {Modal, Spinner} from 'react-bootstrap'
+import { Modal, Spinner } from 'react-bootstrap'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import DeleteIcon from '@material-ui/icons/Delete'
 import Table from '@material-ui/core/Table'
@@ -21,7 +24,7 @@ import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import resources from '../../../resource/color/ColorApp'
-import {TextField} from '@material-ui/core'
+import { TextField } from '@material-ui/core'
 import NetWorking from '../../../networking/fetchWithTimeout'
 import Button from '@material-ui/core/Button'
 
@@ -36,12 +39,12 @@ import iconExcel from '../../../assets/icons/png/icons8-microsoft_excel.png'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 
-import {Alert} from '@material-ui/lab'
+import { Alert } from '@material-ui/lab'
 import Snackbar from '@material-ui/core/Snackbar'
 
-import ReactToPrint, {useReactToPrint} from 'react-to-print'
+import ReactToPrint, { useReactToPrint } from 'react-to-print'
 import PrintedDonHang from '../../Print/PrintedDonHang'
-import {Autocomplete} from '@material-ui/lab'
+import { Autocomplete } from '@material-ui/lab'
 
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -51,14 +54,14 @@ import ReactExport from 'react-data-export'
 
 // xóa dấu
 import removeTones from '../../../utils/removeTones'
-import {set} from 'lodash'
-import {CallReceived} from '@material-ui/icons'
+import { set, debounce } from 'lodash'
+import { CallReceived } from '@material-ui/icons'
 
 var _arrDonHang = []
 
 function TienVietNam(input) {
     var x = parseInt(input)
-    x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'})
+    x = x.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })
     return x
 }
 
@@ -145,7 +148,7 @@ function LichSuGiaoDich() {
     })
 
     function handleClickPrint(item) {
-        setStateModal({...stateModal, open: true, itemSelected: item})
+        setStateModal({ ...stateModal, open: true, itemSelected: item })
     }
 
     const ItemDonHang = (props, action, index) => {
@@ -164,7 +167,8 @@ function LichSuGiaoDich() {
                 <TableCell>
                     <List
                         component="nav"
-                        aria-label="secondary mailbox folders">
+                        aria-label="secondary mailbox folders"
+                    >
                         {props.lstSanPham.map((e) => {
                             return (
                                 <ListItem button>
@@ -180,7 +184,8 @@ function LichSuGiaoDich() {
                             action(props)
                         }}
                         variant="contained"
-                        color="primary">
+                        color="primary"
+                    >
                         In Đơn Hàng Này
                     </Button>
                     <Button
@@ -195,7 +200,8 @@ function LichSuGiaoDich() {
                             RenderUIUpdateBill(props.lstSanPham, index)
 
                             setShowModalUpdateBill(true)
-                        }}>
+                        }}
+                    >
                         Chỉnh sửa
                     </Button>
                 </TableCell>
@@ -215,7 +221,7 @@ function LichSuGiaoDich() {
             if (arr[i].lstSanPham.length != 0) {
                 _total += 1
                 maxRender++
-                if (maxRender < 101) {
+                if (maxRender < 201) {
                     dataSheetExcel.push(Object.assign({}, arr[i]))
                     _result.push(ItemDonHang(arr[i], handleClickPrint, i))
                 } else break
@@ -263,7 +269,8 @@ function LichSuGiaoDich() {
                             cursor: 'pointer',
                         }}
                     />
-                }>
+                }
+            >
                 <ExcelSheet data={props.data} name="Sản phẩm">
                     <ExcelColumn label="Tên Khách" value="TenKhach" />
                     <ExcelColumn label="Thời Gian Giao Dịch" value="Date" />
@@ -293,7 +300,7 @@ function LichSuGiaoDich() {
                 )
             })
         )
-        dispatch({type: UpdateThanhTienDonHang, value: _thanhtien})
+        dispatch({ type: UpdateThanhTienDonHang, value: _thanhtien })
     }
 
     function updateBill(bodyRequest) {
@@ -393,7 +400,7 @@ function LichSuGiaoDich() {
                 <TableCell>{props.index}</TableCell>
                 <TableCell>
                     <Autocomplete
-                        style={{width: '280px'}}
+                        style={{ width: '280px' }}
                         freeSolo={true}
                         options={arrAllSanPham}
                         getOptionLabel={(option) => option.name}
@@ -459,7 +466,7 @@ function LichSuGiaoDich() {
                         type="number"
                         placeholder="Số lượng"
                         value={soluongBan}
-                        style={{width: '70px'}}
+                        style={{ width: '70px' }}
                         onChange={(e) => {
                             const value = e.target.value
                             setSoLuongBan(value)
@@ -498,7 +505,7 @@ function LichSuGiaoDich() {
                         type="number"
                         placeholder="Số lượng quà tặng"
                         value={soluongQuaTang}
-                        style={{width: '70px'}}
+                        style={{ width: '70px' }}
                         onChange={(e) => {
                             const value = +e.target.value
                             setSoLuongQuaTang(value)
@@ -514,7 +521,7 @@ function LichSuGiaoDich() {
                     <TextField
                         placeholder="Giá tiền"
                         value={price}
-                        style={{width: '180px'}}
+                        style={{ width: '180px' }}
                         onChange={(e) => {
                             const value = e.target.value
                             setPrice(value)
@@ -565,7 +572,8 @@ function LichSuGiaoDich() {
                 <TableCell
                     style={{
                         width: '150px',
-                    }}>{`${priceSum} VNĐ`}</TableCell>
+                    }}
+                >{`${priceSum} VNĐ`}</TableCell>
                 <TableCell>
                     <DeleteIcon
                         style={{
@@ -629,7 +637,8 @@ function LichSuGiaoDich() {
                     height: `calc(100vh + ${addHeightScroll}vh)`,
                     backgroundColor: 'rgba(0, 0, 0, .5)',
                     zIndex: '50',
-                }}>
+                }}
+            >
                 <div
                     style={{
                         width: '1150px',
@@ -638,13 +647,15 @@ function LichSuGiaoDich() {
                         borderRadius: '5px',
                         position: 'absolute',
                         top: '30px',
-                    }}>
+                    }}
+                >
                     <h4>Chỉnh sửa bill</h4>
                     <div
                         style={{
                             display: 'flex',
                             justifyContent: 'space-around',
-                        }}>
+                        }}
+                    >
                         <TextField
                             label="Tên Khách"
                             variant="outlined"
@@ -688,14 +699,15 @@ function LichSuGiaoDich() {
                             <TableBody>{resultUpdateBill}</TableBody>
                         </Table>
                     </TableContainer>
-                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <label
                             for="ghiChu"
                             style={{
                                 fontSize: '17px',
                                 marginBottom: '0px',
                                 fontWeight: '600',
-                            }}>
+                            }}
+                        >
                             Ghi chú đơn hàng
                         </label>
                         <TextareaAutosize
@@ -716,8 +728,8 @@ function LichSuGiaoDich() {
                             }}
                         />
                     </div>
-                    <div style={{display: 'flex', marginTop: '10px'}}>
-                        <h5 style={{marginBottom: '0'}}>Thành Tiền: </h5>
+                    <div style={{ display: 'flex', marginTop: '10px' }}>
+                        <h5 style={{ marginBottom: '0' }}>Thành Tiền: </h5>
                         <input
                             type="text"
                             style={{
@@ -752,9 +764,10 @@ function LichSuGiaoDich() {
                             justifyContent: 'space-between',
                             paddingTop: '10px',
                             paddingBottom: '10px',
-                        }}>
+                        }}
+                    >
                         <AddCircleOutlineIcon
-                            style={{fontSize: '40px', cursor: 'pointer'}}
+                            style={{ fontSize: '40px', cursor: 'pointer' }}
                             onClick={() => {
                                 setAddHeightScroll(addHeightScroll + 12)
 
@@ -814,7 +827,8 @@ function LichSuGiaoDich() {
                                     updateBill(objectNewBillPOST)
                                     setShowModalUpdateBill(false)
                                     RenderUIUpdateBill([]) // reset modal bill
-                                }}>
+                                }}
+                            >
                                 Cập Nhật
                             </Button>
                             <Button
@@ -826,7 +840,8 @@ function LichSuGiaoDich() {
                                     OnRefresh()
                                     setShowModalUpdateBill(false)
                                     RenderUIUpdateBill([]) //reset modal bill
-                                }}>
+                                }}
+                            >
                                 Hủy Bỏ
                             </Button>
                         </div>
@@ -836,15 +851,16 @@ function LichSuGiaoDich() {
         )
     }
 
-    function handleSearch(valueSearch, nameFilter) {
+    function handleSearch(value, nameFilter) {
+        setValueSearch(value)
         try {
             // Nếu chuỗi tìm kiếm rỗng thì trả về toàn bộ ds
-            if (!valueSearch) {
+            if (!value) {
                 RenderUIAllDonHang(_arrDonHang)
                 return
             }
 
-            let maxRender = 0
+            var maxSearchResult = 0
             const len = _arrDonHang.length
             var arrUI = []
 
@@ -855,9 +871,8 @@ function LichSuGiaoDich() {
 
             switch (nameFilter) {
                 case 'Theo tên khách hàng':
-                    for (var i = 0; i < len; ++i) {
-                        maxRender++
-                        if (maxRender < 201) {
+                    new Promise((resolve, reject) => {
+                        for (var i = 0; i < len; ++i) {
                             if (
                                 reg.exec(
                                     removeTones(
@@ -865,18 +880,65 @@ function LichSuGiaoDich() {
                                     )
                                 )
                             ) {
-                                //data excel
-                                dataSheetExcel.push(
-                                    Object.assign({}, _arrDonHang[i])
-                                )
-                                //data excel
-
-                                arrUI.push(_arrDonHang[i])
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(_arrDonHang[i])
+                                } else {
+                                    break
+                                }
                             }
-                        } else break
-                    }
+                        }
+                        resolve(arrUI)
+                    }).then((arrResult) => {
+                        // so sanh đảo từ - loại bỏ trùng lặp
+                        for (var i = 0; i < _arrDonHang.length; i++) {
+                            var _destinationWord = removeTones(
+                                _arrDonHang[i].TenKhach.toLowerCase()
+                            )
+                            var _arrWords = removeTones(
+                                value.toLowerCase()
+                            ).split(' ')
+                            var _lenghtWords = 0
 
-                    RenderUIAllDonHang(arrUI)
+                            for (var k = 0; k < _arrWords.length; k++) {
+                                if (
+                                    new String(_destinationWord).includes(
+                                        _arrWords[k]
+                                    )
+                                ) {
+                                    _lenghtWords++
+                                }
+
+                                if (_lenghtWords == _arrWords.length) {
+                                    // kiểm tra trùng _id
+                                    var _isFind = false
+                                    for (var j = 0; j < arrResult.length; j++) {
+                                        if (
+                                            _arrDonHang[i]._id ==
+                                            arrResult[j]._id
+                                        ) {
+                                            _isFind = true
+                                        }
+                                    }
+
+                                    if (_isFind == false) {
+                                        arrResult.push(_arrDonHang[i])
+                                    }
+                                }
+                            }
+                        }
+
+                        // Render Data To Component
+                        var _arrUI = []
+                        var maxRender = 0
+                        for (var index = 0; index < arrResult.length; index++) {
+                            maxRender++
+                            if (maxRender < 201) _arrUI.push(arrResult[index])
+                            else break
+                        }
+
+                        RenderUIAllDonHang(_arrUI)
+                    })
                     break
                 case 'Theo tên sản phẩm':
                     handleShow()
@@ -912,6 +974,11 @@ function LichSuGiaoDich() {
             handleErr(err.name, 'LichSuGiaoDich', '836')
         }
     }
+
+    const searchDebounce = debounce(
+        (value) => handleSearch(value, nameFilterSearch),
+        500
+    )
 
     function handleFilterDate(date) {
         handleShow()
@@ -949,16 +1016,19 @@ function LichSuGiaoDich() {
                     flexDirection: 'column',
                     justifyContent: 'flex-start',
                     alignItems: 'center',
-                }}>
+                }}
+            >
                 <Snackbar
                     open={showMessage}
                     autoHideDuration={2500}
                     onClose={() => {
                         setShowMessage(false)
-                    }}>
+                    }}
+                >
                     <Alert
                         onClose={() => setShowMessage(false)}
-                        severity={'success'}>
+                        severity={'success'}
+                    >
                         {textMessage}
                     </Alert>
                 </Snackbar>
@@ -969,7 +1039,8 @@ function LichSuGiaoDich() {
                             textAlign: 'center',
                             paddingRight: 200,
                             color: resources.colorPrimary,
-                        }}>
+                        }}
+                    >
                         Lịch Sử Giao Dịch
                     </h1>
                 </div>
@@ -979,17 +1050,11 @@ function LichSuGiaoDich() {
                         display: 'flex',
                         width: '100%',
                         alignItems: 'center',
-                    }}>
+                    }}
+                >
                     <TextField
-                        onChange={(e) => {
-                            setValueSearch(e.target.value)
-                        }}
-                        value={valueSearch}
-                        onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                                handleSearch(e.target.value, nameFilterSearch)
-                            }
-                        }}
+                        onChange={(e) => searchDebounce(e.target.value)}
+                        id="search-lichsu"
                         style={{
                             height: 50,
                             marginLeft: '30px',
@@ -1002,7 +1067,9 @@ function LichSuGiaoDich() {
                             endAdornment: (
                                 <CloseIcon
                                     onClick={(e) => {
-                                        setValueSearch('')
+                                        document.getElementById(
+                                            'search-lichsu'
+                                        ).value = ''
                                         handleSearch('')
                                     }}
                                     style={{
@@ -1030,20 +1097,22 @@ function LichSuGiaoDich() {
                             <Dropdown.Item
                                 onClick={(e) => {
                                     setNameFilterSearch('Theo tên khách hàng')
-                                }}>
+                                }}
+                            >
                                 Theo tên khách hàng
                             </Dropdown.Item>
                             <Dropdown.Item
                                 onClick={(e) => {
                                     setNameFilterSearch('Theo tên sản phẩm')
-                                }}>
+                                }}
+                            >
                                 Theo tên sản phẩm
                             </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
 
                     <FormControlLabel
-                        style={{marginLeft: '10px'}}
+                        style={{ marginLeft: '10px' }}
                         control={
                             <Checkbox
                                 color="primary"
@@ -1076,7 +1145,7 @@ function LichSuGiaoDich() {
                             pointerEvents: 'none',
                         }}
                         onChange={(e) => {
-                            setState({...state, DateTimKiem: e.target.value})
+                            setState({ ...state, DateTimKiem: e.target.value })
                             handleFilterDate(e.target.value)
                         }}
                         onKeyPress={(e) => {
@@ -1118,7 +1187,8 @@ function LichSuGiaoDich() {
                         textAlign: 'center',
                         width: '100%',
                         alignSelf: 'center',
-                    }}>
+                    }}
+                >
                     Tổng Số Đơn: {totalBill}
                 </h4>
                 <TableContainer
@@ -1126,7 +1196,8 @@ function LichSuGiaoDich() {
                         marginTop: 20,
                         maxHeight: '450px',
                         width: '93%',
-                    }}>
+                    }}
+                >
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -1147,13 +1218,15 @@ function LichSuGiaoDich() {
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                     show={show}
-                    onHide={handleClose}>
+                    onHide={handleClose}
+                >
                     <Modal.Body>
                         <Modal.Title>
                             <Spinner
                                 animation="border"
                                 variant="success"
-                                role="status"></Spinner>
+                                role="status"
+                            ></Spinner>
                             {messLoading}
                         </Modal.Title>
                     </Modal.Body>
@@ -1164,12 +1237,14 @@ function LichSuGiaoDich() {
                     centered
                     size="xl"
                     show={stateModal.open}
-                    onHide={() => setStateModal({...stateModal, open: false})}>
+                    onHide={() => setStateModal({ ...stateModal, open: false })}
+                >
                     <Modal.Body
                         style={{
                             overflow: 'hidden',
                             padding: '0',
-                        }}>
+                        }}
+                    >
                         <PrintedDonHang
                             ref={componentRef}
                             item={stateModal.itemSelected}
@@ -1182,8 +1257,9 @@ function LichSuGiaoDich() {
                         />
                         <Button
                             onClick={(e) =>
-                                setStateModal({...stateModal, open: false})
-                            }>
+                                setStateModal({ ...stateModal, open: false })
+                            }
+                        >
                             Huỷ Bỏ
                         </Button>
                     </Modal.Footer>

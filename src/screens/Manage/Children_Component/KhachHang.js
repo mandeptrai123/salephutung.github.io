@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
 import TextField from '@material-ui/core/TextField'
 import RefreshIcon from '@material-ui/icons/Refresh'
 
 //import component
-import {Modal, Button, Spinner} from 'react-bootstrap'
+import { Modal, Button, Spinner } from 'react-bootstrap'
 
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -12,6 +12,8 @@ import TableCell from '@material-ui/core/TableCell'
 import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
+
+import { debounce } from 'lodash'
 
 // xóa dấu
 import removeTones from '../../../utils/removeTones'
@@ -26,8 +28,8 @@ import NetWorking from '../../../networking/fetchWithTimeout'
 import resources from '../../../resource/color/ColorApp'
 
 //hook, action redux
-import {useSelector, useDispatch} from 'react-redux'
-import {UpdateKhachHang, GetAllKhachHang} from '../../../Redux/ActionType'
+import { useSelector, useDispatch } from 'react-redux'
+import { UpdateKhachHang, GetAllKhachHang } from '../../../Redux/ActionType'
 
 export default function KhachHang() {
     const [resultTableNhatKy, setResultTableNhatKy] = useState()
@@ -60,16 +62,14 @@ export default function KhachHang() {
 
         NetWorking(_URL, requestOptions)
             .then((res) => {
+                handleClose()
                 if (res.success) {
-                    RenderUIKhachHang(res.data)
-
                     dispatch({
                         type: GetAllKhachHang,
                         dataKhachHang: res.data,
                     })
+                    RenderUIKhachHang(res.data)
                 }
-
-                handleClose()
             })
             .catch((e) => {
                 handleClose()
@@ -84,7 +84,7 @@ export default function KhachHang() {
 
         for (let i = 0; i < lenData; ++i) {
             maxRender++
-            if (maxRender < 201)
+            if (maxRender < 101)
                 result.push(<ItemKhachHang data={data[i]} index={i} />)
             else break
         }
@@ -109,12 +109,13 @@ export default function KhachHang() {
         NetWorking(_url, requestOptions)
             .then((res) => {
                 if (res.success) {
+                    console.log(res)
                     setMessLoading(res.mess)
 
                     //cập nhật khách hàng trên redux store
                     dispatch({
                         type: UpdateKhachHang,
-                        value: {objectKhachHang, index},
+                        value: { objectKhachHang, index },
                     })
 
                     setTimeout(() => {
@@ -256,13 +257,15 @@ export default function KhachHang() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}>
+                onHide={handleClose}
+            >
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"></Spinner>
+                            role="status"
+                        ></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
@@ -275,6 +278,7 @@ export default function KhachHang() {
     }, [])
 
     function handleSearch(value) {
+        setValueSearch(value)
         try {
             if (!value) {
                 setResultTableNhatKy(uiNhatKy)
@@ -290,9 +294,12 @@ export default function KhachHang() {
             for (let i = 0; i < len; ++i) {
                 if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase()))) {
                     maxRender++
-                    if (maxRender < 200) {
+                    if (maxRender < 100) {
                         result.push(
-                            <ItemKhachHang data={allKhachHang[i]} index={i} />
+                            <ItemKhachHang
+                                data={allKhachHang[i]}
+                                index={maxRender}
+                            />
                         )
                     } else {
                         break
@@ -306,6 +313,8 @@ export default function KhachHang() {
         }
     }
 
+    const searchDebounce = debounce((value) => handleSearch(value), 500)
+
     return (
         <div>
             <ModalDialogMessage />
@@ -314,7 +323,8 @@ export default function KhachHang() {
                     textAlign: 'center',
                     marginTop: '20px',
                     color: resources.colorPrimary,
-                }}>
+                }}
+            >
                 Khách Hàng
             </h1>
             <div
@@ -323,26 +333,22 @@ export default function KhachHang() {
                     paddingBottom: '15px',
                     display: 'flex',
                     justifyContent: 'space-around',
-                }}>
+                }}
+            >
                 <TextField
-                    id="outlined-basic"
+                    id="search-kh"
                     placeholder="Tìm kiếm theo tên khách hàng"
                     variant="outlined"
                     style={{
                         width: '80%',
                     }}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSearch(e.target.value)
-                        }
-                    }}
-                    onChange={(e) => setValueSearch(e.target.value)}
-                    value={valueSearch}
+                    onChange={(e) => searchDebounce(e.target.value)}
                     InputProps={{
                         endAdornment: (
                             <CloseIcon
                                 onClick={(e) => {
-                                    setValueSearch('')
+                                    document.getElementById('search-kh').value =
+                                        ''
                                     handleSearch('')
                                 }}
                                 style={{
@@ -376,12 +382,14 @@ export default function KhachHang() {
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
-                }}>
+                }}
+            >
                 <TableContainer
                     style={{
                         maxHeight: '550px',
                         width: '95%',
-                    }}>
+                    }}
+                >
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>

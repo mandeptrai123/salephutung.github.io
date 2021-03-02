@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 
 // import css
 import './css/HangTonSLThap.css'
 
 //import component
 import TextareaAutosize from '@material-ui/core/TextareaAutosize'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faSyncAlt} from '@fortawesome/free-solid-svg-icons'
-import {Modal, Spinner} from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import { Modal, Spinner } from 'react-bootstrap'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -16,15 +16,15 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import resources from '../../resource/color/ColorApp'
 import NetWorking from '../../networking/fetchWithTimeout'
-import {Button} from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import _, {indexOf} from 'lodash'
+import _, { indexOf, debounce } from 'lodash'
 import EmailIcon from '@material-ui/icons/Email'
 import disableScroll from 'disable-scroll'
 import Dropdown from 'react-bootstrap/Dropdown'
 import TextField from '@material-ui/core/TextField'
-import {Alert} from '@material-ui/lab'
+import { Alert } from '@material-ui/lab'
 import Snackbar from '@material-ui/core/Snackbar'
 
 //log api
@@ -43,7 +43,7 @@ import {
     SaveListSPThieuSL,
     UpdateGhiChuNewSpThieuSl,
 } from '../../Redux/ActionType'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 function MatHangHetSL() {
     const dispatch = useDispatch()
@@ -75,7 +75,7 @@ function MatHangHetSL() {
     const handleShow = () => setShow(true)
 
     function ItemNoiDung(props) {
-        const objSP = {...props.data}
+        const objSP = { ...props.data }
         const [valueGhiChuEachSP, setValueGhiChuEachSP] = useState(objSP.Ghichu)
 
         return (
@@ -123,7 +123,7 @@ function MatHangHetSL() {
                     NhaCC: key,
                     SDTNhaCC: value[0].SDTNhaCC,
                     Ghichu: value.map((e) => {
-                        return {ghichu: e.Ghichu, tenSP: e.Name}
+                        return { ghichu: e.Ghichu, tenSP: e.Name }
                     }),
                 }
             })
@@ -140,16 +140,19 @@ function MatHangHetSL() {
                 show={showModalSendEmailGhiChu}
                 onHide={() => {
                     setShowModalSendEmailGhiChu(false)
-                }}>
+                }}
+            >
                 <Snackbar
                     open={showMessage}
                     autoHideDuration={2500}
                     onClose={() => {
                         setShowMessage(false)
-                    }}>
+                    }}
+                >
                     <Alert
                         onClose={() => setShowMessage(false)}
-                        severity={'success'}>
+                        severity={'success'}
+                    >
                         Copy thành công!
                     </Alert>
                 </Snackbar>
@@ -161,12 +164,14 @@ function MatHangHetSL() {
                         fontSize: '17px',
                         maxHeight: '640px',
                         overflowY: 'scroll',
-                    }}>
+                    }}
+                >
                     <div
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                        }}>
+                        }}
+                    >
                         <span>
                             Chúng tôi cần đặt hàng từ các nhà cung cấp thêm 1 số
                             mặt hàng sau:
@@ -209,25 +214,29 @@ function MatHangHetSL() {
                             <div
                                 style={{
                                     display: checkGhiChu ? 'block' : 'none',
-                                }}>
+                                }}
+                            >
                                 <hr />
                                 <div
                                     style={{
                                         display: 'flex',
                                         justifyContent: 'center',
-                                    }}>
+                                    }}
+                                >
                                     <div
                                         style={{
                                             width: '70%',
                                             display: 'flex',
                                             justifyContent: 'space-between',
-                                        }}>
+                                        }}
+                                    >
                                         <div
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 justifyContent: 'center',
-                                            }}>
+                                            }}
+                                        >
                                             {item.Ghichu.map((e) => {
                                                 if (e.ghichu) {
                                                     return (
@@ -239,7 +248,8 @@ function MatHangHetSL() {
                                                                     '13px',
                                                                 fontWeight:
                                                                     '600',
-                                                            }}>
+                                                            }}
+                                                        >
                                                             {e.ghichu} {e.tenSP}
                                                         </p>
                                                     )
@@ -257,7 +267,8 @@ function MatHangHetSL() {
                         variant="primary"
                         onClick={() => {
                             setShowModalSendEmailGhiChu(false)
-                        }}>
+                        }}
+                    >
                         OK
                     </Button>
                 </Modal.Footer>
@@ -308,7 +319,7 @@ function MatHangHetSL() {
                                     Ghichu: '',
                                 },
                             ]
-                            var isAlready = _.some(arr, {NhaCC: e.NhaCC})
+                            var isAlready = _.some(arr, { NhaCC: e.NhaCC })
                             if (!isAlready) {
                                 arr.push(e)
                             } else {
@@ -335,7 +346,7 @@ function MatHangHetSL() {
                         })
 
                         //Lưu list sản phẩm thiếu số lượng vào store
-                        dispatch({type: SaveListSPThieuSL, value: ds})
+                        dispatch({ type: SaveListSPThieuSL, value: ds })
 
                         UpdateHangThieuSL(ds)
                     } catch (err) {
@@ -353,7 +364,7 @@ function MatHangHetSL() {
         let maxRender = 0
         const result = arr.map((e, index) => {
             maxRender++
-            if (maxRender < 101) {
+            if (maxRender < 201) {
                 return <ItemNoiDung data={e} indexItem={index} />
             }
         })
@@ -362,6 +373,7 @@ function MatHangHetSL() {
     }
 
     function handleSearch(value, nameFilterSearch = '') {
+        setValueSearch(value)
         try {
             // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
             if (!value) {
@@ -369,67 +381,173 @@ function MatHangHetSL() {
                 return
             }
 
-            var _arrValue = removeTones(value).toLowerCase();
-            const reg = new RegExp(_arrValue[0]);
+            var _arrValue = removeTones(value).toLowerCase()
+            const reg = new RegExp(_arrValue[0])
+
+            let arrUI = []
+            const len = listSPThieuSL.length
+            console.log(listSPThieuSL[0])
+            let maxSearchResult = 0
 
             switch (nameFilterSearch) {
                 case 'Tìm tên nhà cung cấp':
-                    let arrUI = []
-                    const len = listSPThieuSL.length
-                    let maxLengthSearch = 0
-
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < len; ++i) {
-                        if (
-                            reg.exec(
-                                removeTones(
-                                    listSPThieuSL[i].NhaCC.toLowerCase()
+                    new Promise((resolve, reject) => {
+                        for (var i = 0; i < len; ++i) {
+                            if (
+                                reg.exec(
+                                    removeTones(
+                                        listSPThieuSL[i].NhaCC.toLowerCase()
+                                    )
                                 )
-                            )
-                        ) {
-                            maxLengthSearch++
-                            if (maxLengthSearch < 200) {
-                                arrUI.push(
-                                    <ItemNoiDung
-                                        data={listSPThieuSL[i]}
-                                        indexItem={maxLengthSearch}
-                                    />
-                                )
-                            } else {
-                                break
+                            ) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(listSPThieuSL[i])
+                                } else {
+                                    break
+                                }
                             }
                         }
-                    }
 
-                    setResultLst(arrUI)
+                        resolve(arrUI)
+                    }).then((arrResult) => {
+                        // so sanh đảo từ - loại bỏ trùng lặp
+                        for (var i = 0; i < listSPThieuSL.length; i++) {
+                            var _destinationWord = removeTones(
+                                listSPThieuSL[i].NhaCC.toLowerCase()
+                            )
+                            var _arrWords = removeTones(
+                                value.toLowerCase()
+                            ).split(' ')
+                            var _lenghtWords = 0
+
+                            for (var k = 0; k < _arrWords.length; k++) {
+                                if (
+                                    new String(_destinationWord).includes(
+                                        _arrWords[k]
+                                    )
+                                ) {
+                                    _lenghtWords++
+                                }
+
+                                if (_lenghtWords == _arrWords.length) {
+                                    // kiểm tra trùng _id
+                                    var _isFind = false
+                                    for (var j = 0; j < arrResult.length; j++) {
+                                        if (
+                                            listSPThieuSL[i]._id ==
+                                            arrResult[j]._id
+                                        ) {
+                                            _isFind = true
+                                        }
+                                    }
+
+                                    if (_isFind == false) {
+                                        arrResult.push(listSPThieuSL[i])
+                                    }
+                                }
+                            }
+                        }
+
+                        // Render Data To Component
+                        var _arrUI = []
+                        var maxRender = 0
+                        for (
+                            var index = arrResult.length - 1;
+                            index >= 0;
+                            index--
+                        ) {
+                            maxRender++
+                            if (maxRender < 201)
+                                _arrUI.push(
+                                    <ItemNoiDung
+                                        data={arrResult[index]}
+                                        indexItem={index}
+                                    />
+                                )
+                            else break
+                        }
+
+                        setResultLst(_arrUI)
+                    })
                     break
-                case 'Tìm tên sản phẩm':
-                    let arrUIs = []
-                    const length = listSPThieuSL.length
-                    let maxLengthSearchs = 0
 
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < length; ++i) {
-                        if (
-                            reg.exec(
-                                removeTones(listSPThieuSL[i].Name.toLowerCase())
-                            )
-                        ) {
-                            maxLengthSearchs++
-                            if (maxLengthSearchs < 200) {
-                                arrUIs.push(
-                                    <ItemNoiDung
-                                        data={listSPThieuSL[i]}
-                                        indexItem={maxLengthSearchs}
-                                    />
+                case 'Tìm tên sản phẩm':
+                    new Promise((resolve, reject) => {
+                        for (var i = 0; i < len; ++i) {
+                            if (
+                                reg.exec(
+                                    removeTones(
+                                        listSPThieuSL[i].Name.toLowerCase()
+                                    )
                                 )
-                            } else {
-                                break
+                            ) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(listSPThieuSL[i])
+                                } else {
+                                    break
+                                }
                             }
                         }
-                    }
 
-                    setResultLst(arrUIs)
+                        resolve(arrUI)
+                    }).then((arrResult) => {
+                        // so sanh đảo từ - loại bỏ trùng lặp
+                        for (var i = 0; i < listSPThieuSL.length; i++) {
+                            var _destinationWord = removeTones(
+                                listSPThieuSL[i].Name.toLowerCase()
+                            )
+                            var _arrWords = removeTones(
+                                value.toLowerCase()
+                            ).split(' ')
+                            var _lenghtWords = 0
+
+                            for (var k = 0; k < _arrWords.length; k++) {
+                                if (
+                                    new String(_destinationWord).includes(
+                                        _arrWords[k]
+                                    )
+                                ) {
+                                    _lenghtWords++
+                                }
+
+                                if (_lenghtWords == _arrWords.length) {
+                                    // kiểm tra trùng _id
+                                    var _isFind = false
+                                    for (var j = 0; j < arrResult.length; j++) {
+                                        if (
+                                            listSPThieuSL[i]._id ==
+                                            arrResult[j]._id
+                                        ) {
+                                            _isFind = true
+                                        }
+                                    }
+
+                                    if (_isFind == false) {
+                                        arrResult.push(listSPThieuSL[i])
+                                    }
+                                }
+                            }
+                        }
+
+                        // Render Data To Component
+                        var _arrUI = []
+                        var maxRender = 0
+                        for (var index = 0; index < arrResult.length; index++) {
+                            maxRender++
+                            if (maxRender < 201)
+                                _arrUI.push(
+                                    <ItemNoiDung
+                                        data={arrResult[index]}
+                                        indexItem={index}
+                                    />
+                                )
+                            else break
+                        }
+
+                        setResultLst(_arrUI)
+                    })
                     break
                 default:
                     break
@@ -438,6 +556,11 @@ function MatHangHetSL() {
             handleErr(err.name, 'MatHangHetSL', 358)
         }
     }
+
+    const searchDebounce = debounce(
+        (value) => handleSearch(value, nameFilterSearch),
+        500
+    )
 
     return (
         <section className="hang-container">
@@ -448,7 +571,8 @@ function MatHangHetSL() {
                 autoHideDuration={2500}
                 onClose={() => {
                     setShowMess(false)
-                }}>
+                }}
+            >
                 <Alert onClose={() => setShowMess(false)} severity={'error'}>
                     Bạn chưa điền vào số lượng!
                 </Alert>
@@ -461,17 +585,19 @@ function MatHangHetSL() {
                         justifyContent: 'center',
                         alignItems: 'center',
                         marginBottom: '15px',
-                    }}>
+                    }}
+                >
                     <h3
                         style={{
                             color: resources.colorPrimary,
                             textAlign: 'center',
-                        }}>
+                        }}
+                    >
                         Sản Phẩm Có Số Lượng Thấp
                     </h3>
 
                     <FontAwesomeIcon
-                        style={{marginLeft: 30, cursor: 'pointer'}}
+                        style={{ marginLeft: 30, cursor: 'pointer' }}
                         onClick={(e) => {
                             Refresh()
                         }}
@@ -486,28 +612,21 @@ function MatHangHetSL() {
                         display: 'flex',
 
                         alignItems: 'center',
-                    }}>
+                    }}
+                >
                     <TextField
                         placeholder={nameFilterSearch}
                         variant="outlined"
-                        style={{width: '70%'}}
-                        value={valueSearch}
-                        onKeyPress={(event) => {
-                            if (event.key === 'Enter') {
-                                handleSearch(
-                                    event.target.value,
-                                    nameFilterSearch
-                                )
-                            }
-                        }}
-                        onChange={(e) => {
-                            setValueSearch(e.target.value)
-                        }}
+                        style={{ width: '70%' }}
+                        onChange={(e) => searchDebounce(e.target.value)}
+                        id="search-MHSLT"
                         InputProps={{
                             endAdornment: (
                                 <CloseIcon
                                     onClick={(e) => {
-                                        setValueSearch('')
+                                        document.getElementById(
+                                            'search-MHSLT'
+                                        ).value = ''
                                         handleSearch('')
                                     }}
                                     style={{
@@ -525,7 +644,7 @@ function MatHangHetSL() {
                             ),
                         }}
                     />
-                    <Dropdown style={{marginLeft: '20px'}}>
+                    <Dropdown style={{ marginLeft: '20px' }}>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
                             {nameFilterSearch}
                         </Dropdown.Toggle>
@@ -534,13 +653,15 @@ function MatHangHetSL() {
                             <Dropdown.Item
                                 onClick={(e) => {
                                     setNameFilterSearch('Tìm tên nhà cung cấp')
-                                }}>
+                                }}
+                            >
                                 Tìm tên nhà cung cấp
                             </Dropdown.Item>
                             <Dropdown.Item
                                 onClick={(e) => {
                                     setNameFilterSearch('Tìm tên sản phẩm')
-                                }}>
+                                }}
+                            >
                                 Tìm tên sản phẩm
                             </Dropdown.Item>
                         </Dropdown.Menu>
@@ -551,7 +672,8 @@ function MatHangHetSL() {
                         width: '100%',
                         display: 'flex',
                         justifyContent: 'flex-end',
-                    }}>
+                    }}
+                >
                     <EmailIcon
                         style={{
                             fontSize: '45px',
@@ -568,7 +690,8 @@ function MatHangHetSL() {
                     style={{
                         height: '67vh',
                         width: '100%',
-                    }}>
+                    }}
+                >
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -590,13 +713,15 @@ function MatHangHetSL() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 show={show}
-                onHide={handleClose}>
+                onHide={handleClose}
+            >
                 <Modal.Body>
                     <Modal.Title>
                         <Spinner
                             animation="border"
                             variant="success"
-                            role="status"></Spinner>
+                            role="status"
+                        ></Spinner>
                         {messLoading}
                     </Modal.Title>
                 </Modal.Body>
