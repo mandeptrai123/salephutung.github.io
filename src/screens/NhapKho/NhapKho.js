@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useFocus, useRef} from 'react'
+import React, {useState, useEffect, useFocus, useRef,useCallback} from 'react'
 // import css
 import './css/NhapKho.css'
 //import component
@@ -30,13 +30,24 @@ import {Snackbar} from '@material-ui/core'
 import {Alert} from '@material-ui/lab'
 import {useSelector, useDispatch} from 'react-redux'
 import {AddNewSanPham} from '../../Redux/ActionType'
-import _ from 'lodash'
 
 // xóa dấu
 import removeTones from '../../utils/removeTones'
+import _, { debounce } from 'lodash';
 
 var arr_NhatKy = []
 var arr_NhaCC = []
+
+function useDebounce(callback, delay) {
+	const debouncedFn = useCallback(
+		debounce((...args) => callback(...args), delay),
+		[delay], // will recreate if delay changes
+	);
+	return debouncedFn;
+}
+
+
+
 function NhapKho() {
     const [loading, setShowLoading] = useState(false)
     const [mess, setMessLoading] = useState(
@@ -88,6 +99,8 @@ function NhapKho() {
     //valid emptry Tên Sản Phẩm , Số Lượng , Đơn Vị, Giá nhập Sỉ , Giá Bán Lẻ, sl báo động
     const [validEmptyTenSP, setValidEmptyTenSP] = useState(false)
     const [validEmptyDonVi, setValidEmptyDonVi] = useState(false)
+
+    const debouncedSave = useDebounce(nextValue => handleSearch(nextValue), 1000);
 
     async function isValidInput() {
         // Tránh Rò Rỉ Dữ Liệu Nên Không Gán Trực Tiếp
@@ -339,36 +352,88 @@ function NhapKho() {
     }
 
     function handleSearch(value) {
-        try {
-            const reg = new RegExp(removeTones(value.toLowerCase()))
 
-            // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+        try {
+                 // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
             if (!value) {
                 UpdateNhatKy(arr_NhatKy)
-                return
+                return;
             }
-            console.log(arr_NhatKy)
+            
+            new Promise((resolve,reject)=>{
+                  //Do dữ liệu nhiều nên render 200 sản phẩm khi search
+                const reg = new RegExp(removeTones(value.toLowerCase()))
 
-            //Do dữ liệu nhiều nên render 50 sản phẩm khi search
-            var maxSearchResult = 0
-            var arrUI = []
-            const len = arr_NhatKy.length
+                var maxSearchResult = 0;
+                var arrUI = [];
+                const len = arr_NhatKy.length;
+    
+                for (var i = 0; i < len; ++i) {
+                    if (reg.exec(removeTones(arr_NhatKy[i].TenSP.toLowerCase()))) {
+                        maxSearchResult++
+                        if (maxSearchResult < 200) {
+                            arrUI.push(arr_NhatKy[i])
+                        } else {
+                            break
+                        }
+                    }
+                }
+                resolve(arrUI);
+            })
+            .then(arrResult =>{
+                   // so sanh đảo từ - loại bỏ trùng lặp
+             for (var i = 0; i < arr_NhatKy.length; i++) {
+             
+                var _destinationWord = removeTones(arr_NhatKy[i].TenSP.toLowerCase());
+                var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                var _lenghtWords = 0;
 
-            for (var i = 0; i < len; ++i) {
-                if (reg.exec(removeTones(arr_NhatKy[i].TenSP.toLowerCase()))) {
-                    maxSearchResult++
-                    if (maxSearchResult < 200) {
-                        arrUI.push(arr_NhatKy[i])
-                    } else {
-                        break
+                for(var k = 0 ; k < _arrWords.length;k++)
+                {
+                    
+                    if(new String(_destinationWord).includes(_arrWords[k]))
+                    {
+                        _lenghtWords++;
+                    }
+                        
+                    
+                    if(_lenghtWords == _arrWords.length)
+                    {
+                        // kiểm tra trùng _id
+                        var _isFind = false;
+                        for(var j = 0 ; j < arrResult.length;j++)
+                        {
+                            if(arr_NhatKy[i]._id == arrResult[j]._id)
+                            {
+                                _isFind = true;
+                            }
+                        }
+
+                        if(_isFind == false)
+                        {
+                            arrResult.push(arr_NhatKy[i]);
+                        }
+
                     }
                 }
             }
 
-            UpdateNhatKy(arrUI)
+            // Render Data To Component
+            var _arrUI = [];
+                       // handleSearch(e.target.value);
+            for (var index =arrResult.length - 1 ; index >= 0;index--)
+            {
+                _arrUI.push(arrResult[index]);
+            }
+            UpdateNhatKy(_arrUI);
+
+            })
+
+           
         } catch (err) {
-            handleErr(err.name, 'NhapKho', '341')
+            handleErr(err.name, 'Oder', 'handleSearch');
         }
+     
     }
 
     return (
@@ -722,7 +787,10 @@ function NhapKho() {
                                 }
                             }}
                             onChange={(e) => {
-                                setTimKiemNhatKy(e.target.value)
+                                const { value: nextValue } = e.target;
+                                setTimKiemNhatKy(nextValue);
+                                debouncedSave(nextValue);
+                                
                             }}
                             placeholder="Tìm kiếm theo tên sản phẩm"
                             InputProps={{

@@ -387,8 +387,8 @@ function CongNo() {
                 return
             }
 
-            const regex = new RegExp(removeTones(value.toLowerCase()))
-            var maxItemSearch = 0
+            const reg = new RegExp(removeTones(value.toLowerCase()))
+            var maxSearchResult = 0
             const len = arr_KhachHang.length
             var arrUI = []
 
@@ -396,101 +396,142 @@ function CongNo() {
 
             switch (nameFilter) {
                 case 'Theo tên khách hàng':
-                    //render 200 kết quả tìm đc
-                    for (var i = 0; i < len; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(arr_KhachHang[i].Name.toLowerCase())
-                            )
-                        ) {
-                            maxItemSearch++
-                            if (maxItemSearch < 200) {
-                                if (checkboxView) {
-                                    if (arr_KhachHang[i].Congno != 0) {
-                                        //data excel
-                                        dataSheetExcel.push(
-                                            Object.assign({}, arr_KhachHang[i])
-                                        )
-                                        //data excel
 
-                                        arrUI.push(
-                                            <ItemCongNo
-                                                data={arr_KhachHang[i]}
-                                                soThuTu={maxItemSearch}
-                                            />
-                                        )
-                                    }
+                    new Promise((resolve,reject)=>{
+                        for (var i = 0; i < len; ++i) {
+                            if (reg.exec(removeTones(arr_KhachHang[i].Name.toLowerCase()))) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(arr_KhachHang[i])
                                 } else {
-                                    //data excel
-                                    dataSheetExcel.push(
-                                        Object.assign({}, arr_KhachHang[i])
-                                    )
-                                    //data excel
-
-                                    arrUI.push(
-                                        <ItemCongNo
-                                            data={arr_KhachHang[i]}
-                                            soThuTu={maxItemSearch}
-                                        />
-                                    )
+                                    break
                                 }
-                            } else {
-                                break
+                            }
+                        }
+  
+                        resolve(arrUI);
+                    })
+                    .then(arrResult =>{
+                           // so sanh đảo từ - loại bỏ trùng lặp
+                     for (var i = 0; i < arr_KhachHang.length; i++) {
+                     
+                        var _destinationWord = removeTones(arr_KhachHang[i].Name.toLowerCase());
+                        var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                        var _lenghtWords = 0;
+        
+                        for(var k = 0 ; k < _arrWords.length;k++)
+                        {
+                            
+                            if(new String(_destinationWord).includes(_arrWords[k]))
+                            {
+                                _lenghtWords++;
+                            }
+                                
+                            
+                            if(_lenghtWords == _arrWords.length)
+                            {
+                                // kiểm tra trùng _id
+                                var _isFind = false;
+                                for(var j = 0 ; j < arrResult.length;j++)
+                                {
+                                    if(arr_KhachHang[i]._id == arrResult[j]._id)
+                                    {
+                                        _isFind = true;
+                                    }
+                                }
+        
+                                if(_isFind == false)
+                                {
+                                    arrResult.push(arr_KhachHang[i]);
+                                }
+        
                             }
                         }
                     }
+        
+                    // Render Data To Component
+                    var _arrUI = [];
+                      // handleSearch(e.target.value);
+                    for (var index = 0;  index < arrResult.length ;index++)
+                    {
+                        _arrUI.push(<ItemCongNo
+                            data={arrResult[index]}
+                            soThuTu={index}
+                        />);
+                    }
+                    setResult(_arrUI)
+                    });
 
-                    setResult(arrUI)
+
 
                     break
                 case 'Theo địa chỉ':
-                    //render 200 kết quả tìm đc
-                    for (var i = 0; i < len; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(
-                                    arr_KhachHang[i].DiaChi.toLowerCase()
-                                )
-                            )
-                        ) {
-                            maxItemSearch++
-                            if (maxItemSearch < 200) {
-                                if (checkboxView) {
-                                    if (arr_KhachHang[i].Congno != 0) {
-                                        //data excel
-                                        dataSheetExcel.push(
-                                            Object.assign({}, arr_KhachHang[i])
-                                        )
-                                        //data excel
-
-                                        arrUI.push(
-                                            <ItemCongNo
-                                                data={arr_KhachHang[i]}
-                                                soThuTu={maxItemSearch}
-                                            />
-                                        )
-                                    }
+                   
+                    new Promise((resolve,reject)=>{
+                        for (var i = 0; i < len; ++i) {
+                            if (reg.exec(removeTones(arr_KhachHang[i].DiaChi.toLowerCase()))) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(arr_KhachHang[i])
                                 } else {
-                                    //data excel
-                                    dataSheetExcel.push(
-                                        Object.assign({}, arr_KhachHang[i])
-                                    )
-                                    //data excel
-
-                                    arrUI.push(
-                                        <ItemCongNo
-                                            data={arr_KhachHang[i]}
-                                            soThuTu={maxItemSearch}
-                                        />
-                                    )
+                                    break
                                 }
-                            } else {
-                                break
+                            }
+                        }
+  
+                        resolve(arrUI);
+                    })
+                    .then(arrResult =>{
+                           // so sanh đảo từ - loại bỏ trùng lặp
+                     for (var i = 0; i < arr_KhachHang.length; i++) {
+                     
+                        var _destinationWord = removeTones(arr_KhachHang[i].DiaChi.toLowerCase());
+                        var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                        var _lenghtWords = 0;
+        
+                        for(var k = 0 ; k < _arrWords.length;k++)
+                        {
+                            
+                            if(new String(_destinationWord).includes(_arrWords[k]))
+                            {
+                                _lenghtWords++;
+                            }
+                                
+                            
+                            if(_lenghtWords == _arrWords.length)
+                            {
+                                // kiểm tra trùng _id
+                                var _isFind = false;
+                                for(var j = 0 ; j < arrResult.length;j++)
+                                {
+                                    if(arr_KhachHang[i]._id == arrResult[j]._id)
+                                    {
+                                        _isFind = true;
+                                    }
+                                }
+        
+                                if(_isFind == false)
+                                {
+                                    arrResult.push(arr_KhachHang[i]);
+                                }
+        
                             }
                         }
                     }
-
-                    setResult(arrUI)
+        
+                    // Render Data To Component
+                    var _arrUI = [];
+                      // handleSearch(e.target.value);
+                    for (var index = 0;  index < arrResult.length ;index++)
+                    {
+                        _arrUI.push(<ItemCongNo
+                            data={arrResult[index]}
+                            soThuTu={index}
+                        />);
+                    }
+                    setResult(_arrUI)
+                    });
+                    
 
                     break
                 default:

@@ -1,9 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef,useCallback} from 'react'
 // import css
 import './css/Oder.css'
 //import component
 import InputText from '../../resource/InputText/InputText'
-import {Modal, Button, Spinner} from 'react-bootstrap'
+import {Modal, Button, Spinner, FormText} from 'react-bootstrap'
 import resources from '../../resource/color/ColorApp'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -45,7 +45,7 @@ import PrintedDonHang from '../Print/PrintedDonHang'
 // xóa dấu
 import removeTones from '../../utils/removeTones'
 
-import _ from 'lodash'
+import _, { debounce } from 'lodash';
 
 var itemSelected
 let arr_Cart = []
@@ -69,6 +69,10 @@ function formatNumber(num) {
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />
 }
+
+
+
+
 function Oder() {
     //redux hook
     const dispatch = useDispatch()
@@ -480,6 +484,8 @@ function Oder() {
         return _itemRq
     }
 
+
+
     async function DatHang() {
         settxtButtonNegative('OK')
         setMessLoading('    Đang Tiến Hành Đặt Hàng, Đợi Chút Nhé')
@@ -787,39 +793,89 @@ function Oder() {
         }
     }
 
+
     function handleSearch(value) {
         try {
-            const reg = new RegExp(removeTones(value.toLowerCase()))
-
-            // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
+         
+                 // Nếu chuỗi tìm kiếm trống -> render toàn bộ sản phẩm
             if (!value) {
                 setUIAllSanPham(lspUIAllSP)
                 return
             }
+            
+            new Promise((resolve,reject)=>{
+                  //Do dữ liệu nhiều nên render 200 sản phẩm khi search
+                const reg = new RegExp(removeTones(value.toLowerCase()))
+                var maxSearchResult = 0
+                var arrUI = []
+                const length = arrAllSP.length;
+                for (var i = 0; i < length; i++) {
+                    if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) 
+                    {
+                        maxSearchResult++
+                        if (maxSearchResult < 50) {
+                            arrUI.push(arrAllSP[i])
+                        } else {
+                            break;
+                        }
+                    } 
+                }
 
-            //Do dữ liệu nhiều nên render 200 sản phẩm khi search
-            var maxSearchResult = 0
-            var arrUI = []
-            const length = arrAllSP.length
-            for (var i = 0; i < length; ++i) {
-                var _arrWords = removeTones(arrAllSP[i].name.toLowerCase()).split(' ');
-                for(var j = 0 ; j< _arrWords.length ; j++)
+                resolve(arrUI);
+            })
+            .then(arrResult =>{
+                   // so sanh đảo từ - loại bỏ trùng lặp
+             for (var i = 0; i < arrAllSP.length; i++) {
+             
+                var _destinationWord = removeTones(arrAllSP[i].name.toLowerCase());
+                var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                var _lenghtWords = 0;
+
+                for(var k = 0 ; k < _arrWords.length;k++)
                 {
-                    if (reg.exec(removeTones(arrAllSP[i].name.toLowerCase()))) {
-                    maxSearchResult++
-                    if (maxSearchResult < 200) {
-                        arrUI.push(ItemSanPham(arrAllSP[i]))
-                    } else {
-                        break
+                    
+                    if(new String(_destinationWord).includes(_arrWords[k]))
+                    {
+                        _lenghtWords++;
+                    }
+                        
+                    
+                    if(_lenghtWords == _arrWords.length)
+                    {
+                        // kiểm tra trùng _id
+                        var _isFind = false;
+                        for(var j = 0 ; j < arrResult.length;j++)
+                        {
+                            if(arrAllSP[i]._id == arrResult[j]._id)
+                            {
+                                _isFind = true;
+                            }
+                        }
+
+                        if(_isFind == false)
+                        {
+                            arrResult.push(arrAllSP[i]);
+                        }
+
                     }
                 }
-                }   
-                
             }
-            setUIAllSanPham(arrUI)
+
+            // Render Data To Component
+            var _arrUI = [];
+            for (var index = 0 ; index < arrResult.length;index++)
+            {
+                _arrUI.push(new ItemSanPham(arrResult[index]));
+            }
+            setUIAllSanPham(_arrUI);
+            })
+
+           
         } catch (err) {
-            handleErr(err.name, 'Oder', '782')
+            handleErr(err.name, 'Oder', 'handleSearch');
         }
+
+
     }
 
     return (
@@ -1068,7 +1124,9 @@ function Oder() {
                         ),
                     }}
                     onChange={(e) => {
-                        setValueSearch(e.target.value)
+                        const { value: nextValue } = e.target;
+                        setValueSearch(nextValue);
+
                     }}
                     value={valueSearch}
                     variant="outlined"

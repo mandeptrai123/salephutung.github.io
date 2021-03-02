@@ -836,16 +836,16 @@ function LichSuGiaoDich() {
         )
     }
 
-    function handleSearch(valueSearch, nameFilter) {
+    function handleSearch(value, nameFilter) {
         try {
             // Nếu chuỗi tìm kiếm rỗng thì trả về toàn bộ ds
-            if (!valueSearch) {
+            if (!value) {
                 RenderUIAllDonHang(_arrDonHang)
                 return
             }
 
-            let maxRender = 0
-            const len = _arrDonHang.length
+            var  maxSearchResult = 0
+            const len = _arrDonHang.length;
             var arrUI = []
 
             //Chuỗi text cần tìm
@@ -855,28 +855,70 @@ function LichSuGiaoDich() {
 
             switch (nameFilter) {
                 case 'Theo tên khách hàng':
-                    for (var i = 0; i < len; ++i) {
-                        maxRender++
-                        if (maxRender < 201) {
-                            if (
-                                reg.exec(
-                                    removeTones(
-                                        _arrDonHang[i].TenKhach.toLowerCase()
-                                    )
-                                )
-                            ) {
-                                //data excel
-                                dataSheetExcel.push(
-                                    Object.assign({}, _arrDonHang[i])
-                                )
-                                //data excel
 
-                                arrUI.push(_arrDonHang[i])
+                    new Promise((resolve,reject)=>{
+                        for (var i = 0; i < len; ++i) {
+                            if (reg.exec(removeTones(_arrDonHang[i].TenKhach.toLowerCase()))) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(_arrDonHang[i])
+                                } else {
+                                    break
+                                }
                             }
-                        } else break
+                        }
+  
+                        resolve(arrUI);
+                    })
+                    .then(arrResult =>{
+                           // so sanh đảo từ - loại bỏ trùng lặp
+                     for (var i = 0; i < _arrDonHang.length; i++) {
+                     
+                        var _destinationWord = removeTones(_arrDonHang[i].TenKhach.toLowerCase());
+                        var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                        var _lenghtWords = 0;
+        
+                        for(var k = 0 ; k < _arrWords.length;k++)
+                        {
+                            
+                            if(new String(_destinationWord).includes(_arrWords[k]))
+                            {
+                                _lenghtWords++;
+                            }
+                                
+                            
+                            if(_lenghtWords == _arrWords.length)
+                            {
+                                // kiểm tra trùng _id
+                                var _isFind = false;
+                                for(var j = 0 ; j < arrResult.length;j++)
+                                {
+                                    if(_arrDonHang[i]._id == arrResult[j]._id)
+                                    {
+                                        _isFind = true;
+                                    }
+                                }
+        
+                                if(_isFind == false)
+                                {
+                                    arrResult.push(_arrDonHang[i]);
+                                }
+        
+                            }
+                        }
                     }
-
-                    RenderUIAllDonHang(arrUI)
+        
+                    // Render Data To Component
+                    var _arrUI = [];
+                      // handleSearch(e.target.value);
+                    for (var index = 0;  index < arrResult.length ;index++)
+                    {
+                        _arrUI.push(arrResult[index]);
+                    }
+  
+                    RenderUIAllDonHang(_arrUI);
+        
+                    });
                     break
                 case 'Theo tên sản phẩm':
                     handleShow()

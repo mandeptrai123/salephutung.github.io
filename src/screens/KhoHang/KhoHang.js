@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback} from 'react'
 import './css/KhoHang.css'
 //import component
 import {Button, Modal, Spinner} from 'react-bootstrap'
@@ -31,18 +31,21 @@ import resources from '../../resource/color/ColorApp'
 import NetWorking from '../../networking/fetchWithTimeout'
 import {TextField} from '@material-ui/core'
 import {Autocomplete} from '@material-ui/lab'
-import _, {result} from 'lodash'
 import {useSelector, useDispatch} from 'react-redux'
 
 import iconExcel from '../../assets/icons/png/icons8-microsoft_excel.png'
 
 //log
 import handleErr from '../../utils/handleError'
-
+import _, { debounce } from 'lodash';
 //Action
 import {AllSanPham, DeleteSanPham} from '../../Redux/ActionType'
 
 var ID = 0
+
+
+
+
 
 function KhoHang() {
     const [lstSanPham, setLstSanPham] = useState([])
@@ -78,6 +81,7 @@ function KhoHang() {
     const ExcelFile = ReactExport.ExcelFile
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn
+
 
     function RenderKhoSanPham(arr) {
         dataSheetExcel.length = 0
@@ -471,6 +475,7 @@ function KhoHang() {
     }
 
     function handleSearch(value, nameFilterSearch = '') {
+
         try {
             // Nếu chuỗi tìm kiếm rỗng thì render lại toàn bộ
             if (!value) {
@@ -479,76 +484,162 @@ function KhoHang() {
                 return
             }
 
-            const regex = new RegExp(removeTones(value.toLowerCase()))
 
             dataSheetExcel.length = 0
+            const reg = new RegExp(removeTones(value.toLowerCase()))
+            let arrUI = [];
+            const len = TatCaSanPham.length;
+            var maxSearchResult = 0;
 
             switch (nameFilterSearch) {
                 case 'Tìm tên nhà cung cấp':
-                    let arrUI = []
-                    const len = TatCaSanPham.length
-                    let maxLengthSearch = 0
+                    new Promise((resolve,reject)=>{
+                      for (var i = 0; i < len; ++i) {
+                          if (reg.exec(removeTones(TatCaSanPham[i].NhaCC.toLowerCase()))) {
+                              maxSearchResult++
+                              if (maxSearchResult < 200) {
+                                  arrUI.push(TatCaSanPham[i])
+                              } else {
+                                  break
+                              }
+                          }
+                      }
 
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < len; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(TatCaSanPham[i].NhaCC.toLowerCase())
-                            )
-                        ) {
-                            maxLengthSearch++
-                            if (maxLengthSearch < 200) {
-                                //data excel
-                                const o = TatCaSanPham[i]
-                                o.index = maxLengthSearch
-                                dataSheetExcel.push(Object.assign({}, o))
+                      resolve(arrUI);
+                  })
+                  .then(arrResult =>{
+                         // so sanh đảo từ - loại bỏ trùng lặp
+                   for (var i = 0; i < TatCaSanPham.length; i++) {
+                   
+                      var _destinationWord = removeTones(TatCaSanPham[i].NhaCC.toLowerCase());
+                      var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                      var _lenghtWords = 0;
+      
+                      for(var k = 0 ; k < _arrWords.length;k++)
+                      {
+                          
+                          if(new String(_destinationWord).includes(_arrWords[k]))
+                          {
+                              _lenghtWords++;
+                          }
+                              
+                          
+                          if(_lenghtWords == _arrWords.length)
+                          {
+                              // kiểm tra trùng _id
+                              var _isFind = false;
+                              for(var j = 0 ; j < arrResult.length;j++)
+                              {
+                                  if(TatCaSanPham[i]._id == arrResult[j]._id)
+                                  {
+                                      _isFind = true;
+                                  }
+                              }
+      
+                              if(_isFind == false)
+                              {
+                                  arrResult.push(TatCaSanPham[i]);
+                              }
+      
+                          }
+                      }
+                  }
+      
+                  // Render Data To Component
+                  var _arrUI = [];
+                             // handleSearch(e.target.value);
+                  for (var index = 0;  index < arrResult.length ;index++)
+                  {
+                    const ob = arrResult[index];
+                    ob.index = index;
+                    dataSheetExcel.push(Object.assign({}, ob));
 
-                                arrUI.push(
-                                    <ItemSanPham
-                                        data={TatCaSanPham[i]}
-                                        soThuTu={maxLengthSearch}
-                                    />
-                                )
-                            } else {
-                                break
-                            }
-                        }
-                    }
-                    setLstResult(arrUI)
 
-                    break
+                      _arrUI.push(<ItemSanPham
+                        data={arrResult[index]}
+                        soThuTu={index}
+                    />);
+                  }
+
+                  setLstResult(_arrUI)
+      
+                  });
+
+                    break;
+                
                 case 'Tìm tên sản phẩm':
-                    let arrUIs = []
-                    const length = TatCaSanPham.length
-                    let maxLengthSearchs = 0
-
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < length; ++i) {
-                        if (
-                            regex.exec(
-                                removeTones(TatCaSanPham[i].name.toLowerCase())
-                            )
-                        ) {
-                            maxLengthSearchs++
-                            if (maxLengthSearchs < 200) {
-                                //data excel
-                                const ob = TatCaSanPham[i]
-                                ob.index = maxLengthSearchs
-                                dataSheetExcel.push(Object.assign({}, ob))
-
-                                arrUIs.push(
-                                    <ItemSanPham
-                                        data={TatCaSanPham[i]}
-                                        soThuTu={maxLengthSearchs}
-                                    />
-                                )
-                            } else {
-                                break
-                            }
-                        }
-                    }
-
-                    setLstResult(arrUIs)
+                       
+                        new Promise((resolve,reject)=>{
+                          for (var i = 0; i < len; ++i) {
+                              if (reg.exec(removeTones(TatCaSanPham[i].name.toLowerCase()))) {
+                                  maxSearchResult++
+                                  if (maxSearchResult < 200) {
+                                      arrUI.push(TatCaSanPham[i])
+                                  } else {
+                                      break
+                                  }
+                              }
+                          }
+    
+                          resolve(arrUI);
+                      })
+                      .then(arrResult =>{
+                             // so sanh đảo từ - loại bỏ trùng lặp
+                       for (var i = 0; i < TatCaSanPham.length; i++) {
+                       
+                          var _destinationWord = removeTones(TatCaSanPham[i].name.toLowerCase());
+                          var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                          var _lenghtWords = 0;
+          
+                          for(var k = 0 ; k < _arrWords.length;k++)
+                          {
+                              
+                              if(new String(_destinationWord).includes(_arrWords[k]))
+                              {
+                                  _lenghtWords++;
+                              }
+                                  
+                              
+                              if(_lenghtWords == _arrWords.length)
+                              {
+                                  // kiểm tra trùng _id
+                                  var _isFind = false;
+                                  for(var j = 0 ; j < arrResult.length;j++)
+                                  {
+                                      if(TatCaSanPham[i]._id == arrResult[j]._id)
+                                      {
+                                          _isFind = true;
+                                      }
+                                  }
+          
+                                  if(_isFind == false)
+                                  {
+                                      arrResult.push(TatCaSanPham[i]);
+                                  }
+          
+                              }
+                          }
+                      }
+          
+                      // Render Data To Component
+                      var _arrUI = [];
+                                 // handleSearch(e.target.value);
+                      for (var index = 0;  index < arrResult.length ;index++)
+                      {
+                        const ob = arrResult[index];
+                        ob.index = index;
+                        dataSheetExcel.push(Object.assign({}, ob));
+    
+    
+                          _arrUI.push(<ItemSanPham
+                            data={arrResult[index]}
+                            soThuTu={index}
+                        />);
+                      }
+    
+                      setLstResult(_arrUI)
+          
+                      });
                     break
 
                 default:
@@ -610,7 +701,9 @@ function KhoHang() {
                                 }
                             }}
                             onChange={(e) => {
-                                setValueSearch(e.target.value)
+                                const {value:nextValue} = e.target;
+                                setValueSearch(nextValue);
+
                             }}
                             value={valueSearch}
                             variant="outlined"

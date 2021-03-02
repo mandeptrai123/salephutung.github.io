@@ -372,64 +372,153 @@ function MatHangHetSL() {
             var _arrValue = removeTones(value).toLowerCase();
             const reg = new RegExp(_arrValue[0]);
 
+            let arrUI = []
+            const len = listSPThieuSL.length;
+            console.log(listSPThieuSL[0]);
+            let maxSearchResult = 0
+
+
             switch (nameFilterSearch) {
                 case 'Tìm tên nhà cung cấp':
-                    let arrUI = []
-                    const len = listSPThieuSL.length
-                    let maxLengthSearch = 0
+                   
 
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < len; ++i) {
-                        if (
-                            reg.exec(
-                                removeTones(
-                                    listSPThieuSL[i].NhaCC.toLowerCase()
-                                )
-                            )
-                        ) {
-                            maxLengthSearch++
-                            if (maxLengthSearch < 200) {
-                                arrUI.push(
-                                    <ItemNoiDung
-                                        data={listSPThieuSL[i]}
-                                        indexItem={maxLengthSearch}
-                                    />
-                                )
-                            } else {
-                                break
+                    new Promise((resolve,reject)=>{
+                        for (var i = 0; i < len; ++i) {
+                            if (reg.exec(removeTones(listSPThieuSL[i].NhaCC.toLowerCase()))) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(listSPThieuSL[i])
+                                } else {
+                                    break
+                                }
+                            }
+                        }
+  
+                        resolve(arrUI);
+                    })
+                    .then(arrResult =>{
+                           // so sanh đảo từ - loại bỏ trùng lặp
+                     for (var i = 0; i < listSPThieuSL.length; i++) {
+                     
+                        var _destinationWord = removeTones(listSPThieuSL[i].NhaCC.toLowerCase());
+                        var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                        var _lenghtWords = 0;
+        
+                        for(var k = 0 ; k < _arrWords.length;k++)
+                        {
+                            
+                            if(new String(_destinationWord).includes(_arrWords[k]))
+                            {
+                                _lenghtWords++;
+                            }
+                                
+                            
+                            if(_lenghtWords == _arrWords.length)
+                            {
+                                // kiểm tra trùng _id
+                                var _isFind = false;
+                                for(var j = 0 ; j < arrResult.length;j++)
+                                {
+                                    if(listSPThieuSL[i]._id == arrResult[j]._id)
+                                    {
+                                        _isFind = true;
+                                    }
+                                }
+        
+                                if(_isFind == false)
+                                {
+                                    arrResult.push(listSPThieuSL[i]);
+                                }
+        
                             }
                         }
                     }
+        
+                    // Render Data To Component
+                    var _arrUI = [];
+                      // handleSearch(e.target.value);
+                    for (var index = arrResult.length - 1;  index >= 0 ;index--)
+                    {
+                        _arrUI.push(<ItemNoiDung
+                            data={arrResult[index]}
+                            indexItem={index}
+                        />);
+                    }
+  
+                    setResultLst(_arrUI);
+        
+                    });
+                    break;
 
-                    setResultLst(arrUI)
-                    break
                 case 'Tìm tên sản phẩm':
-                    let arrUIs = []
-                    const length = listSPThieuSL.length
-                    let maxLengthSearchs = 0
-
-                    //cho render kết quả tìm kiếm tối đa là 20
-                    for (let i = 0; i < length; ++i) {
-                        if (
-                            reg.exec(
-                                removeTones(listSPThieuSL[i].Name.toLowerCase())
-                            )
-                        ) {
-                            maxLengthSearchs++
-                            if (maxLengthSearchs < 200) {
-                                arrUIs.push(
-                                    <ItemNoiDung
-                                        data={listSPThieuSL[i]}
-                                        indexItem={maxLengthSearchs}
-                                    />
-                                )
-                            } else {
-                                break
+                    new Promise((resolve,reject)=>{
+                        for (var i = 0; i < len; ++i) {
+                            if (reg.exec(removeTones(listSPThieuSL[i].Name.toLowerCase()))) {
+                                maxSearchResult++
+                                if (maxSearchResult < 200) {
+                                    arrUI.push(listSPThieuSL[i])
+                                } else {
+                                    break
+                                }
+                            }
+                        }
+  
+                        resolve(arrUI);
+                    })
+                    .then(arrResult =>{
+                           // so sanh đảo từ - loại bỏ trùng lặp
+                     for (var i = 0; i < listSPThieuSL.length; i++) {
+                     
+                        var _destinationWord = removeTones(listSPThieuSL[i].Name.toLowerCase());
+                        var _arrWords = removeTones(value.toLowerCase()).split(' ');
+                        var _lenghtWords = 0;
+        
+                        for(var k = 0 ; k < _arrWords.length;k++)
+                        {
+                            
+                            if(new String(_destinationWord).includes(_arrWords[k]))
+                            {
+                                _lenghtWords++;
+                            }
+                                
+                            
+                            if(_lenghtWords == _arrWords.length)
+                            {
+                                // kiểm tra trùng _id
+                                var _isFind = false;
+                                for(var j = 0 ; j < arrResult.length;j++)
+                                {
+                                    if(listSPThieuSL[i]._id == arrResult[j]._id)
+                                    {
+                                        _isFind = true;
+                                    }
+                                }
+        
+                                if(_isFind == false)
+                                {
+                                    arrResult.push(listSPThieuSL[i]);
+                                }
+        
                             }
                         }
                     }
-
-                    setResultLst(arrUIs)
+        
+                    // Render Data To Component
+                    var _arrUI = [];
+                      // handleSearch(e.target.value);
+                    for (var index = 0;  index < arrResult.length ;index++)
+                    {
+                  
+  
+                        _arrUI.push(<ItemNoiDung
+                            data={arrResult[index]}
+                            indexItem={index}
+                        />);
+                    }
+  
+                    setResultLst(_arrUI);
+        
+                    });
                     break
                 default:
                     break
