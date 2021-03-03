@@ -380,9 +380,7 @@ function MatHangHetSL() {
                 setResultLst(uiSanPhamHetSL)
                 return
             }
-
-            var _arrValue = removeTones(value).toLowerCase()
-            const reg = new RegExp(_arrValue[0])
+            const reg = new RegExp(value);
 
             let arrUI = []
             const len = listSPThieuSL.length
@@ -396,8 +394,8 @@ function MatHangHetSL() {
                             if (
                                 reg.exec(
                                     removeTones(
-                                        listSPThieuSL[i].NhaCC.toLowerCase()
-                                    )
+                                        listSPThieuSL[i].NhaCC).toLowerCase()
+                                    
                                 )
                             ) {
                                 maxSearchResult++
@@ -414,8 +412,8 @@ function MatHangHetSL() {
                         // so sanh đảo từ - loại bỏ trùng lặp
                         for (var i = 0; i < listSPThieuSL.length; i++) {
                             var _destinationWord = removeTones(
-                                listSPThieuSL[i].NhaCC.toLowerCase()
-                            )
+                                listSPThieuSL[i].NhaCC).toLowerCase();
+                            
                             var _arrWords = removeTones(
                                 value.toLowerCase()
                             ).split(' ')
@@ -453,8 +451,8 @@ function MatHangHetSL() {
                         var _arrUI = []
                         var maxRender = 0
                         for (
-                            var index = arrResult.length - 1;
-                            index >= 0;
+                            var index = arrResult.length-1;
+                            index >=0;
                             index--
                         ) {
                             maxRender++
@@ -478,8 +476,8 @@ function MatHangHetSL() {
                             if (
                                 reg.exec(
                                     removeTones(
-                                        listSPThieuSL[i].Name.toLowerCase()
-                                    )
+                                        listSPThieuSL[i].Name).toLowerCase()
+                                    
                                 )
                             ) {
                                 maxSearchResult++
@@ -496,11 +494,11 @@ function MatHangHetSL() {
                         // so sanh đảo từ - loại bỏ trùng lặp
                         for (var i = 0; i < listSPThieuSL.length; i++) {
                             var _destinationWord = removeTones(
-                                listSPThieuSL[i].Name.toLowerCase()
-                            )
+                                listSPThieuSL[i].Name).toLowerCase();
+                            
                             var _arrWords = removeTones(
-                                value.toLowerCase()
-                            ).split(' ')
+                                value
+                            ).toLowerCase().split(' ')
                             var _lenghtWords = 0
 
                             for (var k = 0; k < _arrWords.length; k++) {
@@ -526,6 +524,7 @@ function MatHangHetSL() {
 
                                     if (_isFind == false) {
                                         arrResult.push(listSPThieuSL[i])
+                                        console.log(listSPThieuSL[i].Name);
                                     }
                                 }
                             }
@@ -534,7 +533,7 @@ function MatHangHetSL() {
                         // Render Data To Component
                         var _arrUI = []
                         var maxRender = 0
-                        for (var index = 0; index < arrResult.length; index++) {
+                        for (var index = arrResult.length-1; index >= 0; index--) {
                             maxRender++
                             if (maxRender < 201)
                                 _arrUI.push(

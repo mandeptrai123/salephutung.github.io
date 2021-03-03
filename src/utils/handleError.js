@@ -5,7 +5,7 @@ export default function handleErr(name = '', page = '', line = '') {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({name, page, line})
+        body: JSON.stringify({Name:name, Page:page, Line:line})
     }
 
     fetch('https://engcouple.com:8443/SalePhuTung/ErrosByClient', options)

@@ -29,7 +29,8 @@ import resources from '../../../resource/color/ColorApp'
 
 //hook, action redux
 import { useSelector, useDispatch } from 'react-redux'
-import { UpdateKhachHang, GetAllKhachHang } from '../../../Redux/ActionType'
+import { UpdateKhachHang, GetAllKhachHang } from '../../../Redux/ActionType';
+import CheckDaoTu from '../../../utils/CheckDaoTu';
 
 export default function KhachHang() {
     const [resultTableNhatKy, setResultTableNhatKy] = useState()
@@ -292,7 +293,8 @@ export default function KhachHang() {
             const len = allKhachHang.length
 
             for (let i = 0; i < len; ++i) {
-                if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase()))) {
+                if (reg.exec(removeTones(allKhachHang[i].Name.toLowerCase())) || 
+                CheckDaoTu(value,removeTones(allKhachHang[i].Name.toLowerCase()))) {
                     maxRender++
                     if (maxRender < 100) {
                         result.push(
@@ -307,9 +309,11 @@ export default function KhachHang() {
                 }
             }
 
+            console.log(result);
+
             setResultTableNhatKy(result)
         } catch (err) {
-            handleErr(err.name, 'KhachHang', '277')
+            handleErr("Lỗi handlSearch", 'KhachHang', '277')
         }
     }
 

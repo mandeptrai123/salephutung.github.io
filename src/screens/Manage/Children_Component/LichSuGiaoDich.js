@@ -941,6 +941,7 @@ function LichSuGiaoDich() {
                     })
                     break
                 case 'Theo tên sản phẩm':
+                    var _input = value;
                     handleShow()
                     setMessLoading('Đang tìm kiếm!')
 
@@ -952,7 +953,7 @@ function LichSuGiaoDich() {
                         },
                     }
 
-                    let _URL = URL_API + 'DonHangTheoTenSP?input=' + valueSearch
+                    let _URL = URL_API + 'DonHangTheoTenSP?input=' + _input
 
                     NetWorking(_URL, requestOptions)
                         .then((res) => {
@@ -981,7 +982,7 @@ function LichSuGiaoDich() {
     )
 
     function handleFilterDate(date) {
-        handleShow()
+        handleShow();
         const requestOptions = {
             method: 'GET',
             headers: {
