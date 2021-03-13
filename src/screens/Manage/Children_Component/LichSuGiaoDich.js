@@ -413,9 +413,6 @@ function LichSuGiaoDich() {
             setTongTien(tong_tien)
         }, [soluongBan, price])
 
-        //Xử lí lỗi setName rỗng
-        var boolsetName = false
-
         return (
             <TableRow>
                 <TableCell>{props.index}</TableCell>
@@ -537,11 +534,37 @@ function LichSuGiaoDich() {
 
                 <TableCell>
                     <Checkbox
-                        disabled
                         inputProps={{ 'aria-label': 'secondary checkbox' }}
                         checked={isGift}
                         onChange={(e) => {
-                            setIsGift(!isGift)
+                            setIsGift(e.target.checked)
+
+                            _arrDonHang[props.indexBill].lstSanPham[
+                                props.index
+                            ].isGift = e.target.checked
+
+                            let thanhtien = 0
+
+                            for (
+                                let i = 0;
+                                i <
+                                _arrDonHang[props.indexBill].lstSanPham.length;
+                                ++i
+                            ) {
+                                if (
+                                    !_arrDonHang[props.indexBill].lstSanPham[i]
+                                        .isGift
+                                )
+                                    thanhtien +=
+                                        _arrDonHang[props.indexBill].lstSanPham[
+                                            i
+                                        ].pricesum
+                            }
+
+                            dispatch({
+                                type: UpdateThanhTienDonHang,
+                                value: thanhtien,
+                            })
                         }}
                     />
                 </TableCell>
