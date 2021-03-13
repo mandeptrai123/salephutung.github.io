@@ -192,7 +192,7 @@ export default function KhachHang() {
 
         return (
             <TableRow>
-                <TableCell>{props.index}</TableCell>
+                <TableCell>{props.index + 1}</TableCell>
                 <TableCell>
                     <TextField
                         value={name}

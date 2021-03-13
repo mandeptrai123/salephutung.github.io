@@ -58,6 +58,7 @@ import { set, debounce } from 'lodash'
 import { CallReceived } from '@material-ui/icons'
 
 var _arrDonHang = []
+var _arrDefaultDH = []
 
 function TienVietNam(input) {
     var x = parseInt(input)
@@ -156,7 +157,7 @@ function LichSuGiaoDich() {
         const formatDate = new Date(props.Date)
         return (
             <TableRow hover>
-                <TableCell>{index}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>
                     {props.TimeOfDay}{' '}
                     {`${formatDate.getDate()}/${
@@ -217,6 +218,9 @@ function LichSuGiaoDich() {
         let _result = []
         dataSheetExcel.length = 0
 
+        _arrDonHang.length = 0
+        _arrDonHang = arr
+
         for (var i = 0; i < lenArr; i++) {
             // Kiểm tra xem khách hàng này có lịch sử đơn hàng nào ko
             if (arr[i].lstSanPham.length != 0) {
@@ -246,7 +250,8 @@ function LichSuGiaoDich() {
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
-                    _arrDonHang = res.data
+                    _arrDefaultDH.length = 0
+                    _arrDefaultDH = [...res.data]
                     RenderUIAllDonHang(res.data)
                 }
                 handleClose()
@@ -415,7 +420,7 @@ function LichSuGiaoDich() {
 
         return (
             <TableRow>
-                <TableCell>{props.index}</TableCell>
+                <TableCell>{props.index + 1}</TableCell>
                 <TableCell>
                     <Autocomplete
                         style={{ width: '280px' }}
@@ -1012,7 +1017,8 @@ function LichSuGiaoDich() {
         try {
             // Nếu chuỗi tìm kiếm rỗng thì trả về toàn bộ ds
             if (!value) {
-                RenderUIAllDonHang(_arrDonHang)
+                // RenderUIAllDonHang(_arrDefaultDH)
+                OnRefresh()
                 return
             }
 
@@ -1151,7 +1157,6 @@ function LichSuGiaoDich() {
             .then((res) => {
                 handleClose()
                 if (res.success) {
-                    _arrDonHang = res.data
                     RenderUIAllDonHang(res.data)
                 }
             })

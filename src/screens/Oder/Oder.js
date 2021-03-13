@@ -176,6 +176,7 @@ function Oder() {
                         InputProps={{
                             inputProps: {
                                 min: 0,
+                                max: arr_Cart[index].amount,
                             },
                         }}
                         type="number"
@@ -532,7 +533,7 @@ function Oder() {
             },
             body: JSON.stringify(itemRequest),
         }
-
+        console.log(itemRequest)
         let _URL = URL_API + 'ThemDonHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -555,26 +556,26 @@ function Oder() {
                     handleClickPrint(objBill)
 
                     // Kiểm tra có p là khách hàng mới không, thêm vào store
-                    const sdtK = sodienthoai
-                    const dcK = diachi
-                    const tenK = tenkhach
-                    if (
-                        arrAllKhachHang.findIndex(
-                            (e) => e.Name === objBill.TenKhach
-                        ) < 0
-                    ) {
-                        dispatch({
-                            type: AddNewKhachHang,
-                            dataNewKhachHang: {
-                                SDT: sdtK,
-                                DiaChi: dcK,
-                                Name: tenK,
-                                Congno: 0,
-                                LichSuMuaHang: [],
-                            },
-                        })
-                    } else {
-                    }
+                    // const sdtK = sodienthoai
+                    // const dcK = diachi
+                    // const tenK = tenkhach
+                    // if (
+                    //     arrAllKhachHang.findIndex(
+                    //         (e) => e.Name === objBill.TenKhach
+                    //     ) < 0
+                    // ) {
+                    //     dispatch({
+                    //         type: AddNewKhachHang,
+                    //         dataNewKhachHang: {
+                    //             SDT: sdtK,
+                    //             DiaChi: dcK,
+                    //             Name: tenK,
+                    //             Congno: 0,
+                    //             LichSuMuaHang: [],
+                    //         },
+                    //     })
+                    // } else {
+                    // }
 
                     setResultCart([])
                     setGhiChu('')
