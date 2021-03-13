@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react'
 import Table from 'react-bootstrap/Table'
 import './css/PrintedDonHang.css'
+
+import CheckIcon from '@material-ui/icons/Check'
+
 class PrintDonHang extends React.Component {
     render() {
         const objDate = new Date(this.props.item.Date)
@@ -88,6 +91,9 @@ class PrintDonHang extends React.Component {
                                 <h4 className="bill-table__text">THÀNH TIỀN</h4>
                             </th>
                             <th>
+                                <h4 className="bill-table__text">QUÀ TẶNG</h4>
+                            </th>
+                            <th>
                                 <h4 className="bill-table__text">GHI CHÚ SP</h4>
                             </th>
                         </tr>
@@ -103,6 +109,15 @@ class PrintDonHang extends React.Component {
                                     <td>{formatNumber(e.price)}</td>
                                     <td>{formatNumber(e.pricesum)}</td>
                                     <td>
+                                        {e.isGift ? (
+                                            <CheckIcon
+                                                style={{ fontSize: '45px' }}
+                                            />
+                                        ) : (
+                                            ''
+                                        )}
+                                    </td>
+                                    <td>
                                         <div
                                             style={{
                                                 maxWidth: '380px',
@@ -116,9 +131,10 @@ class PrintDonHang extends React.Component {
                         })}
                         <tr>
                             <td colSpan="5">
-                                <h4 className="bill-table__text">TỔNG:</h4>
+                                <h4 className="bill-table__text">TỔNG TIỀN:</h4>
                             </td>
-                            <td>{formatNumber(this.props.item.ThanhTien)}</td>
+                            <td>{formatNumber(this.props.item.TongTien)}</td>
+                            <td></td>
                             <td></td>
                         </tr>
                         <tr>
@@ -127,15 +143,21 @@ class PrintDonHang extends React.Component {
                                     CHIẾT KHẤU %:
                                 </h4>
                             </td>
+                            <td>
+                                {this.props.item.chietKhau
+                                    ? this.props.item.chietKhau
+                                    : ''}
+                            </td>
                             <td></td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colSpan="5">
                                 <h4 className="bill-table__text">
-                                    TỔNG CỘNG:{' '}
+                                    THÀNH TIỀN:
                                 </h4>
                             </td>
+                            <td>{formatNumber(this.props.item.ThanhTien)}</td>
                             <td></td>
                             <td></td>
                         </tr>

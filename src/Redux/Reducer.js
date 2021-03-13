@@ -10,6 +10,7 @@ import {
     UpdateKhachHang,
     DeleteSanPham,
     UpdateThanhTienDonHang,
+    UpdateTongTienDonHang,
 } from './ActionType'
 
 // File Xu Li Logic ( Quan Li State)
@@ -33,6 +34,7 @@ const defineState = {
         },
     ],
     thanhTienDH: 0,
+    tongTienDH: 0,
 }
 
 const Reducer = (state = defineState, action) => {
@@ -102,6 +104,12 @@ const Reducer = (state = defineState, action) => {
         case UpdateThanhTienDonHang:
             state.thanhTienDH = action.value
             state.thanhTienDH = JSON.parse(JSON.stringify(state.thanhTienDH))
+
+            return state
+
+        case UpdateTongTienDonHang:
+            state.tongTienDH = action.value
+            state.tongTienDH = JSON.parse(JSON.stringify(state.tongTienDH))
 
             return state
 

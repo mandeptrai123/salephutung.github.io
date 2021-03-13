@@ -34,6 +34,7 @@ import { useSelector, useDispatch } from 'react-redux'
 //icon
 import SearchIcon from '@material-ui/icons/Search'
 import CloseIcon from '@material-ui/icons/Close'
+import CheckIcon from '@material-ui/icons/Check'
 
 //Action
 import { AllSanPham, AddNewKhachHang } from '../../Redux/ActionType'
@@ -51,7 +52,9 @@ var itemSelected
 let arr_Cart = []
 var _tienkhachno = 0
 var _tongtien = 0
+var _tongtienSPNotGift = 0
 var _thanhtien = 0
+var _chietkhau = 0
 
 function TienVietNam(input) {
     var x = parseInt(input)
@@ -103,6 +106,7 @@ function Oder() {
     const [resultCart, setResultCart] = useState([])
     const [thanhtien, setThanhTien] = useState(0)
     const [ghichu, setGhiChu] = useState('')
+    const [chietKhau, setChietKhau] = useState('')
 
     //Response
     const [messResponse, setMessResponse] = useState('')
@@ -161,7 +165,7 @@ function Oder() {
         setStateModal({ ...stateModal, open: true, itemSelected: item })
     }
 
-    function ItemCart(props) {
+    function ItemCart(props, index) {
         return (
             <TableRow hover>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
@@ -169,13 +173,15 @@ function Oder() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
                         type="number"
                         style={{ width: 30, fontSize: 16, fontWeight: 'bold' }}
                         onChange={(e) => {
-                            var _index = arr_Cart.findIndex(
-                                (i) => i._id == props._id
-                            )
-                            arr_Cart[_index].soluongBan = +e.target.value
+                            arr_Cart[index].soluongBan = +e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         value={props.soluongBan}
@@ -183,13 +189,15 @@ function Oder() {
                 </TableCell>
                 <TableCell>
                     <TextField
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
                         type="number"
                         style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
                         onChange={(e) => {
-                            var _index = arr_Cart.findIndex(
-                                (i) => i._id === props._id
-                            )
-                            arr_Cart[_index].price = e.target.value
+                            arr_Cart[index].price = e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                         value={
@@ -197,30 +205,8 @@ function Oder() {
                         }
                     />
                 </TableCell>
-                <TableCell>
-                    <TextField
-                        type="number"
-                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
-                        onChange={(e) => {
-                            var _index = arr_Cart.findIndex(
-                                (i) => i._id == props._id
-                            )
-                            arr_Cart[_index].chietKhau = +e.target.value
-
-                            RenderKetQuaGioHang(arr_Cart)
-                        }}
-                        value={props.chietKhau ? props.chietKhau : ''}
-                    />
-                </TableCell>
                 <TableCell style={{ fontSize: 16, fontWeight: 'bold' }}>
-                    {formatNumber(
-                        props.chietKhau
-                            ? props.price * props.soluongBan -
-                                  props.price *
-                                      props.soluongBan *
-                                      (props.chietKhau / 100)
-                            : props.price * props.soluongBan
-                    )}
+                    {formatNumber(props.price * props.soluongBan)}
                 </TableCell>
                 <TableCell>
                     <TextareaAutosize
@@ -229,32 +215,12 @@ function Oder() {
                         rowsMin={3}
                         style={{ padding: '3px 8px' }}
                         onChange={(e) => {
-                            var _index = arr_Cart.findIndex(
-                                (i) => i._id == props._id
-                            )
-                            //Điền ghi chú trong 1 sản phẩm
-                            arr_Cart[_index].Ghichu = e.target.value
+                            arr_Cart[index].Ghichu = e.target.value
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                     />
                 </TableCell>
-
-                <TableCell>
-                    <TextField
-                        type="number"
-                        style={{ width: 80, fontSize: 16, fontWeight: 'bold' }}
-                        onChange={(e) => {
-                            var _index = arr_Cart.findIndex(
-                                (i) => i._id == props._id
-                            )
-                            arr_Cart[_index].soluongQuaTang = +e.target.value
-
-                            RenderKetQuaGioHang(arr_Cart)
-                        }}
-                        value={props.soluongQuaTang ? props.soluongQuaTang : ''}
-                    />
-                </TableCell>
-
+                <TableCell>{props.isGift ? <CheckIcon /> : ''}</TableCell>
                 <TableCell>
                     <FontAwesomeIcon
                         style={{
@@ -262,14 +228,13 @@ function Oder() {
                             width: 50,
                             marginLeft: 20,
                             marginTop: 20,
+                            cursor: 'pointer',
                         }}
                         color={resources.colorPrimary}
                         size={'2x'}
                         icon={faTrash}
                         onClick={(e) => {
-                            _.remove(arr_Cart, function (e) {
-                                return e._id === props._id
-                            })
+                            arr_Cart.splice(index, 1)
                             RenderKetQuaGioHang(arr_Cart)
                         }}
                     />
@@ -365,7 +330,7 @@ function Oder() {
         )
     }
 
-    function Handle_AddToCart(_id) {
+    function Handle_AddToCart(_id, isGift = false) {
         try {
             //Tìm sản phẩm có id vừa đc nhấn chọn
             var _item
@@ -383,9 +348,48 @@ function Oder() {
                 return false
             }
 
+            _item.isGift = isGift
+
             // Tìm Xem Trong Giỏ Hàng Đã Có Sản Phẩm Này Chưa
-            var indexAlready = arr_Cart.findIndex((e) => e._id === _id)
-            if (indexAlready > -1) {
+            var indexList = []
+            for (let i = 0; i < arr_Cart.length; ++i) {
+                if (_id === arr_Cart[i]._id) {
+                    indexList.push(i)
+                }
+            }
+
+            if (indexList.length != 0) {
+                //kiểm tra trong list sản phẩm đã có có 2 loại này k
+                let gift = false
+                let product = false
+
+                for (let i = 0; i < indexList.length; ++i) {
+                    if (arr_Cart[indexList[i]].isGift) {
+                        gift = true
+                    } else {
+                        product = true
+                    }
+                }
+
+                if (gift && product) {
+                    setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
+                    setShow(true)
+                    setTimeout(() => {
+                        setShow(false)
+                    }, 1500)
+                    return false
+                }
+
+                if (!gift && _item.isGift) {
+                    arr_Cart.push(_item)
+                    return
+                }
+
+                if (!product && !_item.isGift) {
+                    arr_Cart.push(_item)
+                    return
+                }
+
                 setMessLoading('Đã Thêm Sản Phẩm Này Rồi !')
                 setShow(true)
                 setTimeout(() => {
@@ -400,35 +404,39 @@ function Oder() {
             RenderKetQuaGioHang(arr_Cart)
             handleHideHieuChinh()
         } catch (err) {
-            handleErr(err.name, 'Oder', '365')
+            console.log(err)
+            handleErr(err, 'Oder', '365')
         }
     }
 
     function TinhToanThanhTien() {
         // Tính Toán Thành Tiền
         var _sum = 0
-
+        var _sumProductGift = 0
         arr_Cart.map((e) => {
-            e.pricesum = e.chietKhau
-                ? e.price * e.soluongBan -
-                  e.price * e.soluongBan * (e.chietKhau / 100)
-                : e.price * e.soluongBan // tính tổng tiền trên mỗi sản phẩm
+            e.pricesum = e.price * e.soluongBan // tính tổng tiền trên mỗi sản phẩm
 
             _sum += e.pricesum // Tính tổng tiền tất cả sản phẩm
 
-            return _sum
+            if (e.isGift) _sumProductGift += e.pricesum // Tính tổng tiền tất cả sản phẩm quà tặng
         })
 
         _tongtien = _sum
+        _tongtienSPNotGift = _sum - _sumProductGift
 
-        _thanhtien = _tongtien - _tienkhachno
+        _thanhtien = _chietkhau
+            ? (
+                  _tongtienSPNotGift -
+                  _tongtienSPNotGift * (_chietkhau / 100)
+              ).toFixed(0)
+            : _tongtienSPNotGift
         setThanhTien(TienVietNam(_thanhtien))
     }
 
     function RenderKetQuaGioHang(arr) {
         setResultCart(
-            arr.map((e) => {
-                return ItemCart(e)
+            arr.map((e, index) => {
+                return ItemCart(e, index)
             })
         )
         TinhToanThanhTien()
@@ -515,6 +523,7 @@ function Oder() {
                 : '0' + _d.getMilliseconds()
 
         itemRequest.Time = hours + ':' + minutes + ':' + milis
+        itemRequest.chietKhau = chietKhau ? chietKhau : ''
         const requestOptions = {
             method: 'POST',
             headers: {
@@ -523,6 +532,7 @@ function Oder() {
             },
             body: JSON.stringify(itemRequest),
         }
+
         let _URL = URL_API + 'ThemDonHang'
         NetWorking(_URL, requestOptions)
             .then((res) => {
@@ -536,9 +546,12 @@ function Oder() {
                         SDTKhach: sodienthoai,
                         lstSanPham: arr_Cart,
                         Date: itemRequest.Date,
+                        TongTien: _tongtien,
                         ThanhTien: _thanhtien,
                         Ghichu: itemRequest.Ghichu,
+                        chietKhau: chietKhau ? chietKhau : '',
                     }
+
                     handleClickPrint(objBill)
 
                     // Kiểm tra có p là khách hàng mới không, thêm vào store
@@ -571,14 +584,17 @@ function Oder() {
                     setTenKhach('')
                     setDiaChi('')
                     setSoDienThoai('')
-                    arr_Cart.splice(0, arr_Cart.length)
                     setValueSDT('')
                     setValueDiaChi('')
                     setValueName('')
+                    setChietKhau('')
 
                     _tienkhachno = 0
                     _thanhtien = 0
+                    _tongtienSPNotGift = 0
                     _tongtien = 0
+                    _chietkhau = 0
+                    arr_Cart.splice(0, arr_Cart.length)
                 } else {
                     setStateSnackbar({
                         ...stateSnackbar,
@@ -697,10 +713,24 @@ function Oder() {
                                     searchRef.current.focus()
                                 }, 350)
                             }
+                            if (event.which === 32) {
+                                handleClickThemSanPham(
+                                    soLuongSanPhamDaChon,
+                                    true
+                                )
+                            }
                         }}
                     />
                 </DialogContent>
                 <DialogActions>
+                    <Button
+                        variant="primary"
+                        onClick={() => {
+                            handleClickThemSanPham(soLuongSanPhamDaChon, true)
+                        }}
+                    >
+                        Quà Tặng
+                    </Button>
                     <Button
                         variant="secondary"
                         onClick={() => {
@@ -756,11 +786,10 @@ function Oder() {
         )
     }
 
-    function handleClickThemSanPham(soLuongSanPhamDaChon) {
+    function handleClickThemSanPham(soLuongSanPhamDaChon, isGift = false) {
         try {
             setShowModalDienSoLuongSP(false)
             //sau khi điền sl sp thì thêm vào giỏ hàng
-
             if (idSanPham) {
                 //Kiểm tra số lượng nhập vào có nhỏ hơn số lượg đang có hay k
                 //Kiểm tra số lượng > 0
@@ -781,13 +810,13 @@ function Oder() {
                 }
                 //Kiểm tra đã thêm sản phẩm này vào giỏ hàng hay chưa,
                 //hoặc kiểm tra số lượng hàng có đủ hay không
-                if (Handle_AddToCart(idSanPham) == false) {
+                if (Handle_AddToCart(idSanPham, isGift) == false) {
                     return
                 }
-                var _index = arr_Cart.findIndex((i) => i._id == idSanPham)
-                arr_Cart[_index].soluongBan = +soLuongSanPhamDaChon
-                arr_Cart[_index].Ghichu = ''
-                setsoluongBan(arr_Cart[_index].soluongBan)
+
+                arr_Cart[arr_Cart.length - 1].soluongBan = +soLuongSanPhamDaChon
+                arr_Cart[arr_Cart.length - 1].Ghichu = ''
+                setsoluongBan(arr_Cart[arr_Cart.length - 1].soluongBan)
                 RenderKetQuaGioHang(arr_Cart)
             }
         } catch (err) {
@@ -1222,15 +1251,6 @@ function Oder() {
                                                 fontWeight: 'bold',
                                             }}
                                         >
-                                            Chiết Khấu (%)
-                                        </TableCell>
-                                        <TableCell
-                                            style={{
-                                                fontSize: 12,
-                                                maxWidth: '5px',
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
                                             Tổng Tiền
                                         </TableCell>
                                         <TableCell
@@ -1269,6 +1289,34 @@ function Oder() {
                     >
                         Tên Nhân Viên: {HoTenNV}
                     </div>
+
+                    <div
+                        style={{
+                            width: '100%',
+                            marginLeft: 20,
+                            fontSize: 20,
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            marginTop: 20,
+                        }}
+                        className="total-price"
+                    >
+                        Tổng tiền
+                    </div>
+                    <div
+                        style={{
+                            marginLeft: 20,
+                            textAlign: 'center',
+                            fontSize: 24,
+                            color: 'red',
+                            paddingLeft: 10,
+                        }}
+                        className="price"
+                    >
+                        {formatNumber(_tongtien)}
+                    </div>
+
                     <div
                         style={{
                             width: '100%',
@@ -1304,13 +1352,85 @@ function Oder() {
                         variant="outlined"
                         style={{
                             width: 250,
-                            height: 200,
-                            paddingLeft: 15,
                             marginTop: 40,
                             alignSelf: 'center',
-                            marginLeft: 15,
                         }}
-                        placeholder={'Ghi Chú Đơn Hàng'}
+                        label="Ghi chú đơn hàng"
+                    />
+                    <TextField
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
+                        type="number"
+                        label="Chiết khấu %"
+                        value={chietKhau}
+                        variant="outlined"
+                        onChange={(e) => {
+                            const value = e.target.value
+
+                            setChietKhau(value)
+                            _chietkhau = value
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                const ck = e.target.value
+
+                                if (ck) {
+                                    setThanhTien(
+                                        formatNumber(
+                                            (
+                                                _tongtienSPNotGift -
+                                                _tongtienSPNotGift * (ck / 100)
+                                            ).toFixed(0)
+                                        )
+                                    )
+
+                                    _thanhtien = (
+                                        _tongtienSPNotGift -
+                                        _tongtienSPNotGift * (ck / 100)
+                                    ).toFixed(0)
+                                } else {
+                                    setThanhTien(
+                                        formatNumber(_tongtienSPNotGift)
+                                    )
+                                    _thanhtien = _tongtienSPNotGift
+                                }
+                            }
+                        }}
+                        onBlur={(e) => {
+                            const ck = e.target.value
+
+                            if (ck) {
+                                setThanhTien(
+                                    formatNumber(
+                                        (
+                                            _tongtienSPNotGift -
+                                            _tongtienSPNotGift * (ck / 100)
+                                        ).toFixed(0)
+                                    )
+                                )
+
+                                _thanhtien = (
+                                    _tongtienSPNotGift -
+                                    _tongtienSPNotGift * (ck / 100)
+                                ).toFixed(0)
+                            } else {
+                                setThanhTien(formatNumber(_tongtienSPNotGift))
+                                _thanhtien = _tongtienSPNotGift
+                            }
+                        }}
+                        style={{
+                            width: 250,
+                            marginTop: 35,
+                            alignSelf: 'center',
+                        }}
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
                     />
                     <div className="content-right__submit">
                         <button

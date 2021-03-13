@@ -11,6 +11,7 @@ export const UpdateGhiChuNewSpThieuSl = 'UpdateGhiChuNewSpThieuSl'
 //Xử lí ở trang chỉnh sửa bill (lịch sử giao dịch)
 export const SaveObjectBill = 'SaveObjectBill'
 export const UpdateThanhTienDonHang = 'UpdateThanhTienDonHang'
+export const UpdateTongTienDonHang = 'UpdateTongTienDonHang'
 
 //Xử lí ở trang kho hàng
 export const DeleteSanPham = 'DeleteSanPham'

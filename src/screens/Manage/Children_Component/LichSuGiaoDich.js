@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
     SaveObjectBill,
     UpdateThanhTienDonHang,
+    UpdateTongTienDonHang,
 } from '../../../Redux/ActionType'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -22,7 +23,6 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-
 import resources from '../../../resource/color/ColorApp'
 import { TextField } from '@material-ui/core'
 import NetWorking from '../../../networking/fetchWithTimeout'
@@ -76,6 +76,7 @@ function LichSuGiaoDich() {
     //react redux hook, lấy toàn state all sp và khách hàng từ store
     const arrAllSanPham = useSelector((state) => state.AllSanPham)
     const thanh_tien = useSelector((state) => state.thanhTienDH)
+    const tong_tien = useSelector((state) => state.tongTienDH)
 
     const dispatch = useDispatch()
 
@@ -288,9 +289,12 @@ function LichSuGiaoDich() {
 
     function RenderUIUpdateBill(listSP, indexBill = 0) {
         let _thanhtien = 0
+        let _tongtien = 0
         setResultUpdateBill(
             listSP.map((e, index) => {
-                _thanhtien += e.price * e.soluongBan
+                _tongtien += e.price * e.soluongBan
+                if (!e.isGift) _thanhtien += e.price * e.soluongBan
+
                 return (
                     <ItemUpdateBill
                         data={e}
@@ -300,13 +304,21 @@ function LichSuGiaoDich() {
                 )
             })
         )
-        dispatch({ type: UpdateThanhTienDonHang, value: _thanhtien })
+
+        dispatch({
+            type: UpdateThanhTienDonHang,
+            value: _thanhtien,
+        })
+
+        dispatch({
+            type: UpdateTongTienDonHang,
+            value: _tongtien,
+        })
     }
 
     function updateBill(bodyRequest) {
         handleShow()
         setMessLoading('Đang cập nhật bill!')
-
         const requestOptions = {
             method: 'POST',
             headers: {
@@ -316,13 +328,11 @@ function LichSuGiaoDich() {
             body: JSON.stringify(bodyRequest),
         }
         let _URL = URL_API + 'CapNhatDonHang'
-
         NetWorking(_URL, requestOptions)
             .then((res) => {
                 if (res.success) {
                     // Nếu cập nhật bill mới thành công thì cho refresh lại trang bill
                     OnRefresh()
-
                     setShowMessage(true)
                     setTextMessage('Cập nhật thành công!')
                 }
@@ -349,10 +359,9 @@ function LichSuGiaoDich() {
                 : ''
         )
 
-        const [soluongQuaTang, setSoLuongQuaTang] = useState(
+        const [isGift, setIsGift] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
-                ? _arrDonHang[props.indexBill].lstSanPham[props.index]
-                      .soluongQuaTang
+                ? _arrDonHang[props.indexBill].lstSanPham[props.index].isGift
                 : ''
         )
 
@@ -377,19 +386,31 @@ function LichSuGiaoDich() {
 
         const [thanhTien, setThanhTien] = useState(
             _arrDonHang[props.indexBill].lstSanPham[props.index]
-                ? _arrDonHang[props.indexBill].lstSanPham[props.index].ThanhTien
+                ? _arrDonHang[props.indexBill].ThanhTien
+                : ''
+        )
+
+        const [tongTien, setTongTien] = useState(
+            _arrDonHang[props.indexBill].lstSanPham[props.index]
+                ? _arrDonHang[props.indexBill].TongTien
                 : ''
         )
 
         useEffect(() => {
             setPriceSum(formatNumber(soluongBan * price))
             var thanh_tien = 0
+            var tong_tien = 0
+
             _arrDonHang[props.indexBill].lstSanPham.map((e) => {
-                thanh_tien += e.pricesum
+                tong_tien += e.pricesum
+                if (!e.isGift) thanh_tien += e.pricesum
             })
+
             _arrDonHang[props.indexBill].ThanhTien = thanh_tien
+            _arrDonHang[props.indexBill].TongTien = tong_tien
 
             setThanhTien(thanh_tien)
+            setTongTien(tong_tien)
         }, [soluongBan, price])
 
         //Xử lí lỗi setName rỗng
@@ -467,6 +488,11 @@ function LichSuGiaoDich() {
                         placeholder="Số lượng"
                         value={soluongBan}
                         style={{ width: '70px' }}
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
                         onChange={(e) => {
                             const value = e.target.value
                             setSoLuongBan(value)
@@ -489,6 +515,11 @@ function LichSuGiaoDich() {
                                     type: UpdateThanhTienDonHang,
                                     value: thanhTien,
                                 })
+
+                                dispatch({
+                                    type: UpdateTongTienDonHang,
+                                    value: tongTien,
+                                })
                             }
                         }}
                         onBlur={(e) => {
@@ -496,23 +527,21 @@ function LichSuGiaoDich() {
                                 type: UpdateThanhTienDonHang,
                                 value: thanhTien,
                             })
+                            dispatch({
+                                type: UpdateTongTienDonHang,
+                                value: tongTien,
+                            })
                         }}
                     />
                 </TableCell>
 
                 <TableCell>
-                    <TextField
-                        type="number"
-                        placeholder="Số lượng quà tặng"
-                        value={soluongQuaTang}
-                        style={{ width: '70px' }}
+                    <Checkbox
+                        disabled
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        checked={isGift}
                         onChange={(e) => {
-                            const value = +e.target.value
-                            setSoLuongQuaTang(value)
-
-                            _arrDonHang[props.indexBill].lstSanPham[
-                                props.index
-                            ].soluongQuaTang = value
+                            setIsGift(!isGift)
                         }}
                     />
                 </TableCell>
@@ -522,6 +551,12 @@ function LichSuGiaoDich() {
                         placeholder="Giá tiền"
                         value={price}
                         style={{ width: '180px' }}
+                        InputProps={{
+                            inputProps: {
+                                min: 0,
+                            },
+                        }}
+                        type="number"
                         onChange={(e) => {
                             const value = e.target.value
                             setPrice(value)
@@ -544,12 +579,20 @@ function LichSuGiaoDich() {
                                     type: UpdateThanhTienDonHang,
                                     value: thanhTien,
                                 })
+                                dispatch({
+                                    type: UpdateTongTienDonHang,
+                                    value: tongTien,
+                                })
                             }
                         }}
                         onBlur={(e) => {
                             dispatch({
                                 type: UpdateThanhTienDonHang,
                                 value: thanhTien,
+                            })
+                            dispatch({
+                                type: UpdateTongTienDonHang,
+                                value: tongTien,
                             })
                         }}
                     />
@@ -615,6 +658,18 @@ function LichSuGiaoDich() {
             _arrDonHang.length != 0 ? _arrDonHang[indexBill].Ghichu : ''
         )
 
+        const [chietKhau, setChietKhau] = useState(
+            _arrDonHang.length != 0
+                ? _arrDonHang[indexBill].chietKhau
+                    ? _arrDonHang[indexBill].chietKhau
+                    : ''
+                : ''
+        )
+
+        const [tongTien, setTongTien] = useState(
+            _arrDonHang.length != 0 ? _arrDonHang[indexBill].TongTien : ''
+        )
+
         const [thanhTien, setThanhTien] = useState(
             `${formatNumber(
                 _arrDonHang.length != 0 ? _arrDonHang[indexBill].ThanhTien : ''
@@ -622,8 +677,20 @@ function LichSuGiaoDich() {
         )
 
         useEffect(() => {
-            setThanhTien(`${formatNumber(thanh_tien)} VNĐ`)
+            setThanhTien(
+                `${formatNumber(
+                    chietKhau
+                        ? (thanh_tien - (thanh_tien * chietKhau) / 100).toFixed(
+                              0
+                          )
+                        : thanh_tien
+                )} VNĐ`
+            )
         }, [thanh_tien])
+
+        useEffect(() => {
+            setTongTien(`${formatNumber(tong_tien)} VNĐ`)
+        }, [tong_tien])
 
         return (
             <div
@@ -729,6 +796,21 @@ function LichSuGiaoDich() {
                         />
                     </div>
                     <div style={{ display: 'flex', marginTop: '10px' }}>
+                        <h5 style={{ marginBottom: '0' }}>Tổng Tiền: </h5>
+                        <input
+                            style={{
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '20px',
+                                margin: '0 10px',
+                                borderBottom: '1px solid gray',
+                                pointerEvents: 'none',
+                            }}
+                            placeholder="Tổng tiền"
+                            value={tongTien}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '10px' }}>
                         <h5 style={{ marginBottom: '0' }}>Thành Tiền: </h5>
                         <input
                             type="text"
@@ -738,23 +820,69 @@ function LichSuGiaoDich() {
                                 fontSize: '20px',
                                 margin: '0 10px',
                                 borderBottom: '1px solid gray',
+                                pointerEvents: 'none',
                             }}
                             placeholder="Thành tiền"
                             value={thanhTien}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '10px' }}>
+                        <h5 style={{ marginBottom: '0' }}>Chiết khấu %: </h5>
+                        <input
+                            type="number"
+                            style={{
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '20px',
+                                margin: '0 10px',
+                                borderBottom: '1px solid gray',
+                            }}
+                            InputProps={{
+                                inputProps: {
+                                    min: 0,
+                                },
+                            }}
+                            value={chietKhau}
                             onChange={(e) => {
-                                setThanhTien(e.target.value)
-                                _arrDonHang[indexBill].ThanhTien = +e.target
+                                setChietKhau(e.target.value)
+                                _arrDonHang[indexBill].chietKhau = +e.target
                                     .value
                             }}
-                            onBlur={(e) =>
-                                setThanhTien(
-                                    `${formatNumber(e.target.value)} VNĐ`
-                                )
-                            }
-                            onFocus={(e) => {
-                                setThanhTien(
-                                    e.target.value.replace(/VNĐ|,| /gi, '')
-                                )
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                    const ck = e.target.value
+                                    if (ck) {
+                                        setThanhTien(
+                                            `${formatNumber(
+                                                (
+                                                    thanh_tien -
+                                                    thanh_tien * (ck / 100)
+                                                ).toFixed(0)
+                                            )} VNĐ`
+                                        )
+                                    } else {
+                                        setThanhTien(
+                                            `${formatNumber(thanh_tien)} VNĐ`
+                                        )
+                                    }
+                                }
+                            }}
+                            onBlur={(e) => {
+                                const ck = e.target.value
+                                if (ck) {
+                                    setThanhTien(
+                                        `${formatNumber(
+                                            (
+                                                thanh_tien -
+                                                thanh_tien * (ck / 100)
+                                            ).toFixed(0)
+                                        )} VNĐ`
+                                    )
+                                } else {
+                                    setThanhTien(
+                                        `${formatNumber(thanh_tien)} VNĐ`
+                                    )
+                                }
                             }}
                         />
                     </div>
@@ -815,14 +943,19 @@ function LichSuGiaoDich() {
                                             _arrDonHang[indexBill].DiaChiKhach,
                                         SDTKhach:
                                             _arrDonHang[indexBill].SDTKhach,
-                                        ThanhTien:
-                                            _arrDonHang[indexBill].ThanhTien,
+                                        ThanhTien: thanhTien.replace(
+                                            /VNĐ|,| /gi,
+                                            ''
+                                        ),
+                                        TongTien: tongTien.replace(
+                                            /VNĐ|,| /gi,
+                                            ''
+                                        ),
                                         Ghichu: ghiChu,
+                                        chietKhau: chietKhau,
                                         lstSanPham:
                                             _arrDonHang[indexBill].lstSanPham,
                                     }
-
-                                    console.log(objectNewBillPOST)
 
                                     updateBill(objectNewBillPOST)
                                     setShowModalUpdateBill(false)
@@ -941,7 +1074,7 @@ function LichSuGiaoDich() {
                     })
                     break
                 case 'Theo tên sản phẩm':
-                    var _input = value;
+                    var _input = value
                     handleShow()
                     setMessLoading('Đang tìm kiếm!')
 
@@ -982,7 +1115,7 @@ function LichSuGiaoDich() {
     )
 
     function handleFilterDate(date) {
-        handleShow();
+        handleShow()
         const requestOptions = {
             method: 'GET',
             headers: {
